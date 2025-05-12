@@ -1,0 +1,135 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Service;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+
+class ServiceController extends Controller
+{
+    public function getData()
+    {
+        $services = Service::all();
+
+        return view('staff.service.list', compact('services'));
+    }
+
+    public function formAdd()
+    {
+        return view('staff.service.create');
+    }
+
+    public function addData(Request $request)
+    {
+        $rules = [
+            'name' => 'required',
+            'price' => 'required|numeric',
+            'duration' => 'required|numeric'
+        ];
+
+        $messages = [
+            'name.required' => 'Nama layanan harus di isi.',
+            'price.required' => 'Harga layanan harus di isi.',
+            'duration.required' => 'Waktu pelayanan harus di isi.',
+            'price.numeric' => 'Data yang diinputkan berupa angka.',
+            'duration.numeric' => 'Data yang diinputkan berupa angka.',
+        ];
+
+        // Validasi input
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'failed',
+                'message' => $validator->errors()
+            ], 400); // 400 Bad Request
+        }
+
+        DB::beginTransaction();
+        try {
+            $data = new Service();
+            $data->name = $request->input('name');
+            $data->price = $request->input('price');
+            $data->duration = $request->input('duration');
+            $data->save();
+
+            DB::commit();
+
+            return redirect()->route('service.get-data')
+                            ->with('success', 'Pelayanan berhasil ditambahkan.')
+                            ->with('data', $data);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()
+                            ->withInput() // biar data form tidak hilang
+                            ->withErrors(['message' => 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage()]);
+        }
+    }
+
+    public function formEdit($id)
+    {
+        $service = Service::findOrFail($id);
+        return view('staff.service.edit', compact('service'));
+    }
+
+    public function editData(Request $request, $id)
+    {
+        $service = Service::findOrFail($id);
+
+        $rules = [
+            'name'  => 'sometimes',
+            'price' => 'sometimes|numeric',
+            'duration'  => 'sometimes|numeric',
+        ];
+
+        $messages = [
+            'price.numeric' => 'Data yang diinputkan berupa angka.',
+            'duration.numeric' => 'Data yang diinputkan berupa angka.',
+        ];
+
+        // Validasi input
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'failed',
+                'message' => $validator->errors()
+            ], 400); // 400 Bad Request
+        }
+
+        DB::beginTransaction();
+        try {
+            // Update data sesuai input yang diberikan
+            if ($request->has('name')) {
+                $service->name = $request->name;
+            }
+            if ($request->has('price')) {
+                $service->price = $request->price;
+            }
+            if ($request->has('duration')) {
+                $service->duration = $request->duration;
+            }
+            $service->save();
+
+            DB::commit();
+
+            return redirect()->route('service.get-data')->with('success', 'Pelayanan berhasil diedit.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()
+                            ->withInput() // biar data form tidak hilang
+                            ->withErrors(['message' => 'Terjadi kesalahan saat edit data: ' . $e->getMessage()]);
+        }
+    }
+
+    public function deleteData($id)
+    {
+        $service = Service::findOrFail($id);
+
+        $service->delete();
+        return redirect()->route('service.get-data')
+                        ->with('success', 'Data pelayanan berhasil dihapus');
+    }
+}
