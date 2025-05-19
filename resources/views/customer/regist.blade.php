@@ -22,7 +22,7 @@
             @endforeach
         </select>
         <select name="booking_time_id" id="booking_time_id">
-            <option value="">Pilih Pelayanan</option>
+            <option value="">Pilih Jam</option>
             @foreach ( $times as $item)
                 <option value="{{ $item->id }}">{{ $item->time }}</option>
             @endforeach
