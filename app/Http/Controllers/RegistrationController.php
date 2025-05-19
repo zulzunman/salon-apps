@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\CancelIfNotServed;
 use App\Mail\CallingMail;
 use App\Mail\CompleteMail;
 use App\Mail\RegistrasiMail;
@@ -122,6 +123,9 @@ class RegistrationController extends Controller
             ])->first();
 
             Mail::to($dataCustomer->customer->email)->send(new CallingMail($dataCustomer));
+
+            // Tambah ini
+            CancelIfNotServed::dispatch($data->id)->delay(now()->addMinutes(15));
 
             DB::commit();
             return redirect()->route('register.get-data')
