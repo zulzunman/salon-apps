@@ -3,6 +3,7 @@
 use App\Http\Controllers\auth\LoginController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\StaffController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -36,11 +37,21 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/registration/serving/{id}', [RegistrationController::class, 'servingCustomer'])->name('register.serving');
     Route::post('/registration/complete/{id}', [RegistrationController::class, 'completeCustomer'])->name('register.complete');
 
-    // service
-    Route::get('/service', [ServiceController::class, 'getData'])->name('service.get-data');
-    Route::get('/service/add', [ServiceController::class, 'formAdd'])->name('service.form-add');
-    Route::post('/service/add/add-data', [ServiceController::class, 'addData'])->name('service.add-data');
-    Route::get('/service/edit/{id}', [ServiceController::class, 'formEdit'])->name('service.form-edit');
-    Route::post('/service/edit/{id}/edit-data', [ServiceController::class, 'editData'])->name('service.edit-data');
-    Route::post('/service/delete/{id}', [ServiceController::class, 'deleteData'])->name('service.delete-data');
+    Route::middleware(['is_admin'])->group(function(){
+        // staff
+        Route::get('/staff', [StaffController::class, 'getData'])->name('staff.get-data');
+        Route::get('/staff/add', [StaffController::class, 'formAdd'])->name('staff.form-add');
+        Route::post('/staff/add/add-data', [StaffController::class, 'addData'])->name('staff.add-data');
+        Route::get('/staff/edit/{id}', [StaffController::class, 'formEdit'])->name('staff.form-edit');
+        Route::post('/staff/edit/{id}/edit-data', [StaffController::class, 'editData'])->name('staff.edit-data');
+        Route::post('/staff/delete/{id}', [StaffController::class, 'deleteData'])->name('staff.delete-data');
+
+        // service
+        Route::get('/service', [ServiceController::class, 'getData'])->name('service.get-data');
+        Route::get('/service/add', [ServiceController::class, 'formAdd'])->name('service.form-add');
+        Route::post('/service/add/add-data', [ServiceController::class, 'addData'])->name('service.add-data');
+        Route::get('/service/edit/{id}', [ServiceController::class, 'formEdit'])->name('service.form-edit');
+        Route::post('/service/edit/{id}/edit-data', [ServiceController::class, 'editData'])->name('service.edit-data');
+        Route::post('/service/delete/{id}', [ServiceController::class, 'deleteData'])->name('service.delete-data');
+    });
 });

@@ -11,7 +11,7 @@ class Registration extends Model
     use HasFactory;
 
     protected $table = 'registrations';
-    protected $fillable = ['customer_id', 'service_id', 'queue_number', 'status'];
+    protected $fillable = ['customer_id', 'service_id', 'booking_time_id', 'status'];
 
     public function customer()
     {
