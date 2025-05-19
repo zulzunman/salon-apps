@@ -27,7 +27,7 @@ class StaffController extends Controller
 
     public function formAdd()
     {
-        return view('admin.staff.form-add', compact('data'));
+        return view('admin.staff.formAdd', compact('data'));
     }
 
     public function addData(Request $request)
