@@ -2,11 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\CallingMail;
+use App\Mail\CompleteMail;
+use App\Mail\RegistrasiMail;
+use App\Models\BookingTime;
 use App\Models\Customer;
 use App\Models\Registration;
 use App\Models\Service;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class RegistrationController extends Controller
@@ -24,7 +30,8 @@ class RegistrationController extends Controller
     public function formRegist()
     {
         $services = Service::all();
-        return view('customer.regist', compact('services'));
+        $times = BookingTime::all();
+        return view('customer.regist', compact('services, times'));
     }
     public function addData(Request $request)
     {
@@ -32,7 +39,8 @@ class RegistrationController extends Controller
         $rules = [
             'name' => 'required',
             'email' => 'required|email',
-            'service_id' => 'required|exists:services,id'
+            'service_id' => 'required|exists:services,id',
+            'booking_time_id' => 'required|exists:booking_times,id'
         ];
 
         $messages = [
@@ -40,6 +48,7 @@ class RegistrationController extends Controller
             'email.required' => 'Email harus diisi.',
             'email.email' => 'Format yang anda masukan bukan email.',
             'service_id.required' => 'Silakan pilih pelayanan yang akan dilakukan.',
+            'booking_time_id.required' => 'Silakan pilih jam pelayanan yang akan dilakukan.',
         ];
 
         // Validasi input
@@ -59,20 +68,20 @@ class RegistrationController extends Controller
             $customer->email = $request->input('email');
             $customer->save();
 
-            // Ambil nomor antrean terakhir
-            $lastQueue = Registration::whereDate('created_at', now()->toDateString())
-                ->orderByDesc('id')
-                ->value('queue_number');
-
-            $number = $lastQueue ? (int) $lastQueue + 1 : 1;
-            $formatted = str_pad($number, 4, '0', STR_PAD_LEFT); // hasil misalnya "0001", "0002", dst.
-
             $register = new Registration();
             $register->customer_id = $customer->id;
             $register->service_id = $request->input('service_id');
-            $register->queue_number = $formatted;
+            $register->booking_time_id = $request->input('booking_time_id');
             $register->status = "PENDING";
             $register->save();
+
+            $data = Registration::with([
+                'registration.customer',
+                'registration.service',
+                'registration.bookingTime',
+            ])->first();
+
+            Mail::to($customer->email)->send(new RegistrasiMail($data));
 
             DB::commit();
             return redirect()->route('register.get-data')
@@ -89,33 +98,78 @@ class RegistrationController extends Controller
     {
         $data = Registration::findOrFail($id);
 
-        $data->status = "CALLING";
-        $data->called_at = now();
-        $data->save();
+        DB::beginTransaction();
+        try {
+            $data->status = "CALLING";
+            $data->called_at = now();
+            $data->save();
 
-        return redirect()->route('register.get-data')
-                            ->with('success', 'Memanggil pelanggan berhasil.');
+            $dataCustomer = Registration::with([
+                'registration.customer',
+                'registration.service',
+                'registration.bookingTime',
+            ])->first();
+
+            Mail::to($dataCustomer->customer->email)->send(new CallingMail($dataCustomer));
+
+            DB::commit();
+            return redirect()->route('register.get-data')
+                                ->with('success', 'Memanggil pelanggan berhasil.');
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->back()
+                            ->withInput() // biar data form tidak hilang
+                            ->withErrors(['message' => 'Terjadi kesalahan saat pemanggilan pelanggan: ' . $e->getMessage()]);
+        }
+
     }
 
     public function servingCustomer($id)
     {
         $data = Registration::findOrFail($id);
 
-        $data->status = "SERVING";
-        $data->save();
+        DB::beginTransaction();
+        try {
+            $data->status = "SERVING";
+            $data->save();
 
-        return redirect()->route('register.get-data')
-                            ->with('success', 'Pelanggan sedang dilayani.');
+            DB::commit();
+
+            return redirect()->route('register.get-data')
+                                ->with('success', 'Pelanggan sedang dilayani.');
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->back()
+                            ->withInput() // biar data form tidak hilang
+                            ->withErrors(['message' => 'Terjadi kesalahan saat update status pelanggan: ' . $e->getMessage()]);
+        }
     }
 
     public function completeCustomer($id)
     {
         $data = Registration::findOrFail($id);
 
-        $data->status = "COMPLETED";
-        $data->save();
+        DB::beginTransaction();
+        try {
+            $data->status = "COMPLETED";
+            $data->save();
 
-        return redirect()->route('register.get-data')
-                            ->with('success', 'Pelanggan sedang dilayani.');
+            $dataCustomer = Registration::with([
+                'registration.customer',
+                'registration.service',
+                'registration.bookingTime',
+            ])->first();
+
+            Mail::to($dataCustomer->customer->email)->send(new CompleteMail($dataCustomer));
+
+            DB::commit();
+            return redirect()->route('register.get-data')
+                                ->with('success', 'Pelanggan sedang dilayani.');
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->back()
+                            ->withInput() // biar data form tidak hilang
+                            ->withErrors(['message' => 'Terjadi kesalahan saat update status pelanggan: ' . $e->getMessage()]);
+        }
     }
 }

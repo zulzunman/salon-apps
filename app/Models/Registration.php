@@ -21,4 +21,8 @@ class Registration extends Model
     {
         return $this->belongsTo(Service::class);
     }
+    public function bookingTime()
+    {
+        return $this->belongsTo(BookingTime::class);
+    }
 }
