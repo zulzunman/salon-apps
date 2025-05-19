@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('customer_id');
             $table->unsignedBigInteger('service_id');
-            $table->string('queue_number');
             $table->enum('status', ['PENDING', 'CALLING', 'SERVING', 'CANCELED', 'COMPLETED']);
             $table->timestamps();
             $table->timestamp('called_at')->nullable();
