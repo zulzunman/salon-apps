@@ -2,44 +2,53 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Service;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
-class ServiceController extends Controller
+class StaffController extends Controller
 {
     protected $model;
-    public function __construct() {
-        $this->model = new Service();
+    public function __construct()
+    {
+        $this->model = new User;
     }
+
     public function getData()
     {
-        $services = $this->model->all();
+        // Ambil semua user dengan role 'staff'
+        $data = $this->model->where('role', 'STAFF')->get();
 
-        return view('staff.service.list', compact('services'));
+        return view('admin.staff.index', compact('data'));
     }
 
     public function formAdd()
     {
-        return view('staff.service.create');
+        return view('admin.staff.formAdd', compact('data'));
     }
 
     public function addData(Request $request)
     {
         $rules = [
             'name' => 'required',
-            'price' => 'required|numeric',
-            'duration' => 'required|numeric'
+            'email' => 'required|email',
+            'password' => [
+                'required',
+                'confirmed',
+                'min:8',
+            ],
         ];
 
         $messages = [
-            'name.required' => 'Nama layanan harus di isi.',
-            'price.required' => 'Harga layanan harus di isi.',
-            'duration.required' => 'Waktu pelayanan harus di isi.',
-            'price.numeric' => 'Data yang diinputkan berupa angka.',
-            'duration.numeric' => 'Data yang diinputkan berupa angka.',
+            'name.required' => 'Nama harus diisi',
+            'email.required' => 'Email harus diisi',
+            'email.email' => 'Silahkan isi dengan alaman email',
+            'password.required' => 'Password harus diisi',
+            'password.confirmed' => 'Password konfirmasi salah',
+            'password.min' => 'Password minimal 8 digit',
         ];
 
         // Validasi input
@@ -56,16 +65,16 @@ class ServiceController extends Controller
         try {
             $data = $this->model;
             $data->name = $request->input('name');
-            $data->price = $request->input('price');
-            $data->duration = $request->input('duration');
+            $data->email = $request->input('email');
+            $data->role = 'STAFF';
+            $data->password = Hash::make($request->input('password'));
             $data->save();
 
             DB::commit();
-
-            return redirect()->route('service.get-data')
-                            ->with('success', 'Pelayanan berhasil ditambahkan.')
+            return redirect()->route('admin.staff.index')
+                            ->with('success', 'Tambah data staff berhasil.')
                             ->with('data', $data);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()
                             ->withInput() // biar data form tidak hilang
@@ -75,26 +84,31 @@ class ServiceController extends Controller
 
     public function formEdit($id)
     {
-        $service = $this->model->findOrFail($id);
-        return view('staff.service.edit', compact('service'));
+        $data = $this->model->findOrFail($id);
+
+        return view('admin.staff.formEdit', compact('data'));
     }
 
     public function editData(Request $request, $id)
     {
-        $service = $this->model->findOrFail($id);
+        $data = $this->model->findOrFail($id);
 
         $rules = [
-            'name'  => 'sometimes',
-            'price' => 'sometimes|numeric',
-            'duration'  => 'sometimes|numeric',
+            'name'  =>  'sometimes',
+            'email'  =>  'sometimes|email',
+            'password'  =>  [
+                'sometimes',
+                'confirmed',
+                'min:8',
+            ],
         ];
 
         $messages = [
-            'price.numeric' => 'Data yang diinputkan berupa angka.',
-            'duration.numeric' => 'Data yang diinputkan berupa angka.',
+            'email.email' => 'Silahkan isi dengan alaman email',
+            'password.confirmed' => 'Password konfirmasi salah',
+            'password.min' => 'Password minimal 8 digit',
         ];
 
-        // Validasi input
         $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
@@ -108,20 +122,19 @@ class ServiceController extends Controller
         try {
             // Update data sesuai input yang diberikan
             if ($request->has('name')) {
-                $service->name = $request->name;
+                $data->name = $request->name;
             }
-            if ($request->has('price')) {
-                $service->price = $request->price;
+            if ($request->has('email')) {
+                $data->email = $request->email;
             }
-            if ($request->has('duration')) {
-                $service->duration = $request->duration;
+            if ($request->has('password')) {
+                $data->password = Hash::make($request->name);
             }
-            $service->save();
+            $data->save();
 
             DB::commit();
-
-            return redirect()->route('service.get-data')->with('success', 'Pelayanan berhasil diedit.');
-        } catch (\Exception $e) {
+            return redirect()->route('admin.staff.index')->with('success', 'Staff berhasil diedit.');
+        } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()
                             ->withInput() // biar data form tidak hilang
@@ -138,8 +151,8 @@ class ServiceController extends Controller
             $data->delete();
 
             DB::commit();
-            return redirect()->route('service.get-data')
-                            ->with('success', 'Data pelayanan berhasil dihapus');
+            return redirect()->route('admin.staff.index')
+                        ->with('success', 'Data pelayanan berhasil dihapus');
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()

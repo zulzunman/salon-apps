@@ -17,9 +17,19 @@ use Illuminate\Support\Facades\Validator;
 
 class RegistrationController extends Controller
 {
+    protected $modelRegistration;
+    protected $modelCustomer;
+    protected $modelService;
+    protected $modelBookingTime;
+    public function __construct() {
+        $this->modelRegistration = new Registration();
+        $this->modelCustomer = new Customer();
+        $this->modelService = new Service();
+        $this->modelBookingTime = new BookingTIme();
+    }
     public function getData()
     {
-        $customers = Registration::with('customer', 'service')
+        $customers = $this->modelRegistration->with('customer', 'service')
                         ->whereIn('status', ['PENDING', 'CALLING', 'SERVING'])
                         ->orderBy('queue_number', 'asc')
                         ->get();
@@ -29,8 +39,8 @@ class RegistrationController extends Controller
 
     public function formRegist()
     {
-        $services = Service::all();
-        $times = BookingTime::all();
+        $services = $this->modelService->all();
+        $times = $this->modelBookingTime->all();
         return view('customer.regist', compact('services, times'));
     }
     public function addData(Request $request)
@@ -63,19 +73,19 @@ class RegistrationController extends Controller
 
         DB::beginTransaction();
         try {
-            $customer = new Customer();
+            $customer = $this->modelCustomer;
             $customer->name = $request->input('name');
             $customer->email = $request->input('email');
             $customer->save();
 
-            $register = new Registration();
+            $register = new $this->modelRegistration;
             $register->customer_id = $customer->id;
             $register->service_id = $request->input('service_id');
             $register->booking_time_id = $request->input('booking_time_id');
             $register->status = "PENDING";
             $register->save();
 
-            $data = Registration::with([
+            $data = $this->modelRegistration->with([
                 'registration.customer',
                 'registration.service',
                 'registration.bookingTime',
@@ -88,6 +98,7 @@ class RegistrationController extends Controller
                             ->with('success', 'Registrasi berhasil.')
                             ->with('data', $register);
         } catch (\Exception $e) {
+            DB::rollBack();
             return redirect()->back()
                             ->withInput() // biar data form tidak hilang
                             ->withErrors(['message' => 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage()]);
@@ -96,7 +107,7 @@ class RegistrationController extends Controller
 
     public function callCustomer($id)
     {
-        $data = Registration::findOrFail($id);
+        $data = $this->modelRegistration->findOrFail($id);
 
         DB::beginTransaction();
         try {
@@ -104,7 +115,7 @@ class RegistrationController extends Controller
             $data->called_at = now();
             $data->save();
 
-            $dataCustomer = Registration::with([
+            $dataCustomer = $this->modelRegistration->with([
                 'registration.customer',
                 'registration.service',
                 'registration.bookingTime',
@@ -126,7 +137,7 @@ class RegistrationController extends Controller
 
     public function servingCustomer($id)
     {
-        $data = Registration::findOrFail($id);
+        $data = $this->modelRegistration->findOrFail($id);
 
         DB::beginTransaction();
         try {
@@ -147,14 +158,14 @@ class RegistrationController extends Controller
 
     public function completeCustomer($id)
     {
-        $data = Registration::findOrFail($id);
+        $data = $this->modelRegistration->findOrFail($id);
 
         DB::beginTransaction();
         try {
             $data->status = "COMPLETED";
             $data->save();
 
-            $dataCustomer = Registration::with([
+            $dataCustomer = $this->modelRegistration->with([
                 'registration.customer',
                 'registration.service',
                 'registration.bookingTime',
