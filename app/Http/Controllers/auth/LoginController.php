@@ -4,6 +4,7 @@ namespace App\Http\Controllers\auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Service;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -57,6 +58,10 @@ class LoginController extends Controller
 
     public function homePage()
     {
-       return view('homePage');
+        // Ambil semua data service dari database dan urutkan berdasarkan nama
+        $services = Service::orderBy('name', 'asc')->get();
+
+        // Render view home page dengan data services
+        return view('homepage', compact('services'));
     }
 }
