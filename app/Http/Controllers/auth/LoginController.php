@@ -32,10 +32,10 @@ class LoginController extends Controller
         $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 'failed',
-                'message' => $validator->errors()
-            ], 400); // 400 Bad Request
+            return back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('show_login_modal', true); // Tambahkan flag untuk menampilkan modal
         }
 
         $credentials = $request->only('email', 'password');
@@ -46,9 +46,11 @@ class LoginController extends Controller
         }
 
         // Gagal login
-        return back()->withErrors([
-            'Messages' => 'Email atau Password anda salah.',
-        ]);
+        return back()
+            ->withErrors([
+                'Messages' => 'Email atau Password anda salah.',
+            ])
+            ->with('show_login_modal', true); // Tambahkan flag untuk menampilkan modal
     }
 
     public function dashboard()
@@ -63,5 +65,12 @@ class LoginController extends Controller
 
         // Render view home page dengan data services
         return view('homepage', compact('services'));
+    }
+
+    public function logout()
+    {
+        Auth::logout();
+
+        return redirect()->route('home-page');
     }
 }

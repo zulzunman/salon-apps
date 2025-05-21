@@ -257,6 +257,12 @@
 </head>
 
 <body id="page-top">
+    {{-- @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>Berhasil!</strong> {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif --}}
     <!-- Navigation-->
     <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
         <div class="container px-4 px-lg-5">
@@ -273,6 +279,8 @@
                     <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
                     <li class="nav-item"><a class="nav-link" href="#projects">Projects</a></li>
                     <li class="nav-item"><a class="nav-link" href="#signup">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal"
+                            data-bs-target="#Login">Login</a></li>
                 </ul>
             </div>
         </div>
@@ -302,7 +310,7 @@
                         <div class="policy-list" style="display: inline-block; text-align: left; margin-left: 10%;">
                             <p class="mb-1">- Harap Masukan Nomor Telfon Anda Yang Aktif</p>
                             <p class="mb-1">- Keterlambatan Melebihi 15 Menit Kami Anggap Cancel</p>
-                            <p class="mb-6">- Batas Untuk Konfirmasi Cancel 30 Menit Sebelum</p>
+                            <p class="mb-6">- Batas Untuk Konfirmasi Cancel 30 Menit </p>
                         </div>
                     </div>
                 </div>
@@ -365,7 +373,8 @@
                                 <div class="service-list">
                                     @foreach ($servicesInCategory as $service)
                                         <div class="service-item">
-                                            <a href="{{ route('register.form-add') }}" class="service-link">
+                                            <a href="{{ route('register.form-add', ['service_id' => $service->id]) }}"
+                                                class="service-link">
                                                 <div class="service-image-wrapper">
                                                     <img src="{{ asset('stylish/assets/img/ipad.png') }}"
                                                         alt="{{ $service->name }}" class="service-image">
@@ -564,6 +573,9 @@
     <footer class="footer bg-black small text-center text-white-50">
         <div class="container px-4 px-lg-5">Copyright &copy; Your Website 2023</div>
     </footer>
+
+    <!-- Include Login Modal -->
+    @include('auth.login')
     <!-- Bootstrap core JS-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Core theme JS-->
@@ -573,6 +585,20 @@
     <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
     <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
     <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cek apakah perlu menampilkan modal login (setelah error)
+            @if (session('show_login_modal'))
+                var loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+                loginModal.show();
+            @endif
+
+            // Auto-focus ke field email ketika modal muncul
+            document.getElementById('loginModal').addEventListener('shown.bs.modal', function() {
+                document.getElementById('email').focus();
+            });
+        });
+    </script>
 </body>
 
 </html>
