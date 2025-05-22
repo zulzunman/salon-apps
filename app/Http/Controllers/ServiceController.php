@@ -11,14 +11,15 @@ use Illuminate\Support\Facades\Validator;
 class ServiceController extends Controller
 {
     protected $model;
-    public function __construct() {
+    public function __construct()
+    {
         $this->model = new Service();
     }
     public function getData()
     {
         $services = $this->model->all();
 
-        return view('staff.service.list', compact('services'));
+        return view('admin.service.list', compact('services'));
     }
 
     public function formAdd()
@@ -63,13 +64,13 @@ class ServiceController extends Controller
             DB::commit();
 
             return redirect()->route('service.get-data')
-                            ->with('success', 'Pelayanan berhasil ditambahkan.')
-                            ->with('data', $data);
+                ->with('success', 'Pelayanan berhasil ditambahkan.')
+                ->with('data', $data);
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()
-                            ->withInput() // biar data form tidak hilang
-                            ->withErrors(['message' => 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage()]);
+                ->withInput() // biar data form tidak hilang
+                ->withErrors(['message' => 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage()]);
         }
     }
 
@@ -124,8 +125,8 @@ class ServiceController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()
-                            ->withInput() // biar data form tidak hilang
-                            ->withErrors(['message' => 'Terjadi kesalahan saat edit data: ' . $e->getMessage()]);
+                ->withInput() // biar data form tidak hilang
+                ->withErrors(['message' => 'Terjadi kesalahan saat edit data: ' . $e->getMessage()]);
         }
     }
 
@@ -139,12 +140,12 @@ class ServiceController extends Controller
 
             DB::commit();
             return redirect()->route('service.get-data')
-                            ->with('success', 'Data pelayanan berhasil dihapus');
+                ->with('success', 'Data pelayanan berhasil dihapus');
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()
-                            ->withInput() // biar data form tidak hilang
-                            ->withErrors(['message' => 'Terjadi kesalahan saat menghapus data: ' . $e->getMessage()]);
+                ->withInput() // biar data form tidak hilang
+                ->withErrors(['message' => 'Terjadi kesalahan saat menghapus data: ' . $e->getMessage()]);
         }
     }
 }

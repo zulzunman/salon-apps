@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\CancelIfNotServed;
 use App\Mail\CallingMail;
 use App\Mail\CompleteMail;
 use App\Mail\RegistrasiMail;
@@ -22,28 +21,42 @@ class RegistrationController extends Controller
     protected $modelCustomer;
     protected $modelService;
     protected $modelBookingTime;
-    public function __construct() {
+    public function __construct()
+    {
         $this->modelRegistration = new Registration();
         $this->modelCustomer = new Customer();
         $this->modelService = new Service();
-        $this->modelBookingTime = new BookingTIme();
+        $this->modelBookingTime = new BookingTime();
     }
-    public function getData()
-    {
-        $customers = $this->modelRegistration->with('customer', 'service')
-                        ->whereIn('status', ['PENDING', 'CALLING', 'SERVING'])
-                        ->orderBy('queue_number', 'asc')
-                        ->get();
 
+    public function getData(Request $request)
+    {
+        $status = $request->query('status');
+        $query = $this->modelRegistration->with('customer', 'service', 'bookingTime');
+
+        // Filter berdasarkan status jika ada
+        if ($status) {
+            $query->where('status', $status);
+        } else {
+            $query->whereIn('status', ['PENDING', 'CALLING', 'SERVING']);
+        }
+
+        // Periksa pelanggan yang sudah dipanggil tapi belum dilayani lebih dari 15 menit
+        $this->checkTimedOutCalls();
+
+        $customers = $query->orderBy('created_at', 'asc')->get();
         return view('customer.list', compact('customers'));
     }
 
-    public function formRegist()
+    public function formRegist(Request $request)
     {
         $services = $this->modelService->all();
         $times = $this->modelBookingTime->all();
-        return view('customer.regist', compact('services, times'));
+        $selectedServiceId = $request->query('service_id', null);
+
+        return view('customer.regist', compact('services', 'times', 'selectedServiceId'));
     }
+
     public function addData(Request $request)
     {
         // Aturan validasi
@@ -66,10 +79,9 @@ class RegistrationController extends Controller
         $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 'failed',
-                'message' => $validator->errors()
-            ], 400); // 400 Bad Request
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
         }
 
         DB::beginTransaction();
@@ -79,7 +91,7 @@ class RegistrationController extends Controller
             $customer->email = $request->input('email');
             $customer->save();
 
-            $register = new $this->modelRegistration;
+            $register = $this->modelRegistration;
             $register->customer_id = $customer->id;
             $register->service_id = $request->input('service_id');
             $register->booking_time_id = $request->input('booking_time_id');
@@ -87,22 +99,22 @@ class RegistrationController extends Controller
             $register->save();
 
             $data = $this->modelRegistration->with([
-                'registration.customer',
-                'registration.service',
-                'registration.bookingTime',
-            ])->first();
+                'customer',
+                'service',
+                'bookingTime',
+            ])->find($register->id);
 
             Mail::to($customer->email)->send(new RegistrasiMail($data));
 
             DB::commit();
-            return redirect()->route('register.get-data')
-                            ->with('success', 'Registrasi berhasil.')
-                            ->with('data', $register);
+            // Ubah redirect ke home-page dengan pesan sukses
+            return redirect()->route('home-page')
+                ->with('success', 'Registrasi berhasil. Kami akan menghubungi Anda melalui email.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()
-                            ->withInput() // biar data form tidak hilang
-                            ->withErrors(['message' => 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage()]);
+                ->withInput() // biar data form tidak hilang
+                ->withErrors(['message' => 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage()]);
         }
     }
 
@@ -117,26 +129,48 @@ class RegistrationController extends Controller
             $data->save();
 
             $dataCustomer = $this->modelRegistration->with([
-                'registration.customer',
-                'registration.service',
-                'registration.bookingTime',
-            ])->first();
+                'customer',
+                'service',
+                'bookingTime',
+            ])->find($id);
 
             Mail::to($dataCustomer->customer->email)->send(new CallingMail($dataCustomer));
 
-            // Tambah ini
-            CancelIfNotServed::dispatch($data->id)->delay(now()->addMinutes(15));
+            // Tidak perlu menggunakan job queue lagi
 
             DB::commit();
             return redirect()->route('register.get-data')
-                                ->with('success', 'Memanggil pelanggan berhasil.');
+                ->with('success', 'Memanggil pelanggan berhasil.');
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()
-                            ->withInput() // biar data form tidak hilang
-                            ->withErrors(['message' => 'Terjadi kesalahan saat pemanggilan pelanggan: ' . $e->getMessage()]);
+                ->withInput() // biar data form tidak hilang
+                ->withErrors(['message' => 'Terjadi kesalahan saat pemanggilan pelanggan: ' . $e->getMessage()]);
         }
+    }
 
+    /**
+     * Memeriksa dan memperbarui status pelanggan yang telah dipanggil tapi belum dilayani dalam 15 menit
+     */
+    private function checkTimedOutCalls()
+    {
+        // Cari registrasi dengan status 'CALLING' yang called_at-nya lebih dari 15 menit yang lalu
+        $timedOutCalls = $this->modelRegistration
+            ->where('status', 'CALLING')
+            ->whereNotNull('called_at')
+            ->where('called_at', '<=', now()->subMinutes(15))
+            ->get();
+
+        foreach ($timedOutCalls as $call) {
+            // Update status menjadi 'CANCELED' atau 'PENDING' sesuai kebutuhan
+            // Kita pilih PENDING agar bisa dipanggil ulang
+            $call->status = 'PENDING';
+            $call->save();
+
+            // Atau jika ingin mencatat bahwa pelanggan tidak datang setelah dipanggil:
+            // $call->status = 'NO_SHOW';
+            // $call->save();
+        }
     }
 
     public function servingCustomer($id)
@@ -151,12 +185,12 @@ class RegistrationController extends Controller
             DB::commit();
 
             return redirect()->route('register.get-data')
-                                ->with('success', 'Pelanggan sedang dilayani.');
+                ->with('success', 'Pelanggan sedang dilayani.');
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()
-                            ->withInput() // biar data form tidak hilang
-                            ->withErrors(['message' => 'Terjadi kesalahan saat update status pelanggan: ' . $e->getMessage()]);
+                ->withInput() // biar data form tidak hilang
+                ->withErrors(['message' => 'Terjadi kesalahan saat update status pelanggan: ' . $e->getMessage()]);
         }
     }
 
@@ -170,21 +204,21 @@ class RegistrationController extends Controller
             $data->save();
 
             $dataCustomer = $this->modelRegistration->with([
-                'registration.customer',
-                'registration.service',
-                'registration.bookingTime',
-            ])->first();
+                'customer',
+                'service',
+                'bookingTime',
+            ])->find($id);
 
             Mail::to($dataCustomer->customer->email)->send(new CompleteMail($dataCustomer));
 
             DB::commit();
             return redirect()->route('register.get-data')
-                                ->with('success', 'Pelanggan sedang dilayani.');
+                ->with('success', 'Pelayanan selesai.');
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()
-                            ->withInput() // biar data form tidak hilang
-                            ->withErrors(['message' => 'Terjadi kesalahan saat update status pelanggan: ' . $e->getMessage()]);
+                ->withInput() // biar data form tidak hilang
+                ->withErrors(['message' => 'Terjadi kesalahan saat update status pelanggan: ' . $e->getMessage()]);
         }
     }
 }
