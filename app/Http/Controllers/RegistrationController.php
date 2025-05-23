@@ -44,7 +44,9 @@ class RegistrationController extends Controller
         // Periksa pelanggan yang sudah dipanggil tapi belum dilayani lebih dari 15 menit
         $this->checkTimedOutCalls();
 
-        $customers = $query->orderBy('booking_time_id', 'asc')->get();
+        $customers = $query->orderBy('booking_time_id', 'asc')
+                        ->orderBy('created_at', 'asc')
+                        ->get();
         return view('customer.list', compact('customers'));
     }
 
