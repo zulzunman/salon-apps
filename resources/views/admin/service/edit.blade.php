@@ -25,6 +25,15 @@
                             </div>
 
                             <div class="mb-3">
+                                <label for="description" class="form-label">Deskripsi Pelayanan</label>
+                                <input type="text" class="form-control @error('description') is-invalid @enderror"
+                                    id="description" name="description" value="{{ old('description', $service->description) }}" required>
+                                @error('description')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-3">
                                 <label for="price" class="form-label">Harga Pelayanan</label>
                                 <div class="input-group">
                                     <span class="input-group-text">Rp</span>

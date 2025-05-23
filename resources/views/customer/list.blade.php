@@ -6,9 +6,6 @@
             <div class="col-md-12">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h1><i class="fas fa-users me-2"></i> Data Pelanggan</h1>
-                    <a href="{{ route('register.form-add') }}" class="btn btn-primary">
-                        <i class="fas fa-user-plus me-2"></i> Tambah Pelanggan
-                    </a>
                 </div>
 
                 <div class="card mb-4">

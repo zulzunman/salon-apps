@@ -37,17 +37,39 @@ class UserSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now()
             ],
-            // [
-            //     'id'    => 3,
-            //     'name'  => 'Customer',
-            //     'email' => 'customer@example.com',
-            //     'email_verified_at' => now(),
-            //     'password' => Hash::make('12345678'),
-            //     'role'  => 'CUSTOMER',
-            //     'phone' => 089111111111,
-            //     'created_at' => now(),
-            //     'updated_at' => now()
-            // ]
+            [
+                'id'    => 3,
+                'name'  => 'Putri Ayu Lestari',
+                'role'  => 'STAFF',
+                'email' => 'ayuptr@gmail.com',
+                'email_verified_at' => now(),
+                'password' => Hash::make('12345678'),
+                // 'phone' => 089111111111,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'id'    => 4,
+                'name'  => 'Intan Permata Sari',
+                'role'  => 'STAFF',
+                'email' => 'intanpsari@gmail.com',
+                'email_verified_at' => now(),
+                'password' => Hash::make('12345678'),
+                // 'phone' => 089111111111,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'id'    => 5,
+                'name'  => 'Dewi Anjani Rahmawati',
+                'role'  => 'STAFF',
+                'email' => 'dewi238@gmail.com',
+                'email_verified_at' => now(),
+                'password' => Hash::make('12345678'),
+                // 'phone' => 089111111111,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]
         ]);
     }
 }

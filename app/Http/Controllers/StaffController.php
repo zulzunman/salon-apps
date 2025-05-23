@@ -27,6 +27,7 @@ class StaffController extends Controller
 
     public function formAdd()
     {
+        $data = $this->model->where('role', 'STAFF')->get();
         return view('admin.staff.formAdd', compact('data'));
     }
 

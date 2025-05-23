@@ -19,6 +19,7 @@
                                     <tr>
                                         <th width="5%">No</th>
                                         <th>Nama Pelayanan</th>
+                                        <th>Deskripsi Pelayanan</th>
                                         <th>Harga</th>
                                         <th>Durasi (Menit)</th>
                                         <th width="15%">Aksi</th>
@@ -29,6 +30,7 @@
                                         <tr>
                                             <td>{{ $index + 1 }}</td>
                                             <td>{{ $service->name }}</td>
+                                            <td>{{ $service->description }}</td>
                                             <td>Rp {{ number_format($service->price, 0, ',', '.') }}</td>
                                             <td>{{ $service->duration }}</td>
                                             <td>
