@@ -44,7 +44,8 @@ class RegistrationController extends Controller
         // Periksa pelanggan yang sudah dipanggil tapi belum dilayani lebih dari 15 menit
         $this->checkTimedOutCalls();
 
-        $customers = $query->orderBy('booking_time_id', 'asc')
+        $customers = $query->orderBy('booking_date', 'asc')
+                        ->orderBy('booking_time_id', 'asc')
                         ->orderBy('created_at', 'asc')
                         ->get();
         return view('customer.list', compact('customers'));
@@ -65,6 +66,7 @@ class RegistrationController extends Controller
         $rules = [
             'name' => 'required',
             'email' => 'required|email',
+            'booking_date' => 'required',
             'service_id' => 'required|exists:services,id',
             'booking_time_id' => 'required|exists:booking_times,id'
         ];
@@ -73,6 +75,7 @@ class RegistrationController extends Controller
             'name.required' => 'Nama harus diisi.',
             'email.required' => 'Email harus diisi.',
             'email.email' => 'Format yang anda masukan bukan email.',
+            'booking_date.required' => 'Tanggal harus diisi.',
             'service_id.required' => 'Silakan pilih pelayanan yang akan dilakukan.',
             'booking_time_id.required' => 'Silakan pilih jam pelayanan yang akan dilakukan.',
         ];
@@ -97,6 +100,7 @@ class RegistrationController extends Controller
             $register->customer_id = $customer->id;
             $register->service_id = $request->input('service_id');
             $register->booking_time_id = $request->input('booking_time_id');
+            $register->booking_date = $request->input('booking_date');
             $register->status = "PENDING";
             $register->save();
 

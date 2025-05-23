@@ -407,6 +407,14 @@
                         </div>
                     </div>
 
+                    <div class="detail-item">
+                        <div class="detail-icon">📅</div>
+                        <div class="detail-content">
+                            <div class="detail-label">Tanggal Pelayanan</div>
+                            <div class="detail-value">{{ $date }}</div>
+                        </div>
+                    </div>
+
                     <div class="info-row">
                         <div class="info-icon">🕒</div>
                         <div class="info-content">
