@@ -24,19 +24,21 @@ class ServiceController extends Controller
 
     public function formAdd()
     {
-        return view('staff.service.create');
+        return view('admin.service.create');
     }
 
     public function addData(Request $request)
     {
         $rules = [
             'name' => 'required',
+            'description' => 'required',
             'price' => 'required|numeric',
             'duration' => 'required|numeric'
         ];
 
         $messages = [
             'name.required' => 'Nama layanan harus di isi.',
+            'description.required' => 'Deskripsi layanan harus di isi.',
             'price.required' => 'Harga layanan harus di isi.',
             'duration.required' => 'Waktu pelayanan harus di isi.',
             'price.numeric' => 'Data yang diinputkan berupa angka.',
@@ -57,6 +59,7 @@ class ServiceController extends Controller
         try {
             $data = $this->model;
             $data->name = $request->input('name');
+            $data->description = $request->input('description');
             $data->price = $request->input('price');
             $data->duration = $request->input('duration');
             $data->save();
@@ -77,7 +80,7 @@ class ServiceController extends Controller
     public function formEdit($id)
     {
         $service = $this->model->findOrFail($id);
-        return view('staff.service.edit', compact('service'));
+        return view('admin.service.edit', compact('service'));
     }
 
     public function editData(Request $request, $id)
@@ -86,6 +89,7 @@ class ServiceController extends Controller
 
         $rules = [
             'name'  => 'sometimes',
+            'description'  => 'sometimes',
             'price' => 'sometimes|numeric',
             'duration'  => 'sometimes|numeric',
         ];
@@ -110,6 +114,9 @@ class ServiceController extends Controller
             // Update data sesuai input yang diberikan
             if ($request->has('name')) {
                 $service->name = $request->name;
+            }
+            if ($request->has('description')) {
+                $service->description = $request->description;
             }
             if ($request->has('price')) {
                 $service->price = $request->price;

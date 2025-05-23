@@ -44,7 +44,7 @@ class RegistrationController extends Controller
         // Periksa pelanggan yang sudah dipanggil tapi belum dilayani lebih dari 15 menit
         $this->checkTimedOutCalls();
 
-        $customers = $query->orderBy('created_at', 'asc')->get();
+        $customers = $query->orderBy('booking_time_id', 'asc')->get();
         return view('customer.list', compact('customers'));
     }
 
@@ -136,8 +136,6 @@ class RegistrationController extends Controller
 
             Mail::to($dataCustomer->customer->email)->send(new CallingMail($dataCustomer));
 
-            // Tidak perlu menggunakan job queue lagi
-
             DB::commit();
             return redirect()->route('register.get-data')
                 ->with('success', 'Memanggil pelanggan berhasil.');
@@ -162,14 +160,10 @@ class RegistrationController extends Controller
             ->get();
 
         foreach ($timedOutCalls as $call) {
-            // Update status menjadi 'CANCELED' atau 'PENDING' sesuai kebutuhan
+            // Update status menjadi 'CANCELED' sesuai kebutuhan
             // Kita pilih PENDING agar bisa dipanggil ulang
-            $call->status = 'PENDING';
+            $call->status = 'CANCELED';
             $call->save();
-
-            // Atau jika ingin mencatat bahwa pelanggan tidak datang setelah dipanggil:
-            // $call->status = 'NO_SHOW';
-            // $call->save();
         }
     }
 
