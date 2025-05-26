@@ -15,6 +15,14 @@ class ServiceController extends Controller
     {
         $this->model = new Service();
     }
+
+    // Method untuk homepage (menampilkan services di halaman utama)
+    public function getServicesForHomepage()
+    {
+        $services = $this->model->all();
+        return view('homepage', compact('services'));
+    }
+
     public function getData()
     {
         $services = $this->model->all();
