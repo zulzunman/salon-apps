@@ -46,6 +46,7 @@
                                         <th>Nama Pelanggan</th>
                                         <th>Email</th>
                                         <th>Pelayanan</th>
+                                        <th>Tanggal Booking</th>
                                         <th>Jam Layanan</th>
                                         <th>Status</th>
                                         <th width="15%">Aksi</th>
@@ -57,6 +58,7 @@
                                             <td>{{ $customer->customer->name }}</td>
                                             <td>{{ $customer->customer->email }}</td>
                                             <td>{{ $customer->service->name }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($customer->booking_date)->format('d/m/Y') }}</td>
                                             <td>{{ $customer->bookingTime->time ?? 'Tidak ada' }}</td>
                                             <td>
                                                 @if ($customer->status == 'PENDING')

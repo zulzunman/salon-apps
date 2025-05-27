@@ -4,7 +4,6 @@ namespace App\Http\Controllers\auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Service;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -12,7 +11,8 @@ class LoginController extends Controller
 {
     public function formLogin()
     {
-        return view('auth.login');
+        // Redirect to homepage with login modal if accessed directly
+        return redirect()->route('home-page')->with('show_login_modal', true);
     }
 
     public function login(Request $request)
@@ -32,45 +32,44 @@ class LoginController extends Controller
         $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
-            return back()
+            return redirect()->route('home-page')
                 ->withErrors($validator)
                 ->withInput()
-                ->with('show_login_modal', true); // Tambahkan flag untuk menampilkan modal
+                ->with('show_login_modal', true);
         }
 
         $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credentials)) {
-            // Berhasil login
+        if (Auth::attempt($credentials, $request->has('remember'))) {
+            // Regenerate session untuk keamanan
+            $request->session()->regenerate();
+
+            // Berhasil login - redirect ke dashboard
             return redirect()->intended(route('dashboard'));
         }
 
         // Gagal login
-        return back()
+        return redirect()->route('home-page')
             ->withErrors([
-                'Messages' => 'Email atau Password anda salah.',
+                'credentials' => 'Email atau Password anda salah.',
             ])
-            ->with('show_login_modal', true); // Tambahkan flag untuk menampilkan modal
+            ->with('show_login_modal', true);
     }
 
     public function dashboard()
     {
+        // Pastikan user sudah login (middleware auth sudah handle ini)
         return view('auth.dashboard');
-    }
-
-    public function homePage()
-    {
-        // Ambil semua data service dari database dan urutkan berdasarkan nama
-        $services = Service::orderBy('name', 'asc')->get();
-
-        // Render view home page dengan data services
-        return view('homepage', compact('services'));
     }
 
     public function logout()
     {
         Auth::logout();
 
-        return redirect()->route('home-page');
+        // Invalidate the session
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+
+        return redirect()->route('home-page')->with('success', 'Anda telah berhasil logout.');
     }
 }

@@ -17,11 +17,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', [LoginController::class, 'homePage'])->name('home-page');
+// Homepage route - menggunakan ServiceController untuk menampilkan services
+Route::get('/', [ServiceController::class, 'getServicesForHomepage'])->name('home-page');
+
 Route::get('/login', [LoginController::class, 'formLogin'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login-staff');
 
-// registration
+// registration - new flow
+// Ubah route booking.datetime untuk menerima parameter service_id
+Route::get('/booking/datetime', [RegistrationController::class, 'selectDateTime'])
+    ->name('booking.datetime');
+Route::get('/booking/times/{date}', [RegistrationController::class, 'getAvailableTimes'])->name('booking.times');
 Route::get('/registration/add-data', [RegistrationController::class, 'formRegist'])->name('register.form-add');
 Route::post('/registration/add', [RegistrationController::class, 'addData'])->name('register.add-data');
 
@@ -37,7 +43,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/registration/serving/{id}', [RegistrationController::class, 'servingCustomer'])->name('register.serving');
     Route::post('/registration/complete/{id}', [RegistrationController::class, 'completeCustomer'])->name('register.complete');
 
-    Route::middleware(['is_admin'])->group(function(){
+    Route::middleware(['is_admin'])->group(function () {
         // staff
         Route::get('/staff', [StaffController::class, 'getData'])->name('staff.get-data');
         Route::get('/staff/add', [StaffController::class, 'formAdd'])->name('staff.form-add');
