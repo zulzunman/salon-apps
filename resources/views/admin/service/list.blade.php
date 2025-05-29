@@ -1,66 +1,169 @@
 @extends('layouts.app')
 
-@section('content')
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-12">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h1><i class="fas fa-cogs me-2"></i> Data Pelayanan</h1>
-                    <a href="{{ route('service.form-add') }}" class="btn btn-primary">
-                        <i class="fas fa-plus-circle me-2"></i> Tambah Pelayanan
-                    </a>
-                </div>
+@section('title', 'Data Pelayanan')
 
-                <div class="card">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th width="5%">No</th>
-                                        <th>Nama Pelayanan</th>
-                                        <th>Deskripsi Pelayanan</th>
-                                        <th>Harga</th>
-                                        <th>Durasi (Menit)</th>
-                                        <th width="15%">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($services as $index => $service)
-                                        <tr>
-                                            <td>{{ $index + 1 }}</td>
-                                            <td>{{ $service->name }}</td>
-                                            <td>{{ $service->description }}</td>
-                                            <td>Rp {{ number_format($service->price, 0, ',', '.') }}</td>
-                                            <td>{{ $service->duration }}</td>
-                                            <td>
-                                                <div class="d-flex gap-1">
-                                                    <a href="{{ route('service.form-edit', $service->id) }}"
-                                                        class="btn btn-sm btn-warning">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
-                                                    <form action="{{ route('service.delete-data', $service->id) }}"
-                                                        method="POST" class="d-inline">
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-sm btn-danger"
-                                                            onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="5" class="text-center">Tidak ada data pelayanan</td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
+@section('content')
+    <div class="container-fluid">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Data Pelayanan</h6>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addServiceModal">
+                    <i class="fas fa-plus-circle"></i> Tambah Pelayanan
+                </button>
+            </div>
+            <div class="card-body">
+                @if ($message = Session::get('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ $message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
+                @endif
+
+                @if ($errors->any())
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
+                <div class="table-responsive">
+                    <table class="table table-bordered" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama Pelayanan</th>
+                                <th>Deskripsi</th>
+                                <th>Harga</th>
+                                <th>Durasi (Menit)</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($services as $index => $service)
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $service->name }}</td>
+                                    <td>{{ $service->description }}</td>
+                                    <td>Rp {{ number_format($service->price, 0, ',', '.') }}</td>
+                                    <td>{{ $service->duration }}</td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <a href="#editServiceModal-{{ $service->id }}" class="btn btn-primary btn-sm"
+                                                title="Edit Pelayanan">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form action="{{ route('service.delete-data', $service->id) }}" method="POST"
+                                                class="d-inline delete-form" data-name="{{ $service->name }}">
+                                                @csrf
+                                                @method('POST')
+                                                <button type="button" class="btn btn-danger btn-sm delete-btn">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="text-center">Tidak ada data pelayanan.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Include Modal Files -->
+    @include('admin.service.create')
+    @include('admin.service.edit')
+@endsection
+
+@section('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle delete confirmations
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const form = this.closest('form');
+                    const itemName = form.getAttribute('data-name');
+
+                    if (confirm(`Apakah Anda yakin ingin menghapus pelayanan "${itemName}"?`)) {
+                        form.submit();
+                    }
+                });
+            });
+
+            // Handle edit button clicks
+            const editButtons = document.querySelectorAll('.edit-btn');
+            editButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const name = this.getAttribute('data-name');
+                    const description = this.getAttribute('data-description');
+                    const price = this.getAttribute('data-price');
+                    const duration = this.getAttribute('data-duration');
+
+                    // Update form action URL
+                    const editForm = document.getElementById('editServiceForm');
+                    editForm.action = `/admin/service/edit/${id}`;
+
+                    // Populate form fields
+                    document.getElementById('edit_name').value = name;
+                    document.getElementById('edit_description').value = description;
+                    document.getElementById('edit_price').value = price;
+                    document.getElementById('edit_duration').value = duration;
+                });
+            });
+
+            // Handle modal close - clear forms
+            const addModal = document.getElementById('addServiceModal');
+            const editModal = document.getElementById('editServiceModal');
+
+            if (addModal) {
+                addModal.addEventListener('hidden.bs.modal', function() {
+                    // Clear add form
+                    document.getElementById('addServiceForm').reset();
+                    // Remove validation classes
+                    const inputs = addModal.querySelectorAll('.form-control');
+                    inputs.forEach(input => {
+                        input.classList.remove('is-invalid', 'is-valid');
+                    });
+                });
+            }
+
+            if (editModal) {
+                editModal.addEventListener('hidden.bs.modal', function() {
+                    // Clear edit form
+                    document.getElementById('editServiceForm').reset();
+                    // Remove validation classes
+                    const inputs = editModal.querySelectorAll('.form-control');
+                    inputs.forEach(input => {
+                        input.classList.remove('is-invalid', 'is-valid');
+                    });
+                });
+            }
+
+            // Show modal if there are validation errors
+            @if ($errors->any())
+                @if (old('_token'))
+                    @if (request()->routeIs('service.add-data'))
+                        // Show add modal if add form has errors
+                        const addModalInstance = new bootstrap.Modal(document.getElementById('addServiceModal'));
+                        addModalInstance.show();
+                    @elseif (request()->routeIs('service.edit-data'))
+                        // Show edit modal if edit form has errors
+                        const editModalInstance = new bootstrap.Modal(document.getElementById('editServiceModal'));
+                        editModalInstance.show();
+                    @endif
+                @endif
+            @endif
+        });
+    </script>
 @endsection
