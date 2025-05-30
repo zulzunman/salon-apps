@@ -1,75 +1,135 @@
-@extends('layouts.app')
+<!-- Modal Tambah Pelayanan -->
+<div class="modal fade" id="addServiceModal" tabindex="-1" aria-labelledby="addServiceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addServiceModalLabel">
+                    <i class="fas fa-plus-circle"></i> Tambah Pelayanan Baru
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('service.add-data') }}" method="post" id="addServiceForm">
+                @csrf
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="add_name" class="form-label">Nama Pelayanan <span
+                                class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('name') is-invalid @enderror" id="add_name"
+                            name="name" value="{{ old('name') }}" required>
+                        @error('name')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
 
-@section('content')
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h1><i class="fas fa-plus-circle me-2"></i> Tambah Pelayanan</h1>
-                    <a href="{{ route('service.get-data') }}" class="btn btn-secondary">
-                        <i class="fas fa-arrow-left me-2"></i> Kembali
-                    </a>
-                </div>
+                    <div class="mb-3">
+                        <label for="add_description" class="form-label">Deskripsi Pelayanan <span
+                                class="text-danger">*</span></label>
+                        <textarea class="form-control @error('description') is-invalid @enderror" id="add_description" name="description"
+                            rows="3" required>{{ old('description') }}</textarea>
+                        @error('description')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
 
-                <div class="card">
-                    <div class="card-body">
-                        <form action="{{ route('service.add-data') }}" method="post">
-                            @csrf
-                            <div class="mb-3">
-                                <label for="name" class="form-label">Nama Pelayanan <span
-                                        class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                    id="name" name="name" value="{{ old('name') }}" required>
-                                @error('name')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                    <div class="mb-3">
+                        <label for="add_price" class="form-label">Harga Pelayanan <span
+                                class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text">Rp</span>
+                            <input type="number" class="form-control @error('price') is-invalid @enderror"
+                                id="add_price" name="price" value="{{ old('price') }}" required min="0">
+                            @error('price')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
 
-                            <div class="mb-3">
-                                <label for="description" class="form-label">Deskripsi Pelayanan <span
-                                        class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('description') is-invalid @enderror"
-                                    id="description" name="description" value="{{ old('description') }}" required>
-                                @error('description')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                    <div class="mb-3">
+                        <label for="add_duration" class="form-label">Durasi Pelayanan (Menit) <span
+                                class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="number" class="form-control @error('duration') is-invalid @enderror"
+                                id="add_duration" name="duration" value="{{ old('duration') }}" required min="1">
+                            <span class="input-group-text">Menit</span>
+                            @error('duration')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
 
-                            <div class="mb-3">
-                                <label for="price" class="form-label">Harga Pelayanan <span
-                                        class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <span class="input-group-text">Rp</span>
-                                    <input type="number" class="form-control @error('price') is-invalid @enderror"
-                                        id="price" name="price" value="{{ old('price') }}" required>
-                                    @error('price')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="duration" class="form-label">Durasi Pelayanan (Menit) <span
-                                        class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <input type="number" class="form-control @error('duration') is-invalid @enderror"
-                                        id="duration" name="duration" value="{{ old('duration') }}" required>
-                                    <span class="input-group-text">Menit</span>
-                                    @error('duration')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="d-grid">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save me-2"></i> Simpan Data
-                                </button>
-                            </div>
-                        </form>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Catatan:</strong> Pastikan semua field wajib (*) sudah diisi dengan benar.
                     </div>
                 </div>
-            </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> Batal
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Simpan Data
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
-@endsection
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Real-time validation for add form
+        const addPriceField = document.getElementById('add_price');
+        const addDurationField = document.getElementById('add_duration');
+
+        if (addPriceField) {
+            addPriceField.addEventListener('input', function() {
+                const value = parseInt(this.value);
+
+                // Reset classes
+                this.classList.remove('is-valid', 'is-invalid');
+
+                if (value > 0) {
+                    this.classList.add('is-valid');
+                } else if (this.value !== '') {
+                    this.classList.add('is-invalid');
+                }
+            });
+        }
+
+        if (addDurationField) {
+            addDurationField.addEventListener('input', function() {
+                const value = parseInt(this.value);
+
+                // Reset classes
+                this.classList.remove('is-valid', 'is-invalid');
+
+                if (value > 0) {
+                    this.classList.add('is-valid');
+                } else if (this.value !== '') {
+                    this.classList.add('is-invalid');
+                }
+            });
+        }
+
+        // Format price input (remove non-numeric characters except for first digit)
+        if (addPriceField) {
+            addPriceField.addEventListener('keypress', function(e) {
+                // Allow only numbers
+                if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'Escape', 'Enter'].includes(
+                        e.key)) {
+                    e.preventDefault();
+                }
+            });
+        }
+
+        if (addDurationField) {
+            addDurationField.addEventListener('keypress', function(e) {
+                // Allow only numbers
+                if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'Escape', 'Enter'].includes(
+                        e.key)) {
+                    e.preventDefault();
+                }
+            });
+        }
+    });
+</script>

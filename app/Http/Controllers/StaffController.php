@@ -35,7 +35,7 @@ class StaffController extends Controller
     {
         $rules = [
             'name' => 'required',
-            'email' => 'required|email',
+            'email' => 'required|email|unique:users,email',
             'password' => [
                 'required',
                 'confirmed',
@@ -46,25 +46,34 @@ class StaffController extends Controller
         $messages = [
             'name.required' => 'Nama harus diisi',
             'email.required' => 'Email harus diisi',
-            'email.email' => 'Silahkan isi dengan alaman email',
+            'email.email' => 'Silahkan isi dengan alamat email yang valid',
+            'email.unique' => 'Email sudah digunakan',
             'password.required' => 'Password harus diisi',
-            'password.confirmed' => 'Password konfirmasi salah',
-            'password.min' => 'Password minimal 8 digit',
+            'password.confirmed' => 'Password konfirmasi tidak cocok',
+            'password.min' => 'Password minimal 8 karakter',
         ];
 
         // Validasi input
         $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 'failed',
-                'message' => $validator->errors()
-            ], 400); // 400 Bad Request
+            // Untuk AJAX request, return JSON
+            if ($request->ajax()) {
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => $validator->errors()
+                ], 400);
+            }
+
+            // Untuk form biasa, redirect back dengan errors
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
         }
 
         DB::beginTransaction();
         try {
-            $data = $this->model;
+            $data = new User(); // Gunakan new instance, bukan $this->model
             $data->name = $request->input('name');
             $data->email = $request->input('email');
             $data->role = 'STAFF';
@@ -72,14 +81,31 @@ class StaffController extends Controller
             $data->save();
 
             DB::commit();
+
+            // Untuk AJAX request
+            if ($request->ajax()) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Staff berhasil ditambahkan'
+                ]);
+            }
+
             return redirect()->route('admin.staff.index')
-                            ->with('success', 'Tambah data staff berhasil.')
-                            ->with('data', $data);
+                ->with('success', 'Tambah data staff berhasil.');
         } catch (Exception $e) {
             DB::rollBack();
+
+            // Untuk AJAX request
+            if ($request->ajax()) {
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+                ], 500);
+            }
+
             return redirect()->back()
-                            ->withInput() // biar data form tidak hilang
-                            ->withErrors(['message' => 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage()]);
+                ->withInput()
+                ->withErrors(['message' => 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage()]);
         }
     }
 
@@ -95,51 +121,79 @@ class StaffController extends Controller
         $data = $this->model->findOrFail($id);
 
         $rules = [
-            'name'  =>  'sometimes',
-            'email'  =>  'sometimes|email',
+            'name'  =>  'required',
+            'email'  =>  'required|email|unique:users,email,' . $id, // Exclude current user from unique validation
             'password'  =>  [
-                'sometimes',
+                'nullable', // Password optional untuk edit
                 'confirmed',
                 'min:8',
             ],
         ];
 
         $messages = [
-            'email.email' => 'Silahkan isi dengan alaman email',
-            'password.confirmed' => 'Password konfirmasi salah',
-            'password.min' => 'Password minimal 8 digit',
+            'name.required' => 'Nama harus diisi',
+            'email.required' => 'Email harus diisi',
+            'email.email' => 'Silahkan isi dengan alamat email yang valid',
+            'email.unique' => 'Email sudah digunakan',
+            'password.confirmed' => 'Password konfirmasi tidak cocok',
+            'password.min' => 'Password minimal 8 karakter',
         ];
 
         $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 'failed',
-                'message' => $validator->errors()
-            ], 400); // 400 Bad Request
+            // Untuk AJAX request
+            if ($request->ajax()) {
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => $validator->errors()
+                ], 400);
+            }
+
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
         }
 
         DB::beginTransaction();
         try {
-            // Update data sesuai input yang diberikan
-            if ($request->has('name')) {
-                $data->name = $request->name;
+            // Update data
+            $data->name = $request->name;
+            $data->email = $request->email;
+
+            // Update password hanya jika diisi
+            if ($request->filled('password')) {
+                $data->password = Hash::make($request->password); // Fix: gunakan $request->password, bukan $request->name
             }
-            if ($request->has('email')) {
-                $data->email = $request->email;
-            }
-            if ($request->has('password')) {
-                $data->password = Hash::make($request->name);
-            }
+
             $data->save();
 
             DB::commit();
-            return redirect()->route('admin.staff.index')->with('success', 'Staff berhasil diedit.');
+
+            // Untuk AJAX request
+            if ($request->ajax()) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Staff berhasil diupdate'
+                ]);
+            }
+
+            return redirect()->route('admin.staff.index')
+                ->with('success', 'Staff berhasil diedit.');
         } catch (Exception $e) {
             DB::rollBack();
+
+            // Untuk AJAX request
+            if ($request->ajax()) {
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+                ], 500);
+            }
+
             return redirect()->back()
-                            ->withInput() // biar data form tidak hilang
-                            ->withErrors(['message' => 'Terjadi kesalahan saat edit data: ' . $e->getMessage()]);
+                ->withInput()
+                ->withErrors(['message' => 'Terjadi kesalahan saat edit data: ' . $e->getMessage()]);
         }
     }
 
@@ -153,12 +207,12 @@ class StaffController extends Controller
 
             DB::commit();
             return redirect()->route('admin.staff.index')
-                        ->with('success', 'Data pelayanan berhasil dihapus');
+                ->with('success', 'Data staff berhasil dihapus');
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()
-                            ->withInput() // biar data form tidak hilang
-                            ->withErrors(['message' => 'Terjadi kesalahan saat menghapus data: ' . $e->getMessage()]);
+                ->withInput()
+                ->withErrors(['message' => 'Terjadi kesalahan saat menghapus data: ' . $e->getMessage()]);
         }
     }
 }

@@ -96,52 +96,53 @@ class ServiceController extends Controller
         $service = $this->model->findOrFail($id);
 
         $rules = [
-            'name'  => 'sometimes',
-            'description'  => 'sometimes',
-            'price' => 'sometimes|numeric',
-            'duration'  => 'sometimes|numeric',
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|numeric|min:0',
+            'duration' => 'required|numeric|min:1',
         ];
 
         $messages = [
-            'price.numeric' => 'Data yang diinputkan berupa angka.',
-            'duration.numeric' => 'Data yang diinputkan berupa angka.',
+            'name.required' => 'Nama layanan harus diisi.',
+            'description.required' => 'Deskripsi layanan harus diisi.',
+            'price.required' => 'Harga layanan harus diisi.',
+            'duration.required' => 'Waktu pelayanan harus diisi.',
+            'price.numeric' => 'Harga harus berupa angka.',
+            'duration.numeric' => 'Durasi harus berupa angka.',
+            'price.min' => 'Harga tidak boleh kurang dari 0.',
+            'duration.min' => 'Durasi minimal 1 menit.',
         ];
 
         // Validasi input
         $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 'failed',
-                'message' => $validator->errors()
-            ], 400); // 400 Bad Request
+            // Redirect ke halaman list dengan fragment untuk membuka modal yang error
+            return redirect()->route('service.get-data') . '#editServiceModal-' . $id
+                ->withErrors($validator)
+                ->withInput()
+                ->with('edit_error_service_id', $id); // tambahan untuk identifikasi service yang error
         }
 
         DB::beginTransaction();
         try {
-            // Update data sesuai input yang diberikan
-            if ($request->has('name')) {
-                $service->name = $request->name;
-            }
-            if ($request->has('description')) {
-                $service->description = $request->description;
-            }
-            if ($request->has('price')) {
-                $service->price = $request->price;
-            }
-            if ($request->has('duration')) {
-                $service->duration = $request->duration;
-            }
+            // Update data
+            $service->name = $request->name;
+            $service->description = $request->description;
+            $service->price = $request->price;
+            $service->duration = $request->duration;
             $service->save();
 
             DB::commit();
 
-            return redirect()->route('service.get-data')->with('success', 'Pelayanan berhasil diedit.');
+            return redirect()->route('service.get-data')
+                ->with('success', 'Pelayanan berhasil diperbarui.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()
-                ->withInput() // biar data form tidak hilang
-                ->withErrors(['message' => 'Terjadi kesalahan saat edit data: ' . $e->getMessage()]);
+            return redirect()->route('service.get-data') . '#editServiceModal-' . $id
+                ->withInput()
+                ->withErrors(['message' => 'Terjadi kesalahan saat memperbarui data: ' . $e->getMessage()])
+                ->with('edit_error_service_id', $id);
         }
     }
 
