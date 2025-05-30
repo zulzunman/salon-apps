@@ -63,8 +63,7 @@
                             @enderror
                         </div>
                     </div>
-
-                    <div class="alert alert-warning">
+                    <div class="alert alert-warning" id="edit-warning-alert">
                         <i class="fas fa-exclamation-triangle"></i>
                         <strong>Peringatan:</strong> Perubahan data pelayanan akan mempengaruhi semua booking yang
                         menggunakan pelayanan ini.
@@ -83,3 +82,20 @@
         </div>
     </div>
 </div>
+<style>
+    /* Progress bar visual */
+    .countdown-progress {
+        width: 100%;
+        height: 4px;
+        background-color: #e9ecef;
+        border-radius: 2px;
+        overflow: hidden;
+        margin-top: 8px;
+    }
+
+    .countdown-progress-bar {
+        height: 100%;
+        background-color: #ffc107;
+        transition: width 0.1s linear;
+    }
+</style>
