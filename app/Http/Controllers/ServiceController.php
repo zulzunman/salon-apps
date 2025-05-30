@@ -26,7 +26,6 @@ class ServiceController extends Controller
     public function getData()
     {
         $services = $this->model->all();
-
         return view('admin.service.list', compact('services'));
     }
 
@@ -38,34 +37,35 @@ class ServiceController extends Controller
     public function addData(Request $request)
     {
         $rules = [
-            'name' => 'required',
-            'description' => 'required',
-            'price' => 'required|numeric',
-            'duration' => 'required|numeric'
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|numeric|min:0',
+            'duration' => 'required|numeric|min:1'
         ];
 
         $messages = [
-            'name.required' => 'Nama layanan harus di isi.',
-            'description.required' => 'Deskripsi layanan harus di isi.',
-            'price.required' => 'Harga layanan harus di isi.',
-            'duration.required' => 'Waktu pelayanan harus di isi.',
-            'price.numeric' => 'Data yang diinputkan berupa angka.',
-            'duration.numeric' => 'Data yang diinputkan berupa angka.',
+            'name.required' => 'Nama layanan harus diisi.',
+            'description.required' => 'Deskripsi layanan harus diisi.',
+            'price.required' => 'Harga layanan harus diisi.',
+            'duration.required' => 'Waktu pelayanan harus diisi.',
+            'price.numeric' => 'Harga harus berupa angka.',
+            'duration.numeric' => 'Durasi harus berupa angka.',
+            'price.min' => 'Harga tidak boleh kurang dari 0.',
+            'duration.min' => 'Durasi minimal 1 menit.',
         ];
 
         // Validasi input
         $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 'failed',
-                'message' => $validator->errors()
-            ], 400); // 400 Bad Request
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
         }
 
         DB::beginTransaction();
         try {
-            $data = $this->model;
+            $data = new Service(); // Perbaikan: gunakan new Service() bukan $this->model
             $data->name = $request->input('name');
             $data->description = $request->input('description');
             $data->price = $request->input('price');
@@ -75,12 +75,11 @@ class ServiceController extends Controller
             DB::commit();
 
             return redirect()->route('service.get-data')
-                ->with('success', 'Pelayanan berhasil ditambahkan.')
-                ->with('data', $data);
+                ->with('success', 'Pelayanan berhasil ditambahkan.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()
-                ->withInput() // biar data form tidak hilang
+                ->withInput()
                 ->withErrors(['message' => 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage()]);
         }
     }
@@ -117,11 +116,11 @@ class ServiceController extends Controller
         $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
-            // Redirect ke halaman list dengan fragment untuk membuka modal yang error
-            return redirect()->route('service.get-data') . '#editServiceModal-' . $id
+            // PERBAIKAN: Gunakan redirect biasa, bukan concatenation string
+            return redirect()->route('service.get-data')
                 ->withErrors($validator)
                 ->withInput()
-                ->with('edit_error_service_id', $id); // tambahan untuk identifikasi service yang error
+                ->with('edit_error_service_id', $id);
         }
 
         DB::beginTransaction();
@@ -139,7 +138,8 @@ class ServiceController extends Controller
                 ->with('success', 'Pelayanan berhasil diperbarui.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->route('service.get-data') . '#editServiceModal-' . $id
+            // PERBAIKAN: Gunakan redirect biasa
+            return redirect()->route('service.get-data')
                 ->withInput()
                 ->withErrors(['message' => 'Terjadi kesalahan saat memperbarui data: ' . $e->getMessage()])
                 ->with('edit_error_service_id', $id);
@@ -160,7 +160,7 @@ class ServiceController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()
-                ->withInput() // biar data form tidak hilang
+                ->withInput()
                 ->withErrors(['message' => 'Terjadi kesalahan saat menghapus data: ' . $e->getMessage()]);
         }
     }

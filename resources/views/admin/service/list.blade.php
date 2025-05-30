@@ -52,10 +52,15 @@
                                     <td>{{ $service->duration }}</td>
                                     <td>
                                         <div class="d-flex gap-1">
-                                            <a href="#editServiceModal-{{ $service->id }}" class="btn btn-primary btn-sm"
-                                                title="Edit Pelayanan">
+                                            <!-- PERBAIKAN: Gunakan data-bs-toggle untuk Bootstrap 5 -->
+                                            <button type="button" class="btn btn-primary btn-sm edit-btn"
+                                                data-bs-toggle="modal" data-bs-target="#editServiceModal"
+                                                data-id="{{ $service->id }}" data-name="{{ $service->name }}"
+                                                data-description="{{ $service->description }}"
+                                                data-price="{{ $service->price }}"
+                                                data-duration="{{ $service->duration }}" title="Edit Pelayanan">
                                                 <i class="fas fa-edit"></i>
-                                            </a>
+                                            </button>
                                             <form action="{{ route('service.delete-data', $service->id) }}" method="POST"
                                                 class="d-inline delete-form" data-name="{{ $service->name }}">
                                                 @csrf
@@ -112,7 +117,7 @@
 
                     // Update form action URL
                     const editForm = document.getElementById('editServiceForm');
-                    editForm.action = `/admin/service/edit/${id}`;
+                    editForm.action = `/service/edit/${id}/edit-data`; // PERBAIKAN: URL yang benar
 
                     // Populate form fields
                     document.getElementById('edit_name').value = name;
@@ -128,9 +133,7 @@
 
             if (addModal) {
                 addModal.addEventListener('hidden.bs.modal', function() {
-                    // Clear add form
                     document.getElementById('addServiceForm').reset();
-                    // Remove validation classes
                     const inputs = addModal.querySelectorAll('.form-control');
                     inputs.forEach(input => {
                         input.classList.remove('is-invalid', 'is-valid');
@@ -140,9 +143,7 @@
 
             if (editModal) {
                 editModal.addEventListener('hidden.bs.modal', function() {
-                    // Clear edit form
                     document.getElementById('editServiceForm').reset();
-                    // Remove validation classes
                     const inputs = editModal.querySelectorAll('.form-control');
                     inputs.forEach(input => {
                         input.classList.remove('is-invalid', 'is-valid');
@@ -150,19 +151,26 @@
                 });
             }
 
-            // Show modal if there are validation errors
-            @if ($errors->any())
-                @if (old('_token'))
-                    @if (request()->routeIs('service.add-data'))
-                        // Show add modal if add form has errors
-                        const addModalInstance = new bootstrap.Modal(document.getElementById('addServiceModal'));
-                        addModalInstance.show();
-                    @elseif (request()->routeIs('service.edit-data'))
-                        // Show edit modal if edit form has errors
-                        const editModalInstance = new bootstrap.Modal(document.getElementById('editServiceModal'));
-                        editModalInstance.show();
-                    @endif
-                @endif
+            // Show modal if there are validation errors - PERBAIKAN
+            @if ($errors->any() && session('edit_error_service_id'))
+                // Show edit modal if edit form has errors
+                const editModalInstance = new bootstrap.Modal(document.getElementById('editServiceModal'));
+                editModalInstance.show();
+
+                // Populate form dengan data yang error
+                const serviceId = {{ session('edit_error_service_id') }};
+                document.getElementById('edit_name').value = "{{ old('name') }}";
+                document.getElementById('edit_description').value = "{{ old('description') }}";
+                document.getElementById('edit_price').value = "{{ old('price') }}";
+                document.getElementById('edit_duration').value = "{{ old('duration') }}";
+
+                // Update form action
+                const editForm = document.getElementById('editServiceForm');
+                editForm.action = `/service/edit/${serviceId}/edit-data`;
+            @elseif ($errors->any())
+                // Show add modal if add form has errors
+                const addModalInstance = new bootstrap.Modal(document.getElementById('addServiceModal'));
+                addModalInstance.show();
             @endif
         });
     </script>
