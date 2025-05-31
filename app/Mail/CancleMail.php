@@ -9,28 +9,28 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class CompleteMail extends Mailable
+class CancleMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    protected $dataCustomer;
+    protected $call;
     /**
      * Create a new message instance.
      */
-    public function __construct($dataCustomer)
+    public function __construct($call)
     {
-        $this->dataCustomer = $dataCustomer;
+        $this->call = $call;
     }
 
     public function build()
     {
         return $this->subject('Informasi Pelayanan Salon')
-                    ->view('customer.email.complete')
+                    ->view('customer.email.cancel')
                     ->with([
-                        'name'  => $this->dataCustomer->customer->name,
-                        'time'  => $this->dataCustomer->bookingTime->time,
-                        'date'  => $this->dataCustomer->booking_date,
-                        'service'  => $this->dataCustomer->service->name,
+                        'name'  => $this->call->customer->name,
+                        'time'  => $this->call->bookingTime->time,
+                        'date'  => $this->call->booking_date,
+                        'service'  => $this->call->service->name,
                     ]);
     }
 }

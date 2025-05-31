@@ -492,7 +492,7 @@
                         </div>
                     </div>
 
-                    <div class="detail-item">
+                    <div class="detail-row">
                         <div class="detail-icon">📅</div>
                         <div class="detail-content">
                             <div class="detail-label">Tanggal Pelayanan</div>
