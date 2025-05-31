@@ -267,7 +267,7 @@ class RegistrationController extends Controller
     }
 
     /**
-     * Memeriksa dan memperbarui status pelanggan yang telah dipanggil tapi belum dilayani dalam 15 menit
+     * Memeriksa  dan memperbarui status pelanggan yang telah dipanggil tapi belum dilayani dalam 15 menit
      */
     private function checkTimedOutCalls()
     {
