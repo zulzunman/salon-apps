@@ -28,7 +28,7 @@ class CallingMail extends Mailable
                     ->view('customer.email.calling')
                     ->with([
                         'name'  => $this->dataCustomer->customer->name,
-                        'time'  => $this->dataCustomer->bookingTime->name,
+                        'time'  => $this->dataCustomer->bookingTime->time,
                         'date'  => $this->dataCustomer->booking_date,
                         'service'  => $this->dataCustomer->service->name,
                     ]);

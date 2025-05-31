@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\CallingMail;
+use App\Mail\CancleMail;
 use App\Mail\CompleteMail;
 use App\Mail\RegistrasiMail;
 use App\Models\BookingTime;
@@ -267,11 +268,15 @@ class RegistrationController extends Controller
     }
 
     /**
-     * Memeriksa dan memperbarui status pelanggan yang telah dipanggil tapi belum dilayani dalam 15 menit
+     * Memeriksa  dan memperbarui status pelanggan yang telah dipanggil tapi belum dilayani dalam 15 menit
      */
     private function checkTimedOutCalls()
     {
-        $timedOutCalls = $this->modelRegistration
+        $timedOutCalls = $this->modelRegistration->with([
+                        'customer',
+                        'service',
+                        'bookingTime',
+                    ])
             ->where('status', 'CALLING')
             ->whereNotNull('called_at')
             ->where('called_at', '<=', now()->subMinutes(15))
@@ -280,6 +285,8 @@ class RegistrationController extends Controller
         foreach ($timedOutCalls as $call) {
             $call->status = 'CANCELED';
             $call->save();
+
+            Mail::to($call->customer->email)->send(new CancleMail($call));
         }
     }
 
