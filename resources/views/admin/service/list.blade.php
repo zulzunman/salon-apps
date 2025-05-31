@@ -124,8 +124,93 @@
                     document.getElementById('edit_description').value = description;
                     document.getElementById('edit_price').value = price;
                     document.getElementById('edit_duration').value = duration;
+
+                    // Start warning alert countdown
+                    startWarningCountdown();
                 });
             });
+
+            // Variable global untuk menyimpan interval
+            let warningCountdownInterval = null;
+
+            // Function untuk countdown warning alert
+            function startWarningCountdown() {
+                const warningAlert = document.getElementById('edit-warning-alert');
+                const countdownElement = document.getElementById('countdown-timer');
+                const progressBar = document.getElementById('progress-bar');
+
+                // Clear interval sebelumnya jika ada
+                if (warningCountdownInterval) {
+                    clearInterval(warningCountdownInterval);
+                }
+
+                let timeLeft = 10;
+
+                // Reset alert visibility dan progress bar
+                if (warningAlert) {
+                    warningAlert.style.display = 'block';
+                    warningAlert.style.opacity = '1';
+                    warningAlert.style.visibility = 'visible';
+                    warningAlert.classList.remove('d-none');
+                }
+
+                if (countdownElement) {
+                    countdownElement.textContent = timeLeft;
+                }
+
+                if (progressBar) {
+                    progressBar.style.width = '100%';
+                }
+
+                warningCountdownInterval = setInterval(function() {
+                    timeLeft--;
+
+                    if (countdownElement) {
+                        countdownElement.textContent = timeLeft;
+                    }
+
+                    // Update progress bar
+                    if (progressBar) {
+                        const progressPercentage = (timeLeft / 10) * 100;
+                        progressBar.style.width = progressPercentage + '%';
+                    }
+
+                    if (timeLeft <= 0) {
+                        clearInterval(warningCountdownInterval);
+                        warningCountdownInterval = null;
+
+                        // Hide alert dengan fade out
+                        if (warningAlert) {
+                            warningAlert.style.transition = 'opacity 0.5s ease-out';
+                            warningAlert.style.opacity = '0';
+
+                            setTimeout(() => {
+                                warningAlert.style.display = 'none';
+                                warningAlert.classList.add('d-none');
+                            }, 500);
+                        }
+                    }
+                }, 1000);
+            }
+
+            // Reset countdown ketika modal ditutup
+            const editModal = document.getElementById('editServiceModal');
+            if (editModal) {
+                editModal.addEventListener('hidden.bs.modal', function() {
+                    if (warningCountdownInterval) {
+                        clearInterval(warningCountdownInterval);
+                        warningCountdownInterval = null;
+                    }
+                    // Reset alert untuk next time
+                    const warningAlert = document.getElementById('edit-warning-alert');
+                    const countdownElement = document.getElementById('countdown-timer');
+                    if (warningAlert && countdownElement) {
+                        warningAlert.style.display = 'block';
+                        warningAlert.classList.remove('d-none');
+                        countdownElement.textContent = '10';
+                    }
+                });
+            }
 
             // Handle modal close - clear forms
             const addModal = document.getElementById('addServiceModal');
