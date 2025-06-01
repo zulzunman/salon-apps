@@ -493,6 +493,9 @@
             const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
             const today = new Date();
 
+            // Reset today to start of day for comparison
+            today.setHours(0, 0, 0, 0);
+
             // Calculate starting day (Sunday = 0)
             const startDate = new Date(firstDay);
             startDate.setDate(startDate.getDate() - firstDay.getDay());
@@ -509,19 +512,30 @@
                 // Add classes based on date status
                 if (date.getMonth() !== currentDate.getMonth()) {
                     dayElement.classList.add('other-month');
-                } else if (date < today.setHours(0, 0, 0, 0)) {
-                    dayElement.classList.add('disabled');
                 } else {
-                    if (date.toDateString() === today.toDateString()) {
-                        dayElement.classList.add('today');
+                    // Reset date to start of day for comparison
+                    const dateForComparison = new Date(date);
+                    dateForComparison.setHours(0, 0, 0, 0);
+
+                    if (dateForComparison < today) {
+                        dayElement.classList.add('disabled');
+                    } else {
+                        if (dateForComparison.getTime() === today.getTime()) {
+                            dayElement.classList.add('today');
+                        }
+
+                        // Format date properly to avoid timezone issues
+                        const year = date.getFullYear();
+                        const month = String(date.getMonth() + 1).padStart(2, '0');
+                        const day = String(date.getDate()).padStart(2, '0');
+                        const dateString = `${year}-${month}-${day}`;
+
+                        dayElement.setAttribute('data-date', dateString);
+
+                        dayElement.addEventListener('click', function() {
+                            selectDate(this.getAttribute('data-date'), this);
+                        });
                     }
-
-                    // Store date data untuk event handler
-                    dayElement.setAttribute('data-date', date.toISOString().split('T')[0]);
-
-                    dayElement.addEventListener('click', function() {
-                        selectDate(this.getAttribute('data-date'), this);
-                    });
                 }
 
                 grid.appendChild(dayElement);
