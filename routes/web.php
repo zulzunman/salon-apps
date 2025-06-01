@@ -30,6 +30,7 @@ Route::get('/booking/datetime', [RegistrationController::class, 'selectDateTime'
 Route::get('/booking/times/{date}', [RegistrationController::class, 'getAvailableTimes'])->name('booking.times');
 Route::get('/registration/add-data', [RegistrationController::class, 'formRegist'])->name('register.form-add');
 Route::post('/registration/add', [RegistrationController::class, 'addData'])->name('register.add-data');
+Route::get('/current-time', [RegistrationController::class, 'checkCurrentTime'])->name('check.current.time');
 
 // Route untuk dashboard berbeda berdasarkan role
 Route::middleware(['auth'])->group(function () {

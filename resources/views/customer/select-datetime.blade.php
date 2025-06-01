@@ -9,339 +9,126 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/datetime.css') }}">
     <style>
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px 0;
-        }
-
-        .booking-container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .section-title {
-            color: #333;
-            font-weight: 700;
-            margin-bottom: 30px;
-            text-align: center;
+        /* Additional styles for disabled/past times */
+        .time-slot.disabled,
+        .time-slot.past-time {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            text-decoration: line-through;
+            cursor: not-allowed;
+            opacity: 0.6;
+            border: 1px solid #dee2e6;
             position: relative;
         }
 
-        .section-title::after {
+        .time-slot.disabled:hover,
+        .time-slot.past-time:hover {
+            background-color: #f8f9fa;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .time-slot.disabled .remaining-info,
+        .time-slot.past-time .remaining-info {
+            color: #adb5bd;
+        }
+
+        .past-time-indicator {
+            font-size: 0.75rem;
+            color: #dc3545;
+            font-style: italic;
+        }
+
+        /* Strike-through effect for past times */
+        .time-slot.past-time::before {
             content: '';
             position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 3px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 2px;
+            top: 50%;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background-color: #dc3545;
+            transform: translateY(-50%);
+            z-index: 1;
         }
 
-        /* Main Layout */
-        .booking-layout {
-            display: flex;
-            gap: 30px;
-            align-items: flex-start;
-        }
-
-        /* Calendar Styles - Smaller and on the left */
-        .calendar-container {
-            background: #fff;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-            flex: 0 0 350px;
-            /* Fixed width for calendar */
-        }
-
-        .calendar-header {
+        /* Current Time Display Styles - Mini version for corner */
+        .time-header-container {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding: 0 5px;
-        }
-
-        .calendar-nav {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            color: white;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .calendar-nav:hover {
-            transform: scale(1.1);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .calendar-month {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #333;
-            flex: 1;
-            text-align: center;
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
-        }
-
-        .calendar-day-header {
-            text-align: center;
-            font-weight: 600;
-            color: #666;
-            padding: 8px 3px;
-            font-size: 0.8rem;
-        }
-
-        .calendar-day {
-            aspect-ratio: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            font-size: 0.9rem;
-            position: relative;
-        }
-
-        .calendar-day:not(.disabled):not(.other-month):hover {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .calendar-day.selected {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            transform: scale(1.1);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .calendar-day.disabled {
-            color: #ccc;
-            cursor: not-allowed;
-        }
-
-        .calendar-day.other-month {
-            color: #ddd;
-            cursor: not-allowed;
-        }
-
-        .calendar-day.today {
-            background: rgba(102, 126, 234, 0.1);
-            color: #667eea;
-            font-weight: 600;
-        }
-
-        /* Time Selection Styles - On the right */
-        .time-container {
-            background: #fff;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-            flex: 1;
-            min-height: 400px;
-        }
-
-        .time-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .time-slot {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            padding: 15px 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            position: relative;
-        }
-
-        .time-slot:hover {
-            border-color: #667eea;
-            background: rgba(102, 126, 234, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .time-slot.selected {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-color: #667eea;
-            color: white;
-            transform: scale(1.05);
-        }
-
-        .time-slot.unavailable {
-            background: #f8d7da;
-            border-color: #f5c6cb;
-            color: #721c24;
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-
-        .time-slot .remaining-info {
-            font-size: 0.75rem;
-            opacity: 0.8;
-            margin-top: 5px;
-        }
-
-        .empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 300px;
-            color: #666;
-            text-align: center;
-        }
-
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            opacity: 0.5;
-        }
-
-        .continue-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            color: white;
-            padding: 15px 40px;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
-        }
-
-        .continue-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-        }
-
-        .continue-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .back-link {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .back-link:hover {
-            color: #764ba2;
-            text-decoration: underline;
-        }
-
-        .loading-spinner {
-            display: none;
-            margin: 50px auto;
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        .alert {
-            border-radius: 12px;
-            border: none;
-            padding: 15px 20px;
-            margin-bottom: 25px;
-        }
-
-        .alert-info {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            color: #667eea;
-            border-left: 4px solid #667eea;
-        }
-
-        /* Service Selection Warning */
-        .service-warning {
-            background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 152, 0, 0.1) 100%);
-            color: #856404;
-            border-left: 4px solid #ffc107;
+            align-items: flex-start;
             margin-bottom: 20px;
         }
 
-        /* Responsive Design */
-        @media (max-width: 992px) {
-            .booking-layout {
-                flex-direction: column;
-                gap: 20px;
+        .current-time-corner {
+            position: relative;
+        }
+
+        .current-time-card-mini {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 140px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            animation: pulse-glow-mini 3s infinite alternate;
+        }
+
+        .current-time-mini {
+            font-size: 1.1rem;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .current-date-mini {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        @keyframes pulse-glow-mini {
+            0% {
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
             }
 
-            .calendar-container {
-                flex: none;
-                max-width: 100%;
-            }
-
-            .calendar-grid {
-                gap: 8px;
-            }
-
-            .time-grid {
-                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            100% {
+                box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
             }
         }
 
-        @media (max-width: 768px) {
-            .booking-container {
-                padding: 20px;
-                margin: 10px;
+        /* Digital clock animation */
+        .current-time-mini {
+            animation: digital-flicker 1s infinite;
+        }
+
+        @keyframes digital-flicker {
+
+            0%,
+            98% {
+                opacity: 1;
             }
 
-            .calendar-grid {
-                gap: 5px;
+            99%,
+            100% {
+                opacity: 0.8;
             }
+        }
 
-            .time-grid {
-                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-                gap: 10px;
-            }
+        /* Full slot indicator */
+        .time-slot.full-slot {
+            background-color: #fff3cd;
+            border-color: #ffeaa7;
+            color: #856404;
+        }
 
-            .calendar-day {
-                font-size: 0.8rem;
-            }
+        .time-slot.full-slot .remaining-info {
+            color: #856404;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -354,67 +141,140 @@
                 Pilih Tanggal & Jam Booking
             </h1>
 
-            <!-- Warning jika belum pilih service -->
-            <div class="alert service-warning" id="serviceWarning" style="display: none;">
-                <i class="bi bi-exclamation-triangle me-2"></i>
-                Anda belum memilih layanan. Silakan pilih layanan terlebih dahulu di halaman utama.
-            </div>
+            @if (!$selectedServiceId)
+                <div class="alert service-warning">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Anda belum memilih layanan. Silakan pilih layanan terlebih dahulu di halaman utama.
+                </div>
+            @endif
 
             <div class="alert alert-info">
                 <i class="bi bi-info-circle me-2"></i>
                 Silakan pilih tanggal dan jam yang tersedia. Maksimal 3 customer per jam.
             </div>
 
-            <!-- Main Layout: Calendar on left, Time on right -->
-            <div class="booking-layout">
-                <!-- Calendar Section -->
-                <div class="calendar-container">
-                    <h4 class="mb-3">
-                        <i class="bi bi-calendar3 me-2"></i>
-                        Pilih Tanggal
-                    </h4>
+            <form action="{{ route('register.form-add') }}" method="GET" id="bookingForm">
+                <input type="hidden" name="service_id" value="{{ $selectedServiceId }}">
 
-                    <div class="calendar-header">
-                        <button class="calendar-nav" id="prevMonth">
-                            <i class="bi bi-chevron-left"></i>
-                        </button>
-                        <div class="calendar-month" id="currentMonth"></div>
-                        <button class="calendar-nav" id="nextMonth">
-                            <i class="bi bi-chevron-right"></i>
-                        </button>
+                <div class="booking-layout">
+                    <!-- Calendar Section -->
+                    <div class="calendar-container">
+                        <h4 class="mb-3">
+                            <i class="bi bi-calendar3 me-2"></i>
+                            Pilih Tanggal
+                        </h4>
+                        <div class="calendar-header">
+                            <a href="?service_id={{ $selectedServiceId }}&month={{ $prevMonth }}"
+                                class="calendar-nav">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                            <div class="calendar-month">{{ $currentMonthName }}</div>
+                            <a href="?service_id={{ $selectedServiceId }}&month={{ $nextMonth }}"
+                                class="calendar-nav">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </div>
+                        <div class="calendar-grid">
+                            <!-- Day headers -->
+                            @foreach (['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'] as $day)
+                                <div class="calendar-day-header">{{ $day }}</div>
+                            @endforeach
+
+                            <!-- Calendar days -->
+                            @foreach ($calendarDays as $day)
+                                <div class="calendar-day {{ $day['class'] }} {{ $selectedDate == $day['date'] ? 'selected' : '' }}"
+                                    @if ($day['selectable']) onclick="selectDate('{{ $day['date'] }}')" @endif>
+                                    {{ $day['number'] }}
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
 
-                    <div class="calendar-grid" id="calendarGrid">
-                        <!-- Calendar will be generated by JavaScript -->
+                    <!-- Time Selection Section -->
+                    <div class="time-container">
+                        <div class="time-header-container">
+                            <h4 class="mb-3">
+                                <i class="bi bi-clock me-2"></i>
+                                Pilih Jam
+                            </h4>
+
+                            <!-- Current Time Display - Moved to corner -->
+                            <div class="current-time-corner">
+                                <div class="current-time-card-mini">
+                                    <div class="current-time-mini" id="currentTime"></div>
+                                    <div class="current-date-mini" id="currentDate"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (!$selectedDate)
+                            <div class="empty-state">
+                                <i class="bi bi-clock-history"></i>
+                                <p>Pilih tanggal terlebih dahulu untuk melihat jam yang tersedia</p>
+                            </div>
+                        @else
+                            <div class="time-grid" id="timeGrid">
+                                @forelse($availableTimes as $time)
+                                    <div class="time-slot {{ $selectedTimeId == $time['id'] ? 'selected' : '' }} 
+                                         {{ $time['is_past'] ? 'past-time disabled' : '' }} 
+                                         {{ $time['is_full'] ? 'full-slot' : '' }}"
+                                        data-time-id="{{ $time['id'] }}" data-time="{{ $time['time'] }}"
+                                        data-can-select="{{ $time['can_select'] ? 'true' : 'false' }}"
+                                        @if ($time['can_select']) onclick="selectTime({{ $time['id'] }})" @endif>
+                                        <div>{{ $time['time'] }}</div>
+                                        @if ($time['is_past'])
+                                            <div class="past-time-indicator">Waktu sudah lewat</div>
+                                        @elseif ($time['is_full'])
+                                            <div class="remaining-info">Penuh (0 slot tersisa)</div>
+                                        @else
+                                            <div class="remaining-info">{{ $time['remaining_slots'] }} slot tersisa
+                                            </div>
+                                        @endif
+                                    </div>
+                                @empty
+                                    <div class="alert alert-warning">
+                                        Tidak ada jam yang tersedia untuk tanggal ini.
+                                    </div>
+                                @endforelse
+                            </div>
+
+                            @if (collect($availableTimes)->where('can_select', true)->isEmpty() && !empty($availableTimes))
+                                <div class="alert alert-warning mt-3">
+                                    <i class="bi bi-exclamation-triangle me-2"></i>
+                                    @if ($selectedDate == $currentDate)
+                                        Semua jam untuk hari ini sudah lewat atau penuh. Silakan pilih tanggal lain.
+                                    @else
+                                        Semua jam untuk tanggal ini sudah penuh. Silakan pilih tanggal lain.
+                                    @endif
+                                </div>
+                            @endif
+                        @endif
+
+                        <!-- Notifikasi untuk jam yang sudah lewat atau penuh -->
+                        @if ($selectedDate && collect($availableTimes)->where('can_select', true)->isEmpty() && !empty($availableTimes))
+                            <div class="alert alert-warning mt-3" id="timeWarning">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                @if ($selectedDate == $currentDate)
+                                    Semua jam untuk hari ini sudah lewat atau penuh. Silakan pilih tanggal lain.
+                                @else
+                                    Semua jam untuk tanggal ini sudah penuh. Silakan pilih tanggal lain.
+                                @endif
+                            </div>
+                        @endif
                     </div>
                 </div>
 
-                <!-- Time Selection Section -->
-                <div class="time-container">
-                    <h4 class="mb-3">
-                        <i class="bi bi-clock me-2"></i>
-                        Pilih Jam
-                    </h4>
+                <input type="hidden" name="booking_date" id="selectedDateInput" value="{{ $selectedDate }}">
+                <input type="hidden" name="booking_time_id" id="selectedTimeInput" value="{{ $selectedTimeId }}">
 
-                    <div id="timeEmpty" class="empty-state">
-                        <i class="bi bi-clock-history"></i>
-                        <p>Pilih tanggal terlebih dahulu untuk melihat jam yang tersedia</p>
-                    </div>
-
-                    <div class="loading-spinner" id="loadingSpinner"></div>
-                    <div class="time-grid" id="timeGrid">
-                        <!-- Times will be loaded via AJAX -->
-                    </div>
+                <div class="text-center mt-4">
+                    <button type="submit" class="continue-btn"
+                        {{ !$selectedDate || !$selectedTimeId ? 'disabled' : '' }}>
+                        <i class="bi bi-arrow-right me-2"></i>
+                        Lanjut ke Pendaftaran
+                    </button>
                 </div>
-            </div>
-
-            <!-- Continue Button -->
-            <div class="text-center mt-4">
-                <button class="continue-btn" id="continueBtn" disabled onclick="proceedToRegistration()">
-                    <i class="bi bi-arrow-right me-2"></i>
-                    Lanjut ke Pendaftaran
-                </button>
-            </div>
+            </form>
 
             <div class="text-center mt-4">
                 <a href="/" class="back-link">
@@ -425,241 +285,168 @@
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-
     <script>
-        let currentDate = new Date();
-        let selectedDate = null;
-        let selectedTimeId = null;
-        let selectedServiceId = null;
+        // Store current date and selected date for comparison
+        const currentDate = '{{ $currentDate ?? '' }}';
+        const selectedDate = '{{ $selectedDate ?? '' }}';
+        const isToday = selectedDate === currentDate;
 
-        // Initialize calendar
-        document.addEventListener('DOMContentLoaded', function() {
-            // Ambil service_id dari URL parameter
-            const urlParams = new URLSearchParams(window.location.search);
-            selectedServiceId = urlParams.get('service_id');
+        // Function to check if a time has passed
+        function isTimePassed(timeString) {
+            if (!isToday) return false;
 
-            // Debug log
-            console.log('Selected Service ID:', selectedServiceId);
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
 
-            // Cek apakah service_id ada
-            if (!selectedServiceId) {
-                document.getElementById('serviceWarning').style.display = 'block';
-                // Disable calendar jika tidak ada service
-                document.getElementById('calendarGrid').style.opacity = '0.5';
-                document.getElementById('calendarGrid').style.pointerEvents = 'none';
-                return;
-            }
+            const timeParts = timeString.split(':');
+            const timeHour = parseInt(timeParts[0]);
+            const timeMinute = parseInt(timeParts[1]);
 
-            generateCalendar();
+            return (timeHour < currentHour) || (timeHour === currentHour && timeMinute <= currentMinute);
+        }
 
-            document.getElementById('prevMonth').addEventListener('click', function() {
-                currentDate.setMonth(currentDate.getMonth() - 1);
-                generateCalendar();
-                hideTimeSelection();
-            });
+        // Function to update time slots based on current time
+        function updateTimeSlots() {
+            if (!isToday) return;
 
-            document.getElementById('nextMonth').addEventListener('click', function() {
-                currentDate.setMonth(currentDate.getMonth() + 1);
-                generateCalendar();
-                hideTimeSelection();
-            });
-        });
+            const timeSlots = document.querySelectorAll('.time-slot');
+            let hasSelectableTime = false;
 
-        function generateCalendar() {
-            const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-            ];
-            const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+            timeSlots.forEach(slot => {
+                const timeString = slot.getAttribute('data-time');
+                const timeId = slot.getAttribute('data-time-id');
+                const canSelect = slot.getAttribute('data-can-select') === 'true';
 
-            // Update month display
-            document.getElementById('currentMonth').textContent =
-                monthNames[currentDate.getMonth()] + ' ' + currentDate.getFullYear();
+                if (timeString && isTimePassed(timeString)) {
+                    // Mark as past time
+                    slot.classList.add('past-time', 'disabled');
+                    slot.classList.remove('selected');
+                    slot.removeAttribute('onclick');
+                    slot.setAttribute('data-can-select', 'false');
 
-            const grid = document.getElementById('calendarGrid');
-            grid.innerHTML = '';
-
-            // Add day headers
-            dayNames.forEach(day => {
-                const dayHeader = document.createElement('div');
-                dayHeader.className = 'calendar-day-header';
-                dayHeader.textContent = day;
-                grid.appendChild(dayHeader);
-            });
-
-            // Get first day of month and number of days
-            const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-            const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-            const today = new Date();
-
-            // Reset today to start of day for comparison
-            today.setHours(0, 0, 0, 0);
-
-            // Calculate starting day (Sunday = 0)
-            const startDate = new Date(firstDay);
-            startDate.setDate(startDate.getDate() - firstDay.getDay());
-
-            // Generate 42 days (6 weeks)
-            for (let i = 0; i < 42; i++) {
-                const date = new Date(startDate);
-                date.setDate(startDate.getDate() + i);
-
-                const dayElement = document.createElement('div');
-                dayElement.className = 'calendar-day';
-                dayElement.textContent = date.getDate();
-
-                // Add classes based on date status
-                if (date.getMonth() !== currentDate.getMonth()) {
-                    dayElement.classList.add('other-month');
-                } else {
-                    // Reset date to start of day for comparison
-                    const dateForComparison = new Date(date);
-                    dateForComparison.setHours(0, 0, 0, 0);
-
-                    if (dateForComparison < today) {
-                        dayElement.classList.add('disabled');
-                    } else {
-                        if (dateForComparison.getTime() === today.getTime()) {
-                            dayElement.classList.add('today');
-                        }
-
-                        // Format date properly to avoid timezone issues
-                        const year = date.getFullYear();
-                        const month = String(date.getMonth() + 1).padStart(2, '0');
-                        const day = String(date.getDate()).padStart(2, '0');
-                        const dateString = `${year}-${month}-${day}`;
-
-                        dayElement.setAttribute('data-date', dateString);
-
-                        dayElement.addEventListener('click', function() {
-                            selectDate(this.getAttribute('data-date'), this);
-                        });
+                    // Update the indicator text
+                    const indicator = slot.querySelector('.remaining-info, .past-time-indicator');
+                    if (indicator && !indicator.classList.contains('past-time-indicator')) {
+                        indicator.innerHTML = '<div class="past-time-indicator">Waktu sudah lewat</div>';
+                        indicator.className = 'past-time-indicator';
                     }
+
+                    // If this was the selected time, clear selection
+                    if (slot.classList.contains('selected')) {
+                        document.getElementById('selectedTimeInput').value = '';
+                        updateContinueButton();
+                    }
+                } else if (canSelect) {
+                    hasSelectableTime = true;
                 }
+            });
 
-                grid.appendChild(dayElement);
+            // Show warning if no selectable times remain
+            const existingWarning = document.querySelector('#timeWarning');
+            const timeContainer = document.querySelector('.time-container');
+
+            if (!hasSelectableTime && isToday && document.querySelectorAll('.time-slot').length > 0) {
+                if (!existingWarning) {
+                    const warning = document.createElement('div');
+                    warning.id = 'timeWarning';
+                    warning.className = 'alert alert-warning mt-3';
+                    warning.innerHTML =
+                        '<i class="bi bi-exclamation-triangle me-2"></i>Semua jam untuk hari ini sudah lewat atau penuh. Silakan pilih tanggal lain.';
+                    timeContainer.appendChild(warning);
+                }
+            } else if (existingWarning && hasSelectableTime) {
+                existingWarning.remove();
             }
         }
 
-        function selectDate(dateString, element) {
-            // Remove previous selection
-            document.querySelectorAll('.calendar-day.selected').forEach(el => {
-                el.classList.remove('selected');
-            });
+        // Function to update current time display
+        function updateCurrentTime() {
+            const now = new Date();
 
-            // Add selection to clicked date
-            element.classList.add('selected');
+            // Format date in Indonesian (shorter version for mini display)
+            const days = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+                'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+            ];
 
-            selectedDate = dateString;
-            selectedTimeId = null; // Reset time selection
+            const dayName = days[now.getDay()];
+            const day = now.getDate();
+            const month = months[now.getMonth()];
 
-            console.log('Selected date:', selectedDate);
+            const dateString = `${dayName}, ${day} ${month}`;
 
-            // Show time selection and load available times
-            showTimeSelection();
-            loadAvailableTimes(selectedDate);
+            // Format time
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+
+            const timeString = `${hours}:${minutes}:${seconds}`;
+
+            // Update DOM elements
+            document.getElementById('currentDate').textContent = dateString;
+            document.getElementById('currentTime').textContent = timeString;
+
+            // Update time slots every minute (when seconds is 0)
+            if (seconds === '00') {
+                updateTimeSlots();
+            }
         }
 
-        function showTimeSelection() {
-            document.getElementById('timeEmpty').style.display = 'none';
-            document.getElementById('continueBtn').disabled = true;
+        // Function to update continue button state
+        function updateContinueButton() {
+            const selectedDate = document.getElementById('selectedDateInput').value;
+            const selectedTime = document.getElementById('selectedTimeInput').value;
+            const continueBtn = document.querySelector('.continue-btn');
+
+            continueBtn.disabled = !selectedDate || !selectedTime;
         }
 
-        function hideTimeSelection() {
-            document.getElementById('timeEmpty').style.display = 'flex';
-            document.getElementById('timeGrid').innerHTML = '';
-            document.getElementById('continueBtn').disabled = true;
-            selectedDate = null;
-            selectedTimeId = null;
+        // Update time immediately and then every second
+        updateCurrentTime();
+        setInterval(updateCurrentTime, 1000);
+
+        // Initial check for time slots
+        updateTimeSlots();
+
+        // Function to select date
+        function selectDate(date) {
+            // Update URL to reload page with selected date
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('date', date);
+            window.location.search = urlParams.toString();
         }
 
-        function loadAvailableTimes(date) {
-            const spinner = document.getElementById('loadingSpinner');
-            const timeGrid = document.getElementById('timeGrid');
+        // Function to select time
+        function selectTime(timeId) {
+            // Check if the clicked element is disabled
+            const clickedElement = event.target.closest('.time-slot');
+            if (clickedElement.classList.contains('disabled') ||
+                clickedElement.classList.contains('past-time') ||
+                clickedElement.getAttribute('data-can-select') === 'false') {
+                return; // Do nothing if disabled
+            }
 
-            spinner.style.display = 'block';
-            timeGrid.innerHTML = '';
-
-            console.log('Loading times for date:', date);
-
-            fetch(`/booking/times/${date}`)
-                .then(response => {
-                    console.log('Response status:', response.status);
-                    return response.json();
-                })
-                .then(data => {
-                    spinner.style.display = 'none';
-                    console.log('Times data:', data);
-
-                    if (data.times && data.times.length > 0) {
-                        data.times.forEach(time => {
-                            const timeSlot = document.createElement('div');
-                            timeSlot.className = 'time-slot';
-                            timeSlot.innerHTML = `
-                                <div>${time.time}</div>
-                                <div class="remaining-info">${time.remaining_slots} slot tersisa</div>
-                            `;
-
-                            // Store time id untuk event handler
-                            timeSlot.setAttribute('data-time-id', time.id);
-
-                            timeSlot.addEventListener('click', function() {
-                                selectTime(this.getAttribute('data-time-id'), this);
-                            });
-
-                            timeGrid.appendChild(timeSlot);
-                        });
-                    } else {
-                        timeGrid.innerHTML =
-                            '<div class="alert alert-warning">Tidak ada jam yang tersedia untuk tanggal ini.</div>';
-                    }
-                })
-                .catch(error => {
-                    spinner.style.display = 'none';
-                    console.error('Error loading times:', error);
-                    timeGrid.innerHTML =
-                        '<div class="alert alert-danger">Terjadi kesalahan saat memuat jam yang tersedia.</div>';
-                });
-        }
-
-        function selectTime(timeId, element) {
-            // Remove previous selection
+            // Remove previous selections
             document.querySelectorAll('.time-slot.selected').forEach(el => {
                 el.classList.remove('selected');
             });
 
-            // Add selection to clicked time
-            element.classList.add('selected');
+            // Add selection to clicked element
+            clickedElement.classList.add('selected');
 
-            selectedTimeId = timeId;
-            document.getElementById('continueBtn').disabled = false;
-
-            console.log('Selected time ID:', selectedTimeId);
+            // Update hidden input and enable continue button
+            document.getElementById('selectedTimeInput').value = timeId;
+            updateContinueButton();
         }
 
-        function proceedToRegistration() {
-            console.log('Proceeding to registration...');
-            console.log('Selected date:', selectedDate);
-            console.log('Selected time ID:', selectedTimeId);
-            console.log('Selected service ID:', selectedServiceId);
-
-            if (!selectedServiceId) {
-                alert('Silakan pilih layanan terlebih dahulu di halaman utama');
-                return;
+        // Auto-refresh page every 10 minutes to update available times and sync with server
+        setTimeout(function() {
+            if (window.location.search.includes('date=')) {
+                window.location.reload();
             }
-
-            if (selectedDate && selectedTimeId) {
-                // Konstruksi URL dengan parameter
-                let url =
-                    `/registration/add-data?booking_date=${selectedDate}&booking_time_id=${selectedTimeId}&service_id=${selectedServiceId}`;
-
-                console.log('Redirecting to:', url);
-                window.location.href = url;
-            } else {
-                alert('Silakan pilih tanggal dan jam terlebih dahulu');
-            }
-        }
+        }, 600000); // 10 minutes
     </script>
 </body>
 
