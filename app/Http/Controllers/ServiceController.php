@@ -40,7 +40,8 @@ class ServiceController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
-            'duration' => 'required|numeric|min:1'
+            'duration' => 'required|numeric|min:1',
+            'picture' => 'nullable|image|mimes:jpeg,jpg,png|max:10240', // max 10MB
         ];
 
         $messages = [
@@ -52,9 +53,11 @@ class ServiceController extends Controller
             'duration.numeric' => 'Durasi harus berupa angka.',
             'price.min' => 'Harga tidak boleh kurang dari 0.',
             'duration.min' => 'Durasi minimal 1 menit.',
+            'picture.image' => 'File harus berupa gambar.',
+            'picture.mimes' => 'Gambar hanya boleh dalam format jpeg, jpg, atau png.',
+            'picture.max' => 'Ukuran gambar maksimal 10 MB.',
         ];
 
-        // Validasi input
         $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
@@ -65,12 +68,26 @@ class ServiceController extends Controller
 
         DB::beginTransaction();
         try {
-            $data = new Service(); // Perbaikan: gunakan new Service() bukan $this->model
+            $data = new Service();
             $data->name = $request->input('name');
             $data->description = $request->input('description');
             $data->price = $request->input('price');
             $data->duration = $request->input('duration');
-            $data->save();
+            $data->save(); // disimpan dulu agar mendapatkan ID
+
+            // Proses upload gambar jika ada
+            if ($request->hasFile('picture')) {
+                $file = $request->file('picture');
+                $extension = $file->getClientOriginalExtension();
+                $fileName = $data->id . '-' . str_replace(' ', '_', strtolower($data->name)) . '.' . $extension;
+
+                $destinationPath = public_path('assets/img/service');
+                $file->move($destinationPath, $fileName);
+
+                // Simpan nama file ke kolom picture (jika tersedia di tabel)
+                $data->picture = $fileName;
+                $data->save();
+            }
 
             DB::commit();
 
@@ -95,28 +112,26 @@ class ServiceController extends Controller
         $service = $this->model->findOrFail($id);
 
         $rules = [
-            'name' => 'required|string|max:255',
-            'description' => 'required|string',
-            'price' => 'required|numeric|min:0',
-            'duration' => 'required|numeric|min:1',
+            'name' => 'sometimes|string|max:255',
+            'description' => 'sometimes|string',
+            'price' => 'sometimes|numeric|min:0',
+            'duration' => 'sometimes|numeric|min:1',
+            'picture' => 'nullable|image|mimes:jpeg,jpg,png|max:10240', // max 10MB
         ];
 
         $messages = [
-            'name.required' => 'Nama layanan harus diisi.',
-            'description.required' => 'Deskripsi layanan harus diisi.',
-            'price.required' => 'Harga layanan harus diisi.',
-            'duration.required' => 'Waktu pelayanan harus diisi.',
             'price.numeric' => 'Harga harus berupa angka.',
             'duration.numeric' => 'Durasi harus berupa angka.',
             'price.min' => 'Harga tidak boleh kurang dari 0.',
             'duration.min' => 'Durasi minimal 1 menit.',
+            'picture.image' => 'File harus berupa gambar.',
+            'picture.mimes' => 'Gambar hanya boleh dalam format jpeg, jpg, atau png.',
+            'picture.max' => 'Ukuran gambar maksimal 10 MB.',
         ];
 
-        // Validasi input
         $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
-            // PERBAIKAN: Gunakan redirect biasa, bukan concatenation string
             return redirect()->route('service.get-data')
                 ->withErrors($validator)
                 ->withInput()
@@ -125,11 +140,38 @@ class ServiceController extends Controller
 
         DB::beginTransaction();
         try {
-            // Update data
-            $service->name = $request->name;
-            $service->description = $request->description;
-            $service->price = $request->price;
-            $service->duration = $request->duration;
+            if ($request->has('name')) {
+                $service->name = $request->name;
+            }
+            if ($request->has('description')) {
+                $service->description = $request->description;
+            }
+            if ($request->has('price')) {
+                $service->price = $request->price;
+            }
+            if ($request->has('duration')) {
+                $service->duration = $request->duration;
+            }
+
+            // Proses upload gambar jika ada
+            if ($request->hasFile('picture')) {
+                $file = $request->file('picture');
+                $extension = $file->getClientOriginalExtension();
+                $fileName = $service->id . '-' . str_replace(' ', '_', strtolower($service->name)) . '.' . $extension;
+
+                $destinationPath = public_path('assets/img/service');
+
+                // Hapus file lama jika ada
+                if (!empty($service->picture) && file_exists($destinationPath . '/' . $service->picture)) {
+                    unlink($destinationPath . '/' . $service->picture);
+                }
+
+                // Upload file baru
+                $file->move($destinationPath, $fileName);
+
+                $service->picture = $fileName;
+            }
+
             $service->save();
 
             DB::commit();
@@ -138,7 +180,6 @@ class ServiceController extends Controller
                 ->with('success', 'Pelayanan berhasil diperbarui.');
         } catch (\Exception $e) {
             DB::rollBack();
-            // PERBAIKAN: Gunakan redirect biasa
             return redirect()->route('service.get-data')
                 ->withInput()
                 ->withErrors(['message' => 'Terjadi kesalahan saat memperbarui data: ' . $e->getMessage()])
