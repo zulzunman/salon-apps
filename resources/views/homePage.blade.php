@@ -5,18 +5,20 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="Premium Hair Salon Services" />
-    <meta name="author" content="" />
-    <title>Elegant Hair Salon - Premium Beauty Services</title>
+    <title>Brownis Salon</title>
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+
     <!-- Font Awesome icons -->
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+
     <!-- Google fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap"
         rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap"
         rel="stylesheet" />
+
     <!-- CSS File -->
-    <link rel="stylesheet" href="{{ asset('css/homepage.css') }}">
+    <link rel="stylesheet" href="css/homepage.css">
 </head>
 
 <body>
@@ -24,7 +26,7 @@
     <nav class="navbar">
         <div class="container">
             <div class="nav-content">
-                <a class="navbar-brand" href="#home">Elegant Salon</a>
+                <a class="navbar-brand" href="#home">Brownis Salon</a>
                 <button class="nav-toggle" onclick="toggleNav()">
                     <i class="fas fa-bars"></i>
                 </button>
@@ -33,7 +35,7 @@
                     <li><a class="nav-link" href="#services">Services</a></li>
                     <li><a class="nav-link" href="#gallery">Gallery</a></li>
                     <li><a class="nav-link" href="#contact">Contact</a></li>
-                    <li><a class="nav-link" href="#" onclick="openModal()">Login</a></li>
+                    <li><a class="nav-link login-btn" href="#" onclick="openModal()">Login</a></li>
                 </ul>
             </div>
         </div>
@@ -46,7 +48,7 @@
                 <h1 class="hero-title">Beauty Redefined</h1>
                 <p class="hero-subtitle">Experience luxury hair care and styling at our premium salon. Where elegance
                     meets expertise.</p>
-                <a class="btn-primary" href="{{ route('booking.datetime') }}">Book Your Appointment</a>
+                <a class="btn-primary" href="#services">Book Your Appointment</a>
             </div>
         </div>
     </section>
@@ -60,15 +62,15 @@
                 <ul class="policy-list">
                     <li>
                         <i class="fas fa-phone-alt"></i>
-                        Harap Masukan Nomor Telfon Anda Yang Aktif
+                        <span>Harap Masukan Nomor Telfon Anda Yang Aktif</span>
                     </li>
                     <li>
                         <i class="fas fa-clock"></i>
-                        Keterlambatan Melebihi 15 Menit Kami Anggap Cancel
+                        <span>Keterlambatan Melebihi 15 Menit Kami Anggap Cancel</span>
                     </li>
                     <li>
                         <i class="fas fa-calendar-times"></i>
-                        Batas Untuk Konfirmasi Cancel 30 Menit sebelum Waktu Appointment
+                        <span>Batas Untuk Konfirmasi Cancel 30 Menit sebelum Waktu Appointment</span>
                     </li>
                 </ul>
             </div>
@@ -136,8 +138,7 @@
                     <div class="gallery-text">
                         <div>
                             <h4>Signature Transformations</h4>
-                            <p>Experience the artistry of our master stylists as they create stunning looks
-                                tailored to
+                            <p>Experience the artistry of our master stylists as they create stunning looks tailored to
                                 your unique style and personality.</p>
                         </div>
                     </div>
@@ -153,12 +154,10 @@
                     </div>
                 </div>
                 <div class="gallery-item">
-                    <div class="gallery-text"
-                        style="background: linear-gradient(135deg, var(--rose-gold), var(--soft-pink)); color: var(--text-dark);">
+                    <div class="gallery-text bridal-text">
                         <div>
                             <h4>Bridal Excellence</h4>
-                            <p>Your special day deserves perfection. Our bridal specialists create breathtaking
-                                looks
+                            <p>Your special day deserves perfection. Our bridal specialists create breathtaking looks
                                 that complement your natural beauty.</p>
                         </div>
                     </div>
@@ -175,10 +174,8 @@
     <!-- Contact Section -->
     <section class="section contact-section" id="contact">
         <div class="container">
-            <h2 class="section-title" style="color: white;">Get In Touch</h2>
-            <p class="section-subtitle" style="color: rgba(255,255,255,0.8);">Visit us today or contact us to
-                schedule
-                your appointment</p>
+            <h2 class="section-title">Get In Touch</h2>
+            <p class="section-subtitle">Visit us today or contact us to schedule your appointment</p>
 
             <div class="contact-grid">
                 <div class="contact-card">
@@ -186,7 +183,10 @@
                         <i class="fas fa-map-marker-alt"></i>
                     </div>
                     <h4>Visit Our Salon</h4>
-                    <p>Jl. Kemang Raya No. 123<br>Jakarta Selatan 12560<br>Indonesia</p>
+                    <p>Jl. Lapang Tembak Sel. kp mekarsari 9<br>
+                        Padasuka, Kec. Cimahi Tengah<br>
+                        Kota Cimahi, Jawa Barat 40523</p>
+                    <a href="https://maps.app.goo.gl/1uDXtg97C785V3XN7" target="_blank">View on Maps</a>
                 </div>
 
                 <div class="contact-card">
@@ -194,44 +194,41 @@
                         <i class="fas fa-phone"></i>
                     </div>
                     <h4>Call Us</h4>
-                    <p><a href="tel:+62215551234">+62 21 555 1234</a><br><a href="tel:+6281234567890">+62 812
-                            3456
-                            7890</a></p>
+                    <p><a href="tel:+6289671875340">+62 896 7187 5340</a></p>
                 </div>
 
                 <div class="contact-card">
                     <div class="contact-icon">
-                        <i class="fas fa-envelope"></i>
+                        <i class="fab fa-tiktok"></i>
                     </div>
-                    <h4>Email Us</h4>
-                    <p><a href="mailto:info@elegantsalon.com">info@elegantsalon.com</a><br><a
-                            href="mailto:booking@elegantsalon.com">booking@elegantsalon.com</a></p>
+                    <h4>TikTok</h4>
+                    <p><a href="https://www.tiktok.com/@bronissalon" target="_blank">@bronissalon</a></p>
                 </div>
 
                 <div class="contact-card">
                     <div class="contact-icon">
-                        <i class="fas fa-clock"></i>
+                        <i class="fab fa-instagram"></i>
                     </div>
-                    <h4>Opening Hours</h4>
-                    <p>Mon - Fri: 9:00 AM - 8:00 PM<br>Sat - Sun: 8:00 AM - 6:00 PM</p>
+                    <h4>Instagram</h4>
+                    <p><a href="https://www.instagram.com/bronis.salon" target="_blank">@bronis.salon</a></p>
                 </div>
             </div>
 
             <div class="social-links">
-                <a href="#" class="social-link">
-                    <i class="fab fa-facebook-f"></i>
+                <a href="https://www.instagram.com/bronis.salon" class="social-link" target="_blank">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://www.tiktok.com/@bronissalon" class="social-link" target="_blank">
+                    <i class="fab fa-tiktok"></i>
                 </a>
                 <a href="#" class="social-link">
-                    <i class="fab fa-instagram"></i>
+                    <i class="fab fa-facebook-f"></i>
                 </a>
                 <a href="#" class="social-link">
                     <i class="fab fa-twitter"></i>
                 </a>
                 <a href="#" class="social-link">
                     <i class="fab fa-youtube"></i>
-                </a>
-                <a href="#" class="social-link">
-                    <i class="fab fa-tiktok"></i>
                 </a>
             </div>
         </div>
@@ -240,16 +237,49 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2024 Elegant Hair Salon. All rights reserved. | Designed with ❤️ for beauty enthusiasts
-            </p>
+            <p>&copy; 2024 Brownis Salon. All rights reserved. | Designed with ❤️ for beauty enthusiasts</p>
         </div>
     </footer>
-    <!-- Include Login Modal -->
     @include('auth.login')
-    <!-- Login Modal -->
+    <!-- JavaScript -->
+    <script>
+        function toggleNav() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
 
-    <!-- JavaScript File -->
-    <script src="{{ asset('js/script.js') }}"></script>
+        function openModal() {
+            const modal = document.getElementById('loginModal');
+            modal.classList.add('show');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('loginModal');
+            modal.classList.remove('show');
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('loginModal');
+            if (event.target == modal) {
+                modal.classList.remove('show');
+            }
+        }
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
