@@ -9,7 +9,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <form id="editServiceForm" action="#" method="POST">
+            <form id="editServiceForm" action="#" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div class="modal-body">
@@ -63,10 +63,61 @@
                             @enderror
                         </div>
                     </div>
+
+                    <!-- Field Picture -->
+                    <div class="mb-3">
+                        <label for="edit_picture" class="form-label">
+                            Gambar Pelayanan
+                        </label>
+
+                        <!-- Current Picture Display -->
+                        <div id="current-picture" class="mb-2" style="display: none;">
+                            <div class="card" style="max-width: 200px;">
+                                <div class="card-body p-2">
+                                    <small class="text-muted">Gambar Saat Ini:</small>
+                                    <img id="current-picture-img" src="" alt=""
+                                        class="img-thumbnail mt-1"
+                                        style="width: 100%; height: 120px; object-fit: cover;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="file" class="form-control @error('picture') is-invalid @enderror"
+                            id="edit_picture" name="picture" accept="image/*" onchange="previewEditImage(this)">
+                        <small class="text-muted">
+                            Format yang didukung: JPG, JPEG, PNG, GIF. Maksimal 2MB.
+                            <strong>Kosongkan jika tidak ingin mengubah gambar.</strong>
+                        </small>
+                        @error('picture')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+
+                        <!-- Preview New Image -->
+                        <div id="edit-picture-preview" class="mt-2" style="display: none;">
+                            <div class="card" style="max-width: 200px;">
+                                <div class="card-body p-2">
+                                    <small class="text-muted">Preview Gambar Baru:</small>
+                                    <img id="edit-preview-img" src="" alt="Preview" class="img-thumbnail mt-1"
+                                        style="width: 100%; height: 120px; object-fit: cover;">
+                                    <button type="button" class="btn btn-sm btn-outline-danger mt-1 w-100"
+                                        onclick="removeEditPreview()">
+                                        <i class="fas fa-times"></i> Hapus Preview
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="alert alert-warning" id="edit-warning-alert">
                         <i class="fas fa-exclamation-triangle"></i>
                         <strong>Peringatan:</strong> Perubahan data pelayanan akan mempengaruhi semua booking yang
                         menggunakan pelayanan ini.
+                        <div class="mt-2">
+                            <small>Alert ini akan hilang dalam <span id="countdown-timer">10</span> detik</small>
+                            <div class="countdown-progress">
+                                <div class="countdown-progress-bar" id="progress-bar"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -82,6 +133,54 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Function untuk preview gambar baru saat edit
+    function previewEditImage(input) {
+        const preview = document.getElementById('edit-picture-preview');
+        const previewImg = document.getElementById('edit-preview-img');
+
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+
+            // Validasi ukuran file (2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                alert('Ukuran file terlalu besar. Maksimal 2MB.');
+                input.value = '';
+                preview.style.display = 'none';
+                return;
+            }
+
+            // Validasi tipe file
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('Format file tidak didukung. Gunakan JPG, JPEG, PNG, atau GIF.');
+                input.value = '';
+                preview.style.display = 'none';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.style.display = 'none';
+        }
+    }
+
+    // Function untuk menghapus preview gambar edit
+    function removeEditPreview() {
+        const input = document.getElementById('edit_picture');
+        const preview = document.getElementById('edit-picture-preview');
+
+        input.value = '';
+        preview.style.display = 'none';
+    }
+</script>
+
 <style>
     /* Progress bar visual */
     .countdown-progress {
@@ -97,5 +196,20 @@
         height: 100%;
         background-color: #ffc107;
         transition: width 0.1s linear;
+    }
+
+    /* Preview image styles */
+    .card {
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+    }
+
+    #current-picture .card {
+        background-color: #f8f9fa;
+    }
+
+    #edit-picture-preview .card {
+        background-color: #e7f3ff;
+        border-color: #007bff;
     }
 </style>
