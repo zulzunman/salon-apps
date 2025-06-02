@@ -18,7 +18,7 @@ return new class extends Migration
             info('Kolom gambar sudah ada di tabel services.');
         } else {
             Schema::table('services', function (Blueprint $table) {
-                $table->date('picture')->after('description')->nullable();
+                $table->string('picture')->after('description')->nullable();
             });
             info('Kolom gambar ditambahkan tabel services.');
         }
