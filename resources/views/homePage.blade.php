@@ -35,7 +35,7 @@
                     <li><a class="nav-link" href="#services">Services</a></li>
                     <li><a class="nav-link" href="#gallery">Gallery</a></li>
                     <li><a class="nav-link" href="#contact">Contact</a></li>
-                    <li><a class="nav-link login-btn" href="#" onclick="openModal()">Login</a></li>
+                    <li><a class="nav-link login-btn" href="#" onclick="openLoginModal()">Login</a></li>
                 </ul>
             </div>
         </div>
@@ -148,42 +148,47 @@
             <h2 class="section-title">Our Work Gallery</h2>
             <p class="section-subtitle">Discover the artistry and elegance of our salon transformations</p>
 
-            <div class="gallery-grid">
-                <!-- Gallery Item dengan gambar dari folder assets/img/homepage/ -->
-                <div class="gallery-item">
-                    <div class="gallery-image"
-                        style="background-image: url('assets/img/homepage/1-cukur_rambut_pria.jpg');">
+            <div class="gallery-slider-container">
+                <div class="gallery-slider" id="gallerySlider">
+                    <!-- Gallery Slides -->
+                    <div class="gallery-slide" onclick="openGalleryModal(0)">
+                        <div class="gallery-image"
+                            style="background-image: url('assets/img/homepage/1-cukur_rambut_pria.jpg');"></div>
+                    </div>
+
+                    <div class="gallery-slide" onclick="openGalleryModal(1)">
+                        <div class="gallery-image"
+                            style="background-image: url('assets/img/homepage/2-cukur_rambut_wanita.jpg');"></div>
+                    </div>
+
+                    <div class="gallery-slide" onclick="openGalleryModal(2)">
+                        <div class="gallery-image"
+                            style="background-image: url('assets/img/homepage/7-smoothing.jfif');"></div>
+                    </div>
+
+                    <div class="gallery-slide" onclick="openGalleryModal(3)">
+                        <div class="gallery-image"
+                            style="background-image: url('assets/img/homepage/4-creambath.jpg');"></div>
+                    </div>
+
+                    <div class="gallery-slide" onclick="openGalleryModal(4)">
+                        <div class="gallery-image"
+                            style="background-image: url('assets/img/homepage/5-hair_mask.jpg');"></div>
+                    </div>
+
+                    <div class="gallery-slide" onclick="openGalleryModal(5)">
+                        <div class="gallery-image"
+                            style="background-image: url('assets/img/homepage/6-coloring_rambut.jfif');"></div>
                     </div>
                 </div>
 
-                <div class="gallery-item">
-                    <div class="gallery-image"
-                        style="background-image: url('assets/img/homepage/2-cukur_rambut_wanita.jpg');">
-                    </div>
-                </div>
-
-                <div class="gallery-item">
-                    <div class="gallery-image" style="background-image: url('assets/img/homepage/7-smoothing.jfif');">
-                    </div>
-                </div>
-
-                <!-- Item tambahan dengan gambar -->
-                <div class="gallery-item">
-                    <div class="gallery-image" style="background-image: url('assets/img/homepage/4-creambath.jpg');">
-                    </div>
-                </div>
-
-                <div class="gallery-item">
-                    <div class="gallery-image" style="background-image: url('assets/img/homepage/5-hair_mask.jpg');">
-                    </div>
-                </div>
-
-                <div class="gallery-item">
-                    <div class="gallery-image"
-                        style="background-image: url('assets/img/homepage/6-coloring_rambut.jfif');">
-                    </div>
-                </div>
+                <!-- Navigation Buttons -->
+                <button class="slider-nav prev" onclick="moveSlide(-1)">❮</button>
+                <button class="slider-nav next" onclick="moveSlide(1)">❯</button>
             </div>
+
+            <!-- Dots Indicator -->
+            <div class="slider-dots" id="sliderDots"></div>
         </div>
     </section>
 
@@ -249,7 +254,6 @@
             </div>
         </div>
     </section>
-
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -264,7 +268,8 @@
             navLinks.classList.toggle('active');
         }
 
-        function openModal() {
+        // Fungsi untuk membuka login modal - nama diubah untuk menghindari konflik
+        function openLoginModal() {
             const modal = document.getElementById('loginModal');
             modal.classList.add('show');
         }
@@ -296,6 +301,7 @@
             });
         });
 
+        // Image Modal functionality
         document.addEventListener('DOMContentLoaded', function() {
             const modal = document.getElementById('imageModal');
             const modalImage = document.getElementById('modalImage');
@@ -303,42 +309,160 @@
             const closeBtn = document.querySelector('.modal-close');
             const clickableImages = document.querySelectorAll('.clickable-image');
 
-            // Add click event to each image
+            // Add click event to each service image
             clickableImages.forEach((img) => {
                 img.addEventListener('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
-                    openModal(img.dataset.fullImage, img.dataset.title);
+                    openImageModal(img.dataset.fullImage, img.dataset.title);
                 });
             });
 
-            function openModal(imageSrc, imageTitle) {
+            function openImageModal(imageSrc, imageTitle) {
                 modalImage.src = imageSrc;
                 modalCaption.textContent = imageTitle;
                 modal.classList.add('show');
                 document.body.style.overflow = 'hidden'; // Prevent background scrolling
             }
 
-            function closeModal() {
+            function closeImageModal() {
                 modal.classList.remove('show');
                 document.body.style.overflow = 'auto'; // Restore scrolling
             }
 
             // Close modal events
-            closeBtn.addEventListener('click', closeModal);
+            closeBtn.addEventListener('click', closeImageModal);
 
             modal.addEventListener('click', function(e) {
                 if (e.target === modal) {
-                    closeModal();
+                    closeImageModal();
                 }
             });
 
             // Keyboard navigation
             document.addEventListener('keydown', function(e) {
                 if (modal.classList.contains('show') && e.key === 'Escape') {
-                    closeModal();
+                    closeImageModal();
                 }
             });
+        });
+
+        // Fungsi untuk membuka gallery modal
+        function openGalleryModal(index) {
+            const images = [
+                'assets/img/homepage/1-cukur_rambut_pria.jpg',
+                'assets/img/homepage/2-cukur_rambut_wanita.jpg',
+                'assets/img/homepage/7-smoothing.jfif',
+                'assets/img/homepage/4-creambath.jpg',
+                'assets/img/homepage/5-hair_mask.jpg',
+                'assets/img/homepage/6-coloring_rambut.jfif'
+            ];
+
+            const titles = [
+                'Cukur Rambut Pria',
+                'Cukur Rambut Wanita',
+                'Smoothing',
+                'Creambath',
+                'Hair Mask',
+                'Coloring Rambut'
+            ];
+
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            const modalCaption = document.getElementById('modalCaption');
+
+            modalImage.src = images[index];
+            modalCaption.textContent = titles[index];
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Gallery Slider functionality
+        let currentSlide = 0;
+        const slider = document.getElementById('gallerySlider');
+        const slides = document.querySelectorAll('.gallery-slide');
+        const totalSlides = slides.length;
+        const slidesToShow = window.innerWidth <= 768 ? 1 : window.innerWidth <= 1024 ? 2 : 3;
+        const maxSlides = totalSlides - slidesToShow;
+
+        // Create dots
+        function createDots() {
+            const dotsContainer = document.getElementById('sliderDots');
+            dotsContainer.innerHTML = '';
+
+            for (let i = 0; i <= maxSlides; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'dot';
+                if (i === 0) dot.classList.add('active');
+                dot.onclick = () => goToSlide(i);
+                dotsContainer.appendChild(dot);
+            }
+        }
+
+        // Update dots
+        function updateDots() {
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+        }
+
+        // Move slide function
+        function moveSlide(direction) {
+            currentSlide += direction;
+
+            if (currentSlide > maxSlides) {
+                currentSlide = 0;
+            } else if (currentSlide < 0) {
+                currentSlide = maxSlides;
+            }
+
+            updateSlider();
+        }
+
+        // Go to specific slide
+        function goToSlide(slideIndex) {
+            currentSlide = slideIndex;
+            updateSlider();
+        }
+
+        // Update slider position
+        function updateSlider() {
+            const slideWidth = slides[0].offsetWidth + 20; // width + margin
+            const translateX = -currentSlide * slideWidth;
+            slider.style.transform = `translateX(${translateX}px)`;
+            updateDots();
+        }
+
+        // Initialize
+        createDots();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            createDots();
+            currentSlide = 0;
+            updateSlider();
+        });
+
+        // Touch/swipe support for mobile
+        let startX = 0;
+        let endX = 0;
+
+        slider.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+        });
+
+        slider.addEventListener('touchend', (e) => {
+            endX = e.changedTouches[0].clientX;
+            const diffX = startX - endX;
+
+            if (Math.abs(diffX) > 50) {
+                if (diffX > 0) {
+                    moveSlide(1); // Swipe left - next slide
+                } else {
+                    moveSlide(-1); // Swipe right - previous slide
+                }
+            }
         });
     </script>
 </body>
