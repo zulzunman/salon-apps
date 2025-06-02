@@ -48,7 +48,7 @@
                 <h1 class="hero-title">Beauty Redefined</h1>
                 <p class="hero-subtitle">Experience luxury hair care and styling at our premium salon. Where elegance
                     meets expertise.</p>
-                <a class="btn-primary" href="#services">Book Your Appointment</a>
+                <a class="btn-primary" href="#services">Booking Now</a>
             </div>
         </div>
     </section>
@@ -93,9 +93,6 @@
                                         alt="{{ $service->name }}" class="service-img clickable-image"
                                         data-full-image="{{ asset('assets/img/service/' . $service->picture) }}"
                                         data-title="{{ $service->name }}">
-                                    <div class="image-overlay">
-                                        <i class="fas fa-search-plus"></i>
-                                    </div>
                                 @else
                                     <i class="fas fa-cut"></i>
                                 @endif
@@ -152,37 +149,38 @@
             <p class="section-subtitle">Discover the artistry and elegance of our salon transformations</p>
 
             <div class="gallery-grid">
+                <!-- Gallery Item dengan gambar dari folder assets/img/homepage/ -->
                 <div class="gallery-item">
-                    <div class="gallery-text">
-                        <div>
-                            <h4>Signature Transformations</h4>
-                            <p>Experience the artistry of our master stylists as they create stunning looks tailored to
-                                your unique style and personality.</p>
-                        </div>
+                    <div class="gallery-image"
+                        style="background-image: url('assets/img/homepage/1-cukur_rambut_pria.jpg');">
                     </div>
                 </div>
+
                 <div class="gallery-item">
-                    <div class="gallery-image">
-                        <i class="fas fa-palette"></i>
+                    <div class="gallery-image"
+                        style="background-image: url('assets/img/homepage/2-cukur_rambut_wanita.jpg');">
                     </div>
                 </div>
+
                 <div class="gallery-item">
-                    <div class="gallery-image">
-                        <i class="fas fa-magic"></i>
+                    <div class="gallery-image" style="background-image: url('assets/img/homepage/7-smoothing.jfif');">
                     </div>
                 </div>
+
+                <!-- Item tambahan dengan gambar -->
                 <div class="gallery-item">
-                    <div class="gallery-text bridal-text">
-                        <div>
-                            <h4>Bridal Excellence</h4>
-                            <p>Your special day deserves perfection. Our bridal specialists create breathtaking looks
-                                that complement your natural beauty.</p>
-                        </div>
+                    <div class="gallery-image" style="background-image: url('assets/img/homepage/4-creambath.jpg');">
                     </div>
                 </div>
+
                 <div class="gallery-item">
-                    <div class="gallery-image">
-                        <i class="fas fa-cut"></i>
+                    <div class="gallery-image" style="background-image: url('assets/img/homepage/5-hair_mask.jpg');">
+                    </div>
+                </div>
+
+                <div class="gallery-item">
+                    <div class="gallery-image"
+                        style="background-image: url('assets/img/homepage/6-coloring_rambut.jfif');">
                     </div>
                 </div>
             </div>
