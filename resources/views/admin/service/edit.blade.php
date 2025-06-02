@@ -116,7 +116,7 @@
                             </div>
                             <div class="form-text">
                                 <i class="fas fa-info-circle me-1"></i>
-                                Format: JPG, JPEG, PNG, GIF | Maksimal: 2MB |
+                                Format: JPG, JPEG, PNG, GIF | Maksimal: 10MB |
                                 <span class="text-primary fw-bold">Kosongkan jika tidak ingin mengubah gambar</span>
                             </div>
                             @error('picture')
@@ -160,9 +160,9 @@
         if (input.files && input.files[0]) {
             const file = input.files[0];
 
-            // Validasi ukuran file (2MB)
-            if (file.size > 2 * 1024 * 1024) {
-                alert('Ukuran file terlalu besar. Maksimal 2MB.');
+            // Validasi ukuran file (10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                alert('Ukuran file terlalu besar. Maksimal 10MB.');
                 input.value = '';
                 preview.style.display = 'none';
                 return;

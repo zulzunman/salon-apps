@@ -88,7 +88,18 @@
                     @foreach ($services as $service)
                         <div class="service-card">
                             <div class="service-image">
-                                <i class="fas fa-cut"></i>
+                                @if ($service->picture && file_exists(public_path('assets/img/service/' . $service->picture)))
+                                    <img src="{{ asset('assets/img/service/' . $service->picture) }}"
+                                        alt="{{ $service->name }}" class="service-img clickable-image"
+                                        data-full-image="{{ asset('assets/img/service/' . $service->picture) }}"
+                                        data-title="{{ $service->name }}">
+                                    <div class="image-overlay">
+                                        <i class="fas fa-search-plus"></i>
+                                    </div>
+                                @else
+                                    <i class="fas fa-cut"></i>
+                                @endif
+
                                 @if ($loop->first)
                                     <div class="service-badge">Popular</div>
                                 @elseif($loop->index == 1)
@@ -126,6 +137,13 @@
             @endif
         </div>
     </section>
+
+    <!-- Image Modal -->
+    <div id="imageModal" class="image-modal">
+        <span class="modal-close">&times;</span>
+        <img class="modal-image" id="modalImage">
+        <div class="modal-caption" id="modalCaption"></div>
+    </div>
 
     <!-- Gallery Section -->
     <section class="section gallery-section" id="gallery">
@@ -276,6 +294,51 @@
                         behavior: 'smooth',
                         block: 'start'
                     });
+                }
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            const modalCaption = document.getElementById('modalCaption');
+            const closeBtn = document.querySelector('.modal-close');
+            const clickableImages = document.querySelectorAll('.clickable-image');
+
+            // Add click event to each image
+            clickableImages.forEach((img) => {
+                img.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openModal(img.dataset.fullImage, img.dataset.title);
+                });
+            });
+
+            function openModal(imageSrc, imageTitle) {
+                modalImage.src = imageSrc;
+                modalCaption.textContent = imageTitle;
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            }
+
+            function closeModal() {
+                modal.classList.remove('show');
+                document.body.style.overflow = 'auto'; // Restore scrolling
+            }
+
+            // Close modal events
+            closeBtn.addEventListener('click', closeModal);
+
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (modal.classList.contains('show') && e.key === 'Escape') {
+                    closeModal();
                 }
             });
         });
