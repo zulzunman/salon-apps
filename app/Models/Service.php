@@ -10,7 +10,7 @@ class Service extends Model
     use HasFactory;
 
     protected $table = 'services';
-    protected $fillable = ['name', 'price', 'duration', 'description'];
+    protected $fillable = ['name', 'price', 'duration', 'description', 'picture'];
 
     public function regist()
     {

@@ -35,6 +35,7 @@
                         <thead>
                             <tr>
                                 <th>No</th>
+                                <th>Gambar</th>
                                 <th>Nama Pelayanan</th>
                                 <th>Deskripsi</th>
                                 <th>Harga</th>
@@ -46,19 +47,31 @@
                             @forelse ($services as $index => $service)
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
+                                    <td class="text-center">
+                                        @if ($service->picture)
+                                            <img src="{{ asset('assets/img/service/' . $service->picture) }}"
+                                                alt="{{ $service->name }}" class="img-thumbnail service-image"
+                                                style="width: 60px; height: 60px; object-fit: cover;">
+                                        @else
+                                            <div class="no-image-placeholder d-flex align-items-center justify-content-center"
+                                                style="width: 60px; height: 60px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 0.375rem;">
+                                                <i class="fas fa-image text-muted"></i>
+                                            </div>
+                                        @endif
+                                    </td>
                                     <td>{{ $service->name }}</td>
                                     <td>{{ $service->description }}</td>
                                     <td>Rp {{ number_format($service->price, 0, ',', '.') }}</td>
                                     <td>{{ $service->duration }}</td>
                                     <td>
                                         <div class="d-flex gap-1">
-                                            <!-- PERBAIKAN: Gunakan data-bs-toggle untuk Bootstrap 5 -->
                                             <button type="button" class="btn btn-primary btn-sm edit-btn"
                                                 data-bs-toggle="modal" data-bs-target="#editServiceModal"
                                                 data-id="{{ $service->id }}" data-name="{{ $service->name }}"
                                                 data-description="{{ $service->description }}"
                                                 data-price="{{ $service->price }}"
-                                                data-duration="{{ $service->duration }}" title="Edit Pelayanan">
+                                                data-duration="{{ $service->duration }}"
+                                                data-picture="{{ $service->picture }}" title="Edit Pelayanan">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                             <form action="{{ route('service.delete-data', $service->id) }}" method="POST"
@@ -74,7 +87,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center">Tidak ada data pelayanan.</td>
+                                    <td colspan="7" class="text-center">Tidak ada data pelayanan.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -114,16 +127,29 @@
                     const description = this.getAttribute('data-description');
                     const price = this.getAttribute('data-price');
                     const duration = this.getAttribute('data-duration');
+                    const picture = this.getAttribute('data-picture');
 
                     // Update form action URL
                     const editForm = document.getElementById('editServiceForm');
-                    editForm.action = `/service/edit/${id}/edit-data`; // PERBAIKAN: URL yang benar
+                    editForm.action = `/service/edit/${id}/edit-data`;
 
                     // Populate form fields
                     document.getElementById('edit_name').value = name;
                     document.getElementById('edit_description').value = description;
                     document.getElementById('edit_price').value = price;
                     document.getElementById('edit_duration').value = duration;
+
+                    // Show current picture if exists
+                    const currentPictureDiv = document.getElementById('current-picture');
+                    const currentPictureImg = document.getElementById('current-picture-img');
+
+                    if (picture && picture.trim() !== '') {
+                        currentPictureImg.src = `/assets/img/service/${picture}`;
+                        currentPictureImg.alt = name;
+                        currentPictureDiv.style.display = 'block';
+                    } else {
+                        currentPictureDiv.style.display = 'none';
+                    }
 
                     // Start warning alert countdown
                     startWarningCountdown();
@@ -214,7 +240,6 @@
 
             // Handle modal close - clear forms
             const addModal = document.getElementById('addServiceModal');
-            const editModal = document.getElementById('editServiceModal');
 
             if (addModal) {
                 addModal.addEventListener('hidden.bs.modal', function() {
@@ -223,6 +248,12 @@
                     inputs.forEach(input => {
                         input.classList.remove('is-invalid', 'is-valid');
                     });
+
+                    // Reset file input preview
+                    const filePreview = document.getElementById('add-picture-preview');
+                    if (filePreview) {
+                        filePreview.style.display = 'none';
+                    }
                 });
             }
 
@@ -233,10 +264,16 @@
                     inputs.forEach(input => {
                         input.classList.remove('is-invalid', 'is-valid');
                     });
+
+                    // Reset file input preview
+                    const filePreview = document.getElementById('edit-picture-preview');
+                    if (filePreview) {
+                        filePreview.style.display = 'none';
+                    }
                 });
             }
 
-            // Show modal if there are validation errors - PERBAIKAN
+            // Show modal if there are validation errors
             @if ($errors->any() && session('edit_error_service_id'))
                 // Show edit modal if edit form has errors
                 const editModalInstance = new bootstrap.Modal(document.getElementById('editServiceModal'));
@@ -259,4 +296,19 @@
             @endif
         });
     </script>
+
+    <style>
+        .service-image {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .service-image:hover {
+            transform: scale(1.1);
+        }
+
+        .no-image-placeholder {
+            cursor: default;
+        }
+    </style>
 @endsection
