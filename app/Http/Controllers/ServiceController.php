@@ -39,7 +39,7 @@ class ServiceController extends Controller
         $rules = [
             'name' => 'required|string|max:255',
             'description' => 'required|string',
-            'price' => 'required|numeric|min:0',
+            'price' => 'required|numeric|min:0|max:7',
             'duration' => 'required|numeric|min:1',
             'picture' => 'nullable|image|mimes:jpeg,jpg,png|max:10240', // max 10MB
         ];
@@ -52,6 +52,7 @@ class ServiceController extends Controller
             'price.numeric' => 'Harga harus berupa angka.',
             'duration.numeric' => 'Durasi harus berupa angka.',
             'price.min' => 'Harga tidak boleh kurang dari 0.',
+            'price.max' => 'Harga tidak boleh lebih dari 7 digit.',
             'duration.min' => 'Durasi minimal 1 menit.',
             'picture.image' => 'File harus berupa gambar.',
             'picture.mimes' => 'Gambar hanya boleh dalam format jpeg, jpg, atau png.',
