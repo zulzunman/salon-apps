@@ -312,8 +312,7 @@
 
             <div class="message-section">
                 <p><strong>Catatan Penting:</strong></p>
-                <p>• Harap datang 15 menit sebelum waktu appointment</p>
-                <p>• Jika ada perubahan jadwal, hubungi kami minimal 2 jam sebelumnya</p>
+                <p>• Harap datang 30 menit sebelum waktu appointment</p>
                 <p>• Bawa kartu identitas untuk verifikasi</p>
             </div>
         </div>

@@ -66,7 +66,7 @@
                     </li>
                     <li>
                         <i class="fas fa-clock"></i>
-                        <span>Keterlambatan Melebihi 15 Menit Kami Anggap Cancel</span>
+                        <span>Keterlambatan Melebihi 30 Menit Kami Anggap Cancel</span>
                     </li>
                     <li>
                         <i class="fas fa-calendar-times"></i>
