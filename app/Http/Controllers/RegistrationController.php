@@ -384,7 +384,7 @@ class RegistrationController extends Controller
         ])
             ->where('status', 'CALLING')
             ->whereNotNull('called_at')
-            ->where('called_at', '<=', now()->subMinutes(15))
+            ->where('called_at', '<=', now()->subMinutes(30))
             ->get();
 
         foreach ($timedOutCalls as $call) {
