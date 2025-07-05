@@ -37,7 +37,7 @@ class RegistrationController extends Controller
     public function getData(Request $request)
     {
         $status = $request->query('status');
-        $query = $this->modelRegistration->with('customer', 'service', 'bookingTime');
+        $query = $this->modelRegistration->with('customer', 'service');
 
         if ($status) {
             $query->where('status', $status);
@@ -47,7 +47,7 @@ class RegistrationController extends Controller
 
         $this->checkTimedOutCalls();
         $customers = $query->orderBy('booking_date', 'asc')
-            ->orderBy('booking_time_id', 'asc')
+            // ->orderBy('booking_time_id', 'asc')
             ->orderBy('created_at', 'asc')
             ->get();
 
@@ -282,7 +282,7 @@ class RegistrationController extends Controller
             'email' => 'required|email',
             'booking_date' => 'required|date',
             'service_id' => 'required|exists:services,id',
-            'booking_time_id' => 'required|exists:booking_times,id'
+            // 'booking_time_id' => 'required|exists:booking_times,id'
         ];
 
         $messages = [
@@ -292,7 +292,7 @@ class RegistrationController extends Controller
             'booking_date.required' => 'Tanggal harus diisi.',
             'booking_date.date' => 'Format tanggal tidak valid.',
             'service_id.required' => 'Silakan pilih pelayanan yang akan dilakukan.',
-            'booking_time_id.required' => 'Silakan pilih jam pelayanan yang akan dilakukan.',
+            // 'booking_time_id.required' => 'Silakan pilih jam pelayanan yang akan dilakukan.',
         ];
 
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -303,10 +303,10 @@ class RegistrationController extends Controller
                 ->withInput();
         }
 
-        // Double-check availability
+        // Cek slot tersedia
         $registrationCount = $this->modelRegistration
             ->where('booking_date', $request->booking_date)
-            ->where('booking_time_id', $request->booking_time_id)
+            // ->where('booking_time_id', $request->booking_time_id)
             ->whereIn('status', ['PENDING', 'CALLING', 'SERVING'])
             ->count();
 
@@ -317,30 +317,40 @@ class RegistrationController extends Controller
 
         DB::beginTransaction();
         try {
+            // Simpan customer
             $customer = $this->modelCustomer;
             $customer->name = $request->input('name');
             $customer->email = $request->input('email');
             $customer->save();
 
+            // Hitung nomor antrean untuk tanggal itu
+            $queueNumber = $this->modelRegistration
+                ->where('booking_date', $request->booking_date)
+                ->count();
+
+            // Simpan registrasi
             $register = $this->modelRegistration;
             $register->customer_id = $customer->id;
             $register->service_id = $request->input('service_id');
-            $register->booking_time_id = $request->input('booking_time_id');
+            // $register->booking_time_id = $request->input('booking_time_id');
             $register->booking_date = $request->input('booking_date');
+            // $register->booking_date = now();
             $register->status = "PENDING";
+            $register->queue_number = $queueNumber + 1;
             $register->save();
 
+            // Kirim email
             $data = $this->modelRegistration->with([
                 'customer',
                 'service',
-                'bookingTime',
+                // 'bookingTime',
             ])->find($register->id);
 
             Mail::to($customer->email)->send(new RegistrasiMail($data));
 
             DB::commit();
             return redirect()->route('home-page')
-                ->with('success', 'Registrasi berhasil. Kami akan menghubungi Anda melalui email.');
+                ->with('success', 'Registrasi berhasil. Nomor antrean Anda: ' . ($queueNumber + 1));
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()
@@ -348,6 +358,7 @@ class RegistrationController extends Controller
                 ->withErrors(['message' => 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage()]);
         }
     }
+
 
     public function callCustomer($id)
     {
@@ -361,7 +372,7 @@ class RegistrationController extends Controller
             $dataCustomer = $this->modelRegistration->with([
                 'customer',
                 'service',
-                'bookingTime',
+                // 'bookingTime',
             ])->find($id);
 
             Mail::to($dataCustomer->customer->email)->send(new CallingMail($dataCustomer));
@@ -406,7 +417,7 @@ class RegistrationController extends Controller
         $timedOutCalls = $this->modelRegistration->with([
             'customer',
             'service',
-            'bookingTime',
+            // 'bookingTime',
         ])
             ->where('status', 'CALLING')
             ->whereNotNull('called_at')
@@ -449,7 +460,7 @@ class RegistrationController extends Controller
             $dataCustomer = $this->modelRegistration->with([
                 'customer',
                 'service',
-                'bookingTime',
+                // 'bookingTime',
             ])->find($id);
 
             Mail::to($dataCustomer->customer->email)->send(new CompleteMail($dataCustomer));

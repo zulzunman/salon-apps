@@ -418,8 +418,8 @@
                     <div class="info-row">
                         <div class="info-icon">🕒</div>
                         <div class="info-content">
-                            <div class="info-label">Waktu Booking</div>
-                            <div class="info-value">{{ $time }}</div>
+                            <div class="detail-label">Nomor Antrian</div>
+                            <div class="detail-value">00{{ $antri }}</div>
                         </div>
                     </div>
 

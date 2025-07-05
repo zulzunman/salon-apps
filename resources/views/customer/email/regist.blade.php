@@ -284,18 +284,10 @@
                 </div>
 
                 <div class="detail-item">
-                    <div class="detail-icon">📅</div>
-                    <div class="detail-content">
-                        <div class="detail-label">Tanggal Pelayanan</div>
-                        <div class="detail-value">{{ $date }}</div>
-                    </div>
-                </div>
-
-                <div class="detail-item">
                     <div class="detail-icon">🕒</div>
                     <div class="detail-content">
-                        <div class="detail-label">Waktu Pelayanan</div>
-                        <div class="detail-value">{{ $time }}</div>
+                        <div class="detail-label">Nomor Antrian</div>
+                        <div class="detail-value">00{{ $antri }}</div>
                     </div>
                 </div>
 
