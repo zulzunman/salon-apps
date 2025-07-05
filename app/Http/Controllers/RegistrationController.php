@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendReminderEmailJob;
 use App\Mail\CallingMail;
 use App\Mail\CancleMail;
 use App\Mail\CompleteMail;
 use App\Mail\RegistrasiMail;
+use App\Mail\ReminderMail;
 use App\Models\BookingTime;
 use App\Models\Customer;
 use App\Models\Registration;
@@ -372,6 +374,30 @@ class RegistrationController extends Controller
             return redirect()->back()
                 ->withInput()
                 ->withErrors(['message' => 'Terjadi kesalahan saat pemanggilan pelanggan: ' . $e->getMessage()]);
+        }
+    }
+
+    public function sendReminderEmails()
+    {
+        $bookings = $this->modelRegistration
+            ->with(['customer', 'bookingTime'])
+            ->where('status', 'PENDING')
+            ->get();
+
+        foreach ($bookings as $booking) {
+            if (!$booking->bookingTime || !$booking->customer) {
+                continue;
+            }
+
+            $bookingDateTime = Carbon::parse($booking->booking_date . ' ' . $booking->bookingTime->time, 'Asia/Jakarta');
+            $now = Carbon::now('Asia/Jakarta');
+            $diffInMinutes = $now->diffInMinutes($bookingDateTime, false);
+
+            if ($diffInMinutes >= 0 && $diffInMinutes <= 15) {
+                // Dispatch ke queue
+                SendReminderEmailJob::dispatch($booking->id);
+                \Log::info("📤 Job dikirim untuk booking ID: " . $booking->id);
+            }
         }
     }
 
