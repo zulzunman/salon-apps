@@ -118,7 +118,7 @@
                             <div class="service-footer">
                                 <div class="service-price">Rp
                                     {{ number_format($service->price, 0, ',', '.') }}</div>
-                                <a href="{{ route('booking.datetime', ['service_id' => $service->id]) }}"
+                                <a href="{{ route('register.form-add', ['service_id' => $service->id]) }}"
                                     class="btn-book">
                                     <i class="fas fa-calendar-plus"></i>
                                     Booking

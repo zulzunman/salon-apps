@@ -187,14 +187,6 @@
             <div class="booking-info">
                 <h5><i class="bi bi-info-circle me-2"></i>Informasi Booking Anda</h5>
                 <div class="booking-detail">
-                    <i class="bi bi-calendar3"></i>
-                    <span>Tanggal: <strong>{{ date('d F Y', strtotime($bookingDate)) }}</strong></span>
-                </div>
-                <div class="booking-detail">
-                    <i class="bi bi-clock"></i>
-                    <span>Jam: <strong>{{ $bookingTime->time ?? 'Waktu tidak tersedia' }}</strong></span>
-                </div>
-                <div class="booking-detail">
                     <i class="bi bi-scissors"></i>
                     <span>Layanan: <strong>{{ $selectedService->name }}</strong></span>
                 </div>
@@ -226,24 +218,22 @@
                 @csrf
 
                 <!-- Hidden fields for booking data -->
-                <input type="hidden" name="booking_date" value="{{ $bookingDate }}">
-                <input type="hidden" name="booking_time_id" value="{{ $bookingTimeId }}">
                 <input type="hidden" name="service_id" value="{{ $selectedService->id }}">
 
                 <div class="mb-4">
                     <label for="name" class="form-label">
                         <i class="bi bi-person me-2"></i>Nama Lengkap
                     </label>
-                    <input type="text" class="form-control" id="name" name="name"
-                        value="{{ old('name') }}" placeholder="Masukkan nama lengkap Anda" required>
+                    <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}"
+                        placeholder="Masukkan nama lengkap Anda" required>
                 </div>
 
                 <div class="mb-4">
                     <label for="email" class="form-label">
                         <i class="bi bi-envelope me-2"></i>Alamat Email
                     </label>
-                    <input type="email" class="form-control" id="email" name="email"
-                        value="{{ old('email') }}" placeholder="contoh@email.com" required>
+                    <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}"
+                        placeholder="contoh@email.com" required>
                 </div>
 
                 <div class="d-grid gap-2 mt-4">
@@ -254,10 +244,6 @@
                 </div>
 
                 <div class="text-center mt-4">
-                    <a href="{{ route('booking.datetime') }}" class="back-link">
-                        <i class="bi bi-arrow-left me-1"></i>
-                        Ubah Tanggal & Jam
-                    </a>
                     <span class="mx-3">|</span>
                     <a href="{{ route('home-page') }}" class="back-link">
                         <i class="bi bi-house me-1"></i>
