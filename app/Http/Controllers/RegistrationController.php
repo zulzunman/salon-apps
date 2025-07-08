@@ -35,6 +35,8 @@ class RegistrationController extends Controller
     public function getData(Request $request)
     {
         $status = $request->query('status');
+        $perPage = $request->query('per_page', 3); // Default 10 items per page
+
         $query = $this->modelRegistration->with('customer', 'service', 'bookingTime');
 
         if ($status) {
@@ -44,10 +46,14 @@ class RegistrationController extends Controller
         }
 
         $this->checkTimedOutCalls();
+
         $customers = $query->orderBy('booking_date', 'asc')
             ->orderBy('booking_time_id', 'asc')
             ->orderBy('created_at', 'asc')
-            ->get();
+            ->paginate($perPage);
+
+        // Preserve query parameters in pagination links
+        $customers->appends($request->query());
 
         return view('customer.list', compact('customers'));
     }
