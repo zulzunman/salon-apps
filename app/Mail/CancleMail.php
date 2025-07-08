@@ -28,8 +28,7 @@ class CancleMail extends Mailable
                     ->view('customer.email.cancel')
                     ->with([
                         'name'  => $this->call->customer->name,
-                        'time'  => $this->call->bookingTime->time,
-                        'date'  => $this->call->booking_date,
+                        'antri'  => $this->call->queue_number,
                         'service'  => $this->call->service->name,
                     ]);
     }

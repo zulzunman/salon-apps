@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Informasi Pemanggilan Pelanggan</title>
+    <title>Informasi Pengingat Pelayanan Pelanggan</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
@@ -13,15 +13,15 @@
 
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #4CAF50 0%, #45a049 50%, #2E7D32 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #5b73e8 100%);
             min-height: 100vh;
             padding: 20px;
-            animation: gradientShift 3s ease-in-out infinite alternate;
+            animation: gradientShift 4s ease-in-out infinite alternate;
         }
 
         @keyframes gradientShift {
-            0% { background: linear-gradient(135deg, #4CAF50 0%, #45a049 50%, #2E7D32 100%); }
-            100% { background: linear-gradient(135deg, #45a049 0%, #4CAF50 50%, #66BB6A 100%); }
+            0% { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #5b73e8 100%); }
+            100% { background: linear-gradient(135deg, #764ba2 0%, #667eea 50%, #8b94e8 100%); }
         }
 
         .email-container {
@@ -46,7 +46,7 @@
         }
 
         .header {
-            background: linear-gradient(45deg, #ff4757, #ff6b7a);
+            background: linear-gradient(45deg, #4a90e2, #5ba3f5);
             padding: 40px 30px;
             text-align: center;
             position: relative;
@@ -75,10 +75,10 @@
             100% { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
-        .urgency-badge {
+        .reminder-badge {
             display: inline-block;
             background: rgba(255, 255, 255, 0.9);
-            color: #ff4757;
+            color: #4a90e2;
             padding: 8px 20px;
             border-radius: 50px;
             font-size: 14px;
@@ -86,12 +86,12 @@
             margin-bottom: 15px;
             position: relative;
             z-index: 2;
-            animation: pulse 2s infinite;
+            animation: gentlePulse 3s infinite;
         }
 
-        @keyframes pulse {
+        @keyframes gentlePulse {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            50% { transform: scale(1.02); }
         }
 
         .header h1 {
@@ -103,7 +103,7 @@
             z-index: 2;
         }
 
-        .bell-icon {
+        .calendar-icon {
             width: 70px;
             height: 70px;
             background: rgba(255, 255, 255, 0.2);
@@ -114,17 +114,16 @@
             margin: 0 auto 20px;
             position: relative;
             z-index: 2;
-            animation: bellRing 1.5s ease-in-out infinite;
+            animation: calendarFloat 2s ease-in-out infinite;
         }
 
-        @keyframes bellRing {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(-15deg); }
-            75% { transform: rotate(15deg); }
+        @keyframes calendarFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
         }
 
-        .bell-icon::before {
-            content: '🔔';
+        .calendar-icon::before {
+            content: '📅';
             font-size: 30px;
         }
 
@@ -132,8 +131,8 @@
             padding: 40px 30px;
         }
 
-        .urgent-message {
-            background: linear-gradient(135deg, #ff6b7a, #ff4757);
+        .reminder-message {
+            background: linear-gradient(135deg, #4a90e2, #5ba3f5);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -141,34 +140,34 @@
             font-weight: bold;
             text-align: center;
             margin-bottom: 30px;
-            animation: glow 2s ease-in-out infinite alternate;
+            animation: softGlow 3s ease-in-out infinite alternate;
         }
 
-        @keyframes glow {
-            from { text-shadow: 0 0 10px rgba(255, 71, 87, 0.5); }
-            to { text-shadow: 0 0 20px rgba(255, 71, 87, 0.8); }
+        @keyframes softGlow {
+            from { text-shadow: 0 0 10px rgba(74, 144, 226, 0.3); }
+            to { text-shadow: 0 0 20px rgba(74, 144, 226, 0.5); }
         }
 
-        .call-notification {
-            background: linear-gradient(135deg, #ff4757, #ff6b7a);
+        .appointment-info {
+            background: linear-gradient(135deg, #4a90e2, #5ba3f5);
             border-radius: 20px;
             padding: 30px;
             margin: 30px 0;
             color: white;
-            box-shadow: 0 15px 35px rgba(255, 71, 87, 0.3);
+            box-shadow: 0 15px 35px rgba(74, 144, 226, 0.3);
             position: relative;
             overflow: hidden;
         }
 
-        .call-notification::before {
+        .appointment-info::before {
             content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            animation: shimmer 3s infinite;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            animation: shimmer 4s infinite;
         }
 
         @keyframes shimmer {
@@ -176,7 +175,7 @@
             100% { left: 100%; }
         }
 
-        .call-title {
+        .appointment-title {
             font-size: 24px;
             font-weight: bold;
             margin-bottom: 25px;
@@ -235,33 +234,60 @@
             font-weight: bold;
         }
 
-        .turn-announcement {
+        .reminder-announcement {
             background: #fff;
-            border: 3px solid #4CAF50;
+            border: 3px solid #4a90e2;
             border-radius: 20px;
             padding: 30px;
             text-align: center;
             margin: 30px 0;
-            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.2);
-            animation: borderPulse 2s infinite;
+            box-shadow: 0 10px 30px rgba(74, 144, 226, 0.2);
+            animation: borderGlow 3s infinite;
         }
 
-        @keyframes borderPulse {
-            0%, 100% { border-color: #4CAF50; box-shadow: 0 10px 30px rgba(76, 175, 80, 0.2); }
-            50% { border-color: #66BB6A; box-shadow: 0 15px 40px rgba(76, 175, 80, 0.4); }
+        @keyframes borderGlow {
+            0%, 100% { border-color: #4a90e2; box-shadow: 0 10px 30px rgba(74, 144, 226, 0.2); }
+            50% { border-color: #5ba3f5; box-shadow: 0 15px 40px rgba(74, 144, 226, 0.4); }
         }
 
-        .turn-text {
+        .reminder-text {
             font-size: 28px;
             font-weight: bold;
-            color: #4CAF50;
+            color: #4a90e2;
             margin-bottom: 15px;
         }
 
-        .turn-subtitle {
+        .reminder-subtitle {
             font-size: 16px;
             color: #666;
             margin-bottom: 20px;
+        }
+
+        .countdown-timer {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: center;
+            color: white;
+            box-shadow: 0 10px 25px rgba(240, 147, 251, 0.3);
+        }
+
+        .countdown-text {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .time-remaining {
+            font-size: 24px;
+            font-weight: bold;
+            animation: timeFlash 2s infinite;
+        }
+
+        @keyframes timeFlash {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0.7; }
         }
 
         .action-buttons {
@@ -285,15 +311,15 @@
         }
 
         .btn-primary {
-            background: linear-gradient(45deg, #4CAF50, #66BB6A);
+            background: linear-gradient(45deg, #4a90e2, #5ba3f5);
             color: white;
-            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.4);
         }
 
         .btn-secondary {
-            background: linear-gradient(45deg, #2196F3, #64B5F6);
+            background: linear-gradient(45deg, #f093fb, #f5576c);
             color: white;
-            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+            box-shadow: 0 5px 15px rgba(240, 147, 251, 0.4);
         }
 
         .action-btn:hover {
@@ -301,27 +327,27 @@
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
 
-        .instructions {
+        .preparation-tips {
             background: #f0f8ff;
-            border-left: 5px solid #2196F3;
+            border-left: 5px solid #4a90e2;
             padding: 20px;
             border-radius: 10px;
             margin: 25px 0;
         }
 
-        .instructions h4 {
-            color: #2196F3;
+        .preparation-tips h4 {
+            color: #4a90e2;
             margin-bottom: 15px;
             font-size: 18px;
         }
 
-        .instructions ul {
+        .preparation-tips ul {
             color: #666;
             line-height: 1.6;
             padding-left: 20px;
         }
 
-        .instructions li {
+        .preparation-tips li {
             margin-bottom: 8px;
         }
 
@@ -363,11 +389,11 @@
                 padding: 30px 20px;
             }
 
-            .urgent-message {
+            .reminder-message {
                 font-size: 24px;
             }
 
-            .turn-text {
+            .reminder-text {
                 font-size: 24px;
             }
 
@@ -385,18 +411,18 @@
 <body>
     <div class="email-container">
         <div class="header">
-            <div class="urgency-badge">⚡ URGENT NOTIFICATION</div>
-            <div class="bell-icon"></div>
-            <h1>Panggilan Pelanggan</h1>
+            <div class="reminder-badge">🔔 PENGINGAT PELAYANAN</div>
+            <div class="calendar-icon"></div>
+            <h1>Pengingat Pelayanan</h1>
         </div>
 
         <div class="content">
-            <div class="urgent-message">
-                Saatnya Giliran Anda! 🎉
+            <div class="reminder-message">
+                Pelayanan Anda Segera Dimulai! ⏰
             </div>
 
-            <div class="call-notification">
-                <div class="call-title">📢 Detail Panggilan</div>
+            <div class="appointment-info">
+                <div class="appointment-title">📋 Detail Pelayanan</div>
 
                 <div class="customer-info">
                     <div class="info-row">
@@ -418,8 +444,8 @@
                     <div class="info-row">
                         <div class="info-icon">🕒</div>
                         <div class="info-content">
-                            <div class="detail-label">Nomor Antrian</div>
-                            <div class="detail-value">00{{ $antri }}</div>
+                            <div class="info-label">Waktu Booking</div>
+                            <div class="info-value">{{ $time }}</div>
                         </div>
                     </div>
 
@@ -433,18 +459,31 @@
                 </div>
             </div>
 
-            <div class="turn-announcement">
-                <div class="turn-text">🎯 SEKARANG GILIRAN ANDA!</div>
-                <div class="turn-subtitle">Mohon segera menuju counter untuk memulai layanan</div>
+            <div class="countdown-timer">
+                <div class="countdown-text">⏳ Waktu Tersisa</div>
+                <div class="time-remaining">15 Menit Lagi</div>
             </div>
 
-            <div class="instructions">
-                <h4>📝 Petunjuk:</h4>
+            <div class="reminder-announcement">
+                <div class="reminder-text">📍 Jangan Lupa!</div>
+                <div class="reminder-subtitle">Silakan bersiap-siap untuk datang ke salon kami</div>
+            </div>
+
+            <div class="action-buttons">
+                <a href="#" class="action-btn btn-primary">
+                    📍 Lihat Lokasi
+                </a>
+                <a href="#" class="action-btn btn-secondary">
+                    📞 Hubungi Salon
+                </a>
+            </div>
+
+            <div class="preparation-tips">
+                <h4>💡 Tips Persiapan:</h4>
                 <ul>
-                    <li>Segera datang ke counter penerimaan</li>
-                    <li>Tunjukkan email ini atau sebutkan nama Anda</li>
-                    <li>Stylist kami sudah siap melayani Anda</li>
-                    <li>Jika ada kendala, hubungi staff kami</li>
+                    <li>Berangkat lebih awal untuk menghindari keterlambatan</li>
+                    <li>Bawa kartu identitas atau bukti booking</li>
+                    <li>Siapkan metode pembayaran (tunai/kartu/e-wallet)</li>
                 </ul>
             </div>
         </div>
@@ -458,7 +497,7 @@
                     <p>✉️ info@beautysalon.com</p>
                 </div>
                 <p style="margin-top: 15px; font-size: 12px; opacity: 0.7;">
-                    Email ini dikirim secara otomatis oleh sistem antrian salon
+                    Email pengingat ini dikirim secara otomatis. Terima kasih atas kepercayaan Anda.
                 </p>
             </div>
         </div>
