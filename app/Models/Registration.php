@@ -12,41 +12,49 @@ class Registration extends Model
     use HasFactory;
 
     protected $table = 'registrations';
-    protected $fillable = ['customer_id', 'service_id', 'booking_time_id', 'status', 'booking_date'];
+    protected $fillable = ['customer_id', 'service_id', 'status', 'queue_number', 'called_at'];
     protected $casts = [
-        'booking_date' => 'date',
+        'called_at' => 'datetime',
     ];
 
     public function customer()
     {
         return $this->belongsTo(Customer::class);
     }
+
     public function service()
     {
         return $this->belongsTo(Service::class);
     }
-    public function bookingTime()
+
+    public function getStatusLabelAttribute()
     {
-        return $this->belongsTo(BookingTime::class);
+        $statuses = [
+            'PENDING' => 'Menunggu',
+            'CALLING' => 'Dipanggil',
+            'SERVING' => 'Sedang Dilayani',
+            'COMPLETED' => 'Selesai',
+            'CANCELED' => 'Dibatalkan'
+        ];
+
+        return $statuses[$this->status] ?? $this->status;
     }
 
-    public function getFullDateTimeAttribute()
+    // Helper method untuk mendapatkan waktu tunggu
+    public function getWaitingTimeAttribute()
     {
-        $dateTime = Carbon::parse($this->booking_date->format('Y-m-d') . ' ' . $this->bookingTime->time->format('H:i:s'));
-
-        // Pastikan timezone WIB
-        return $dateTime->setTimezone('Asia/Jakarta');
+        if ($this->status === 'PENDING') {
+            return Carbon::parse($this->created_at)->diffForHumans(null, true);
+        }
+        return null;
     }
 
-    // Method untuk mendapatkan waktu reminder (15 menit sebelum) dalam WIB
-    public function getReminderTimeAttribute()
+    // Method untuk check apakah sudah timeout saat dipanggil
+    public function isCallTimeout()
     {
-        return $this->full_date_time->copy()->subMinutes(15);
-    }
-
-    // Method untuk mendapatkan waktu dalam UTC (untuk queue delay)
-    public function getReminderTimeUtcAttribute()
-    {
-        return $this->reminder_time->utc();
+        if ($this->status === 'CALLING' && $this->called_at) {
+            return Carbon::parse($this->called_at)->addMinutes(30)->isPast();
+        }
+        return false;
     }
 }
