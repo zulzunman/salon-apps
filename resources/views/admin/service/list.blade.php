@@ -93,6 +93,69 @@
                         </tbody>
                     </table>
                 </div>
+                <!-- Pagination -->
+                <div class="row mt-4">
+                    <div class="col-sm-12 col-md-5">
+                        <div class="dataTables_info">
+                            @if ($services->total() > 0)
+                                Menampilkan {{ $services->firstItem() }} - {{ $services->lastItem() }}
+                                dari {{ $services->total() }} pelayanan
+                            @else
+                                Tidak ada data untuk ditampilkan
+                            @endif
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-7">
+                        <div class="dataTables_paginate paging_simple_numbers float-right">
+                            @if ($services->hasPages())
+                                <ul class="pagination pagination-sm mb-0">
+                                    <!-- Previous -->
+                                    @if ($services->onFirstPage())
+                                        <li class="page-item disabled">
+                                            <span class="page-link">
+                                                <i class="fas fa-chevron-left"></i>
+                                            </span>
+                                        </li>
+                                    @else
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ $services->previousPageUrl() }}">
+                                                <i class="fas fa-chevron-left"></i>
+                                            </a>
+                                        </li>
+                                    @endif
+
+                                    <!-- Page Numbers -->
+                                    @foreach ($services->getUrlRange(max(1, $services->currentPage() - 2), min($services->lastPage(), $services->currentPage() + 2)) as $page => $url)
+                                        @if ($page == $services->currentPage())
+                                            <li class="page-item active">
+                                                <span class="page-link">{{ $page }}</span>
+                                            </li>
+                                        @else
+                                            <li class="page-item">
+                                                <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                                            </li>
+                                        @endif
+                                    @endforeach
+
+                                    <!-- Next -->
+                                    @if ($services->hasMorePages())
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ $services->nextPageUrl() }}">
+                                                <i class="fas fa-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                    @else
+                                        <li class="page-item disabled">
+                                            <span class="page-link">
+                                                <i class="fas fa-chevron-right"></i>
+                                            </span>
+                                        </li>
+                                    @endif
+                                </ul>
+                            @endif
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -309,6 +372,62 @@
 
         .no-image-placeholder {
             cursor: default;
+        }
+
+        .dataTables_info {
+            padding-top: 8px;
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .dataTables_paginate {
+            padding-top: 0;
+        }
+
+        .pagination-sm .page-link {
+            padding: 0.4rem 0.65rem;
+            font-size: 0.875rem;
+            border-radius: 0.2rem;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #4e73df;
+            border-color: #4e73df;
+            color: #fff;
+        }
+
+        .pagination .page-link {
+            color: #6c757d;
+            border: 1px solid #e3e6f0;
+            margin: 0 2px;
+        }
+
+        .pagination .page-link:hover {
+            color: #4e73df;
+            background-color: #f8f9fc;
+            border-color: #4e73df;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #adb5bd;
+            background-color: #fff;
+            border-color: #e3e6f0;
+        }
+
+        @media (max-width: 576px) {
+            .float-right {
+                float: none !important;
+            }
+
+            .dataTables_paginate {
+                text-align: center;
+                margin-top: 10px;
+            }
+
+            .col-sm-12.col-md-5,
+            .col-sm-12.col-md-7 {
+                text-align: center;
+            }
         }
     </style>
 @endsection
