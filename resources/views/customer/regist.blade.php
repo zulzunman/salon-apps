@@ -46,6 +46,44 @@
             border-radius: 2px;
         }
 
+        .queue-number {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(40, 167, 69, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .queue-number h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .queue-number p {
+            font-size: 1.1rem;
+            margin-bottom: 0;
+            opacity: 0.9;
+        }
+
         .booking-info {
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
             border-radius: 15px;
@@ -171,6 +209,10 @@
                 padding: 20px;
                 margin: 10px;
             }
+
+            .queue-number h3 {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
@@ -182,6 +224,18 @@
                 <i class="bi bi-person-plus me-2"></i>
                 Form Pendaftaran
             </h1>
+
+            <!-- Queue Number Display -->
+            <div class="queue-number">
+                <h3>
+                    <i class="bi bi-hash me-2"></i>
+                    {{ $queueNumber }}
+                </h3>
+                <p>
+                    <i class="bi bi-calendar-date me-2"></i>
+                    Nomor Antrian Anda Hari Ini
+                </p>
+            </div>
 
             <!-- Booking Information Display -->
             <div class="booking-info">
@@ -256,40 +310,6 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const serviceSelect = document.getElementById('service_id');
-            const serviceDetails = document.getElementById('serviceDetails');
-            const serviceName = document.getElementById('serviceName');
-            const serviceDescription = document.getElementById('serviceDescription');
-            const serviceDuration = document.getElementById('serviceDuration');
-            const servicePrice = document.getElementById('servicePrice');
-
-            // Show service details when a service is selected
-            serviceSelect.addEventListener('change', function() {
-                const selectedOption = this.options[this.selectedIndex];
-
-                if (selectedOption.value) {
-                    serviceName.textContent = selectedOption.textContent.split(' - ')[0];
-                    serviceDescription.textContent = selectedOption.dataset.description ||
-                        'Tidak ada deskripsi';
-                    serviceDuration.textContent = selectedOption.dataset.duration;
-                    servicePrice.textContent = new Intl.NumberFormat('id-ID').format(selectedOption.dataset
-                        .price);
-
-                    serviceDetails.style.display = 'block';
-                } else {
-                    serviceDetails.style.display = 'none';
-                }
-            });
-
-            // Trigger change event if there's a pre-selected service
-            if (serviceSelect.value) {
-                serviceSelect.dispatchEvent(new Event('change'));
-            }
-        });
-    </script>
 </body>
 
 </html>

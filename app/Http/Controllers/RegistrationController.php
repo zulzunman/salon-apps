@@ -70,8 +70,14 @@ class RegistrationController extends Controller
                 ->with('error', 'Layanan tidak valid.');
         }
 
-        return view('customer.regist', compact('selectedService'));
+        // Hitung nomor antrean untuk hari ini
+        $queueNumber = $this->modelRegistration
+            ->whereDate('created_at', now()->toDateString())
+            ->count() + 1;
+
+        return view('customer.regist', compact('selectedService', 'queueNumber'));
     }
+
 
     public function addData(Request $request)
     {
