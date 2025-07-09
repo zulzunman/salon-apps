@@ -408,14 +408,6 @@
                     </div>
 
                     <div class="info-row">
-                        <div class="info-icon">📅</div>
-                        <div class="info-content">
-                            <div class="info-label">Tanggal Pelayanan</div>
-                            <div class="info-value">{{ $date }}</div>
-                        </div>
-                    </div>
-
-                    <div class="info-row">
                         <div class="info-icon">🕒</div>
                         <div class="info-content">
                             <div class="detail-label">Nomor Antrian</div>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Informasi Booking Pelayanan Salon</title>
+    <title>Informasi Pendaftaran Pelayanan Salon</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
@@ -259,7 +259,7 @@
     <div class="email-container">
         <div class="header">
             <div class="salon-icon"></div>
-            <h1>Konfirmasi Booking Salon</h1>
+            <h1>Konfirmasi Pendaftaran Pelayanan Salon</h1>
         </div>
 
         <div class="content">
@@ -268,12 +268,12 @@
             </div>
 
             <div class="message-section">
-                <p>Terima kasih telah mempercayai layanan salon kami! Booking Anda telah berhasil dikonfirmasi dan kami sangat senang dapat melayani Anda.</p>
-                <p>Berikut adalah detail booking Anda:</p>
+                <p>Terima kasih telah mempercayai layanan salon kami! Pendaftaran Anda telah berhasil dikonfirmasi dan kami sangat senang dapat melayani Anda.</p>
+                <p>Berikut adalah detail pendaftaran Anda:</p>
             </div>
 
             <div class="booking-details">
-                <div class="booking-title">📋 Detail Booking</div>
+                <div class="booking-title">📋 Detail Pendaftaran</div>
 
                 <div class="detail-item">
                     <div class="detail-icon">👤</div>
