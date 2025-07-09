@@ -299,14 +299,6 @@
                     </div>
                 </div>
             </div>
-
-            <div class="divider"></div>
-
-            <div class="message-section">
-                <p><strong>Catatan Penting:</strong></p>
-                <p>• Harap datang 30 menit sebelum waktu appointment</p>
-                <p>• Bawa kartu identitas untuk verifikasi</p>
-            </div>
         </div>
 
         <div class="footer">

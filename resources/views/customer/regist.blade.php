@@ -244,7 +244,7 @@
 
             <!-- Booking Information Display -->
             <div class="booking-info">
-                <h5><i class="bi bi-info-circle me-2"></i>Informasi Booking Anda</h5>
+                <h5><i class="bi bi-info-circle me-2"></i>Informasi Pendaftaran Anda</h5>
                 <div class="booking-detail">
                     <i class="bi bi-scissors"></i>
                     <span>Layanan: <strong>{{ $selectedService->name }}</strong></span>

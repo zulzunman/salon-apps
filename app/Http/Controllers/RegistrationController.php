@@ -79,6 +79,7 @@ class RegistrationController extends Controller
         $antrianSebelumnya = Registration::whereDate('created_at', now()->toDateString())
             ->where('queue_number', '<', $queueNumber)
             ->where('status', '!=', 'COMPLETED') // ← Tambahan untuk exclude selesai
+            ->where('status', '!=', 'CANCELED') // ← Tambahan untuk exclude selesai
             ->orderBy('queue_number')
             ->get();
 
@@ -184,11 +185,12 @@ class RegistrationController extends Controller
         ])
             ->where('status', 'CALLING')
             ->whereNotNull('called_at')
-            ->where('called_at', '<=', now()->subMinutes(30))
+            ->where('called_at', '<=', now()->subMinutes(15))
             ->get();
 
         foreach ($timedOutCalls as $call) {
             $call->status = 'CANCELED';
+            $call->canceled_at = now();
             $call->save();
             Mail::to($call->customer->email)->send(new CancleMail($call));
         }

@@ -53,7 +53,7 @@ class Registration extends Model
     public function isCallTimeout()
     {
         if ($this->status === 'CALLING' && $this->called_at) {
-            return Carbon::parse($this->called_at)->addMinutes(30)->isPast();
+            return Carbon::parse($this->called_at)->addMinutes(15)->isPast();
         }
         return false;
     }
