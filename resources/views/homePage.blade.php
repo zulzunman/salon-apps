@@ -121,7 +121,7 @@
                                 <a href="{{ route('register.form-add', ['service_id' => $service->id]) }}"
                                     class="btn-book">
                                     <i class="fas fa-calendar-plus"></i>
-                                    Booking
+                                    Pendaftaran
                                 </a>
                             </div>
                         </div>

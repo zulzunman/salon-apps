@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Informasi Pemanggilan Pelanggan</title>
     <meta charset="UTF-8">
@@ -20,8 +21,13 @@
         }
 
         @keyframes gradientShift {
-            0% { background: linear-gradient(135deg, #4CAF50 0%, #45a049 50%, #2E7D32 100%); }
-            100% { background: linear-gradient(135deg, #45a049 0%, #4CAF50 50%, #66BB6A 100%); }
+            0% {
+                background: linear-gradient(135deg, #4CAF50 0%, #45a049 50%, #2E7D32 100%);
+            }
+
+            100% {
+                background: linear-gradient(135deg, #45a049 0%, #4CAF50 50%, #66BB6A 100%);
+            }
         }
 
         .email-container {
@@ -39,6 +45,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -60,19 +67,22 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 10px,
-                rgba(255, 255, 255, 0.05) 10px,
-                rgba(255, 255, 255, 0.05) 20px
-            );
+            background: repeating-linear-gradient(45deg,
+                    transparent,
+                    transparent 10px,
+                    rgba(255, 255, 255, 0.05) 10px,
+                    rgba(255, 255, 255, 0.05) 20px);
             animation: moveStripes 8s linear infinite;
         }
 
         @keyframes moveStripes {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
         }
 
         .urgency-badge {
@@ -90,8 +100,15 @@
         }
 
         @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
         }
 
         .header h1 {
@@ -118,9 +135,19 @@
         }
 
         @keyframes bellRing {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(-15deg); }
-            75% { transform: rotate(15deg); }
+
+            0%,
+            100% {
+                transform: rotate(0deg);
+            }
+
+            25% {
+                transform: rotate(-15deg);
+            }
+
+            75% {
+                transform: rotate(15deg);
+            }
         }
 
         .bell-icon::before {
@@ -145,8 +172,13 @@
         }
 
         @keyframes glow {
-            from { text-shadow: 0 0 10px rgba(255, 71, 87, 0.5); }
-            to { text-shadow: 0 0 20px rgba(255, 71, 87, 0.8); }
+            from {
+                text-shadow: 0 0 10px rgba(255, 71, 87, 0.5);
+            }
+
+            to {
+                text-shadow: 0 0 20px rgba(255, 71, 87, 0.8);
+            }
         }
 
         .call-notification {
@@ -172,8 +204,13 @@
         }
 
         @keyframes shimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
+            0% {
+                left: -100%;
+            }
+
+            100% {
+                left: 100%;
+            }
         }
 
         .call-title {
@@ -247,8 +284,17 @@
         }
 
         @keyframes borderPulse {
-            0%, 100% { border-color: #4CAF50; box-shadow: 0 10px 30px rgba(76, 175, 80, 0.2); }
-            50% { border-color: #66BB6A; box-shadow: 0 15px 40px rgba(76, 175, 80, 0.4); }
+
+            0%,
+            100% {
+                border-color: #4CAF50;
+                box-shadow: 0 10px 30px rgba(76, 175, 80, 0.2);
+            }
+
+            50% {
+                border-color: #66BB6A;
+                box-shadow: 0 15px 40px rgba(76, 175, 80, 0.4);
+            }
         }
 
         .turn-text {
@@ -382,6 +428,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="email-container">
         <div class="header">
@@ -406,15 +453,6 @@
                             <div class="info-value">{{ $name }}</div>
                         </div>
                     </div>
-
-                    <div class="info-row">
-                        <div class="info-icon">📅</div>
-                        <div class="info-content">
-                            <div class="info-label">Tanggal Pelayanan</div>
-                            <div class="info-value">{{ $date }}</div>
-                        </div>
-                    </div>
-
                     <div class="info-row">
                         <div class="info-icon">🕒</div>
                         <div class="info-content">
@@ -464,4 +502,5 @@
         </div>
     </div>
 </body>
+
 </html>

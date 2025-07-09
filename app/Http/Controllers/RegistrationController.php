@@ -76,7 +76,13 @@ class RegistrationController extends Controller
             ->whereDate('created_at', now()->toDateString())
             ->count() + 1;
 
-        return view('customer.regist', compact('selectedService', 'queueNumber'));
+        $antrianSebelumnya = Registration::whereDate('created_at', now()->toDateString())
+            ->where('queue_number', '<', $queueNumber)
+            ->where('status', '!=', 'COMPLETED') // ← Tambahan untuk exclude selesai
+            ->orderBy('queue_number')
+            ->get();
+
+        return view('customer.regist', compact('selectedService', 'queueNumber', 'antrianSebelumnya'));
     }
 
 

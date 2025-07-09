@@ -226,7 +226,7 @@
             </h1>
 
             <!-- Queue Number Display -->
-            <div class="queue-number">
+            <div class="queue-number text-center">
                 <h3>
                     <i class="bi bi-hash me-2"></i>
                     {{ $queueNumber }}
@@ -235,6 +235,11 @@
                     <i class="bi bi-calendar-date me-2"></i>
                     Nomor Antrian Anda Hari Ini
                 </p>
+
+                <!-- Tombol Lihat Antrian -->
+                <button class="btn btn-outline-primary btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#queueModal">
+                    <i class="fas fa-eye me-1"></i> Lihat Antrian Sebelumnya
+                </button>
             </div>
 
             <!-- Booking Information Display -->
@@ -305,6 +310,59 @@
                     </a>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal Lihat Antrian -->
+    <div class="modal fade" id="queueModal" tabindex="-1" aria-labelledby="queueModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 20px;">
+                <div class="modal-header"
+                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-top-left-radius: 20px; border-top-right-radius: 20px;">
+                    <h5 class="modal-title text-white" id="queueModalLabel">
+                        <i class="bi bi-clock-history me-2"></i>
+                        Antrian Sebelumnya
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    @if ($antrianSebelumnya->count())
+                        <ul class="list-group">
+                            @foreach ($antrianSebelumnya as $antri)
+                                <li
+                                    class="list-group-item d-flex justify-content-between align-items-center rounded shadow-sm mb-2">
+                                    <div>
+                                        <i class="bi bi-person-circle me-2 text-secondary"></i>
+                                        Antrian <strong>{{ $antri->queue_number }}</strong>
+                                    </div>
+                                    <div>
+                                        @if ($antri->status == 'PENDING')
+                                            <span class="badge bg-warning">Menunggu</span>
+                                        @elseif ($antri->status == 'CALLING')
+                                            <span class="badge bg-info text-dark">Dipanggil</span>
+                                        @elseif ($antri->status == 'SERVING')
+                                            <span class="badge bg-primary">Dilayani</span>
+                                        @elseif ($antri->status == 'COMPLETED')
+                                            <span class="badge bg-success">Selesai</span>
+                                        @endif
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <div class="alert alert-info text-center mb-0 rounded shadow-sm">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Tidak ada antrian sebelumnya.
+                        </div>
+                    @endif
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i> Tutup
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
