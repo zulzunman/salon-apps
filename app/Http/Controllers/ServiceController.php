@@ -25,7 +25,7 @@ class ServiceController extends Controller
 
     public function getData()
     {
-        $services = $this->model->paginate(5); // 10 data per halaman
+        $services = $this->model->paginate(5); // 5 data per halaman
         return view('admin.service.list', compact('services'));
     }
 

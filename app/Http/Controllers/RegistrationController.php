@@ -33,8 +33,9 @@ class RegistrationController extends Controller
 
     public function getData(Request $request)
     {
+
         $status = $request->query('status');
-        $perPage = $request->query('per_page', 3); // Default 3 items per page
+        $perPage = $request->query('per_page', 10);
 
         $query = $this->modelRegistration->with('customer', 'service');
 
@@ -46,7 +47,7 @@ class RegistrationController extends Controller
 
         $this->checkTimedOutCalls();
 
-        $customers = $query->orderBy('created_at', 'asc')
+        $customers = $query->orderBy('created_at', 'desc')
             ->paginate($perPage);
 
         // Preserve query parameters in pagination links
