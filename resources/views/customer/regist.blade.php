@@ -46,6 +46,44 @@
             border-radius: 2px;
         }
 
+        .queue-number {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(40, 167, 69, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .queue-number h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .queue-number p {
+            font-size: 1.1rem;
+            margin-bottom: 0;
+            opacity: 0.9;
+        }
+
         .booking-info {
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
             border-radius: 15px;
@@ -171,6 +209,10 @@
                 padding: 20px;
                 margin: 10px;
             }
+
+            .queue-number h3 {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
@@ -183,17 +225,26 @@
                 Form Pendaftaran
             </h1>
 
+            <!-- Queue Number Display -->
+            <div class="queue-number text-center">
+                <h3>
+                    <i class="bi bi-hash me-2"></i>
+                    {{ $queueNumber }}
+                </h3>
+                <p>
+                    <i class="bi bi-calendar-date me-2"></i>
+                    Nomor Antrian Anda Hari Ini
+                </p>
+
+                <!-- Tombol Lihat Antrian -->
+                <button class="btn btn-outline-primary btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#queueModal">
+                    <i class="fas fa-eye me-1"></i> Lihat Antrian Sebelumnya
+                </button>
+            </div>
+
             <!-- Booking Information Display -->
             <div class="booking-info">
-                <h5><i class="bi bi-info-circle me-2"></i>Informasi Booking Anda</h5>
-                <div class="booking-detail">
-                    <i class="bi bi-calendar3"></i>
-                    <span>Tanggal: <strong>{{ date('d F Y', strtotime($bookingDate)) }}</strong></span>
-                </div>
-                <div class="booking-detail">
-                    <i class="bi bi-clock"></i>
-                    <span>Jam: <strong>{{ $bookingTime->time ?? 'Waktu tidak tersedia' }}</strong></span>
-                </div>
+                <h5><i class="bi bi-info-circle me-2"></i>Informasi Pendaftaran Anda</h5>
                 <div class="booking-detail">
                     <i class="bi bi-scissors"></i>
                     <span>Layanan: <strong>{{ $selectedService->name }}</strong></span>
@@ -226,24 +277,22 @@
                 @csrf
 
                 <!-- Hidden fields for booking data -->
-                <input type="hidden" name="booking_date" value="{{ $bookingDate }}">
-                <input type="hidden" name="booking_time_id" value="{{ $bookingTimeId }}">
                 <input type="hidden" name="service_id" value="{{ $selectedService->id }}">
 
                 <div class="mb-4">
                     <label for="name" class="form-label">
                         <i class="bi bi-person me-2"></i>Nama Lengkap
                     </label>
-                    <input type="text" class="form-control" id="name" name="name"
-                        value="{{ old('name') }}" placeholder="Masukkan nama lengkap Anda" required>
+                    <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}"
+                        placeholder="Masukkan nama lengkap Anda" required>
                 </div>
 
                 <div class="mb-4">
                     <label for="email" class="form-label">
                         <i class="bi bi-envelope me-2"></i>Alamat Email
                     </label>
-                    <input type="email" class="form-control" id="email" name="email"
-                        value="{{ old('email') }}" placeholder="contoh@email.com" required>
+                    <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}"
+                        placeholder="contoh@email.com" required>
                 </div>
 
                 <div class="d-grid gap-2 mt-4">
@@ -254,10 +303,6 @@
                 </div>
 
                 <div class="text-center mt-4">
-                    <a href="{{ route('booking.datetime') }}" class="back-link">
-                        <i class="bi bi-arrow-left me-1"></i>
-                        Ubah Tanggal & Jam
-                    </a>
                     <span class="mx-3">|</span>
                     <a href="{{ route('home-page') }}" class="back-link">
                         <i class="bi bi-house me-1"></i>
@@ -268,42 +313,61 @@
         </div>
     </div>
 
+    <!-- Modal Lihat Antrian -->
+    <div class="modal fade" id="queueModal" tabindex="-1" aria-labelledby="queueModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 20px;">
+                <div class="modal-header"
+                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-top-left-radius: 20px; border-top-right-radius: 20px;">
+                    <h5 class="modal-title text-white" id="queueModalLabel">
+                        <i class="bi bi-clock-history me-2"></i>
+                        Antrian Sebelumnya
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    @if ($antrianSebelumnya->count())
+                        <ul class="list-group">
+                            @foreach ($antrianSebelumnya as $antri)
+                                <li
+                                    class="list-group-item d-flex justify-content-between align-items-center rounded shadow-sm mb-2">
+                                    <div>
+                                        <i class="bi bi-person-circle me-2 text-secondary"></i>
+                                        Antrian <strong>{{ $antri->queue_number }}</strong>
+                                    </div>
+                                    <div>
+                                        @if ($antri->status == 'PENDING')
+                                            <span class="badge bg-warning">Menunggu</span>
+                                        @elseif ($antri->status == 'CALLING')
+                                            <span class="badge bg-info text-dark">Dipanggil</span>
+                                        @elseif ($antri->status == 'SERVING')
+                                            <span class="badge bg-primary">Dilayani</span>
+                                        @elseif ($antri->status == 'COMPLETED')
+                                            <span class="badge bg-success">Selesai</span>
+                                        @endif
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <div class="alert alert-info text-center mb-0 rounded shadow-sm">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Tidak ada antrian sebelumnya.
+                        </div>
+                    @endif
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i> Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const serviceSelect = document.getElementById('service_id');
-            const serviceDetails = document.getElementById('serviceDetails');
-            const serviceName = document.getElementById('serviceName');
-            const serviceDescription = document.getElementById('serviceDescription');
-            const serviceDuration = document.getElementById('serviceDuration');
-            const servicePrice = document.getElementById('servicePrice');
-
-            // Show service details when a service is selected
-            serviceSelect.addEventListener('change', function() {
-                const selectedOption = this.options[this.selectedIndex];
-
-                if (selectedOption.value) {
-                    serviceName.textContent = selectedOption.textContent.split(' - ')[0];
-                    serviceDescription.textContent = selectedOption.dataset.description ||
-                        'Tidak ada deskripsi';
-                    serviceDuration.textContent = selectedOption.dataset.duration;
-                    servicePrice.textContent = new Intl.NumberFormat('id-ID').format(selectedOption.dataset
-                        .price);
-
-                    serviceDetails.style.display = 'block';
-                } else {
-                    serviceDetails.style.display = 'none';
-                }
-            });
-
-            // Trigger change event if there's a pre-selected service
-            if (serviceSelect.value) {
-                serviceSelect.dispatchEvent(new Event('change'));
-            }
-        });
-    </script>
 </body>
 
 </html>

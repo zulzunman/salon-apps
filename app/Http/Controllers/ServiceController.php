@@ -25,7 +25,7 @@ class ServiceController extends Controller
 
     public function getData()
     {
-        $services = $this->model->all();
+        $services = $this->model->paginate(5); // 5 data per halaman
         return view('admin.service.list', compact('services'));
     }
 
@@ -39,7 +39,7 @@ class ServiceController extends Controller
         $rules = [
             'name' => 'required|string|max:255',
             'description' => 'required|string',
-            'price' => 'required|numeric|min:0|max:7',
+            'price' => 'required|numeric|digits_between:1,7',
             'duration' => 'required|numeric|min:1',
             'picture' => 'nullable|image|mimes:jpeg,jpg,png|max:10240', // max 10MB
         ];
@@ -52,7 +52,7 @@ class ServiceController extends Controller
             'price.numeric' => 'Harga harus berupa angka.',
             'duration.numeric' => 'Durasi harus berupa angka.',
             'price.min' => 'Harga tidak boleh kurang dari 0.',
-            'price.max' => 'Harga tidak boleh lebih dari 7 digit.',
+            'price.digits_between' => 'Harga tidak boleh lebih dari 7 digit.',
             'duration.min' => 'Durasi minimal 1 menit.',
             'picture.image' => 'File harus berupa gambar.',
             'picture.mimes' => 'Gambar hanya boleh dalam format jpeg, jpg, atau png.',
@@ -115,7 +115,7 @@ class ServiceController extends Controller
         $rules = [
             'name' => 'sometimes|string|max:255',
             'description' => 'sometimes|string',
-            'price' => 'sometimes|numeric|min:0',
+            'price' => 'sometimes|numeric|digits_between:1,7',
             'duration' => 'sometimes|numeric|min:1',
             'picture' => 'nullable|image|mimes:jpeg,jpg,png|max:10240', // max 10MB
         ];
@@ -124,6 +124,7 @@ class ServiceController extends Controller
             'price.numeric' => 'Harga harus berupa angka.',
             'duration.numeric' => 'Durasi harus berupa angka.',
             'price.min' => 'Harga tidak boleh kurang dari 0.',
+            'price.digits_between' => 'Harga tidak boleh lebih dari 7 digit.',
             'duration.min' => 'Durasi minimal 1 menit.',
             'picture.image' => 'File harus berupa gambar.',
             'picture.mimes' => 'Gambar hanya boleh dalam format jpeg, jpg, atau png.',
@@ -194,6 +195,10 @@ class ServiceController extends Controller
 
         DB::beginTransaction();
         try {
+            // Hapus file jika ada
+            if ($data->picture && file_exists(public_path('assets/img/service/' . $data->picture))) {
+                unlink(public_path('assets/img/service/' . $data->picture));
+            }
             $data->delete();
 
             DB::commit();

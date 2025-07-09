@@ -493,18 +493,10 @@
                     </div>
 
                     <div class="detail-row">
-                        <div class="detail-icon">📅</div>
-                        <div class="detail-content">
-                            <div class="detail-label">Tanggal Pelayanan</div>
-                            <div class="detail-value">{{ $date }}</div>
-                        </div>
-                    </div>
-
-                    <div class="detail-row">
                         <div class="detail-icon">🕒</div>
                         <div class="detail-content">
-                            <div class="detail-label">Waktu Layanan</div>
-                            <div class="detail-value">{{ $time }}</div>
+                            <div class="detail-label">Nomor Antrian</div>
+                            <div class="detail-value">00{{ $antri }}</div>
                         </div>
                     </div>
 
@@ -528,7 +520,7 @@
                 <ul>
                     <li>Gunakan produk perawatan yang direkomendasikan</li>
                     <li>Hindari aktivitas yang dapat merusak hasil styling</li>
-                    <li>Booking treatment rutin untuk hasil optimal</li>
+                    <li>Treatment rutin untuk hasil optimal</li>
                     <li>Hubungi kami jika ada pertanyaan</li>
                 </ul>
             </div>

@@ -28,8 +28,7 @@ class CompleteMail extends Mailable
                     ->view('customer.email.complete')
                     ->with([
                         'name'  => $this->dataCustomer->customer->name,
-                        'time'  => $this->dataCustomer->bookingTime->time,
-                        'date'  => $this->dataCustomer->booking_date,
+                        'antri'  => $this->dataCustomer->queue_number,
                         'service'  => $this->dataCustomer->service->name,
                     ]);
     }

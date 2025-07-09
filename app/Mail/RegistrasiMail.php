@@ -28,8 +28,7 @@ class RegistrasiMail extends Mailable
                     ->view('customer.email.regist')
                     ->with([
                         'name'  => $this->data->customer->name,
-                        'time'  => $this->data->bookingTime->time,
-                        'date'  => $this->data->booking_date,
+                        'antri'  => $this->data->queue_number,
                         'service'  => $this->data->service->name,
                     ]);
     }
