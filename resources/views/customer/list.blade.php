@@ -78,7 +78,7 @@
                                 <th>Email</th>
                                 <th>Pelayanan</th>
                                 <th>Tanggal Booking</th>
-                                <th>Jam Layanan</th>
+                                <th>Nomor Antrian</th> {{-- Ganti dari Jam Layanan --}}
                                 <th>Status</th>
                                 <th>Aksi</th>
                             </tr>
@@ -91,7 +91,7 @@
                                     <td>{{ $customer->customer->email }}</td>
                                     <td>{{ $customer->service->name }}</td>
                                     <td>{{ \Carbon\Carbon::parse($customer->booking_date)->format('d/m/Y') }}</td>
-                                    <td>{{ $customer->bookingTime->time ?? 'Tidak ada' }}</td>
+                                    <td>{{ $customer->queue_number ?? '-' }}</td>
                                     <td>
                                         @if ($customer->status == 'PENDING')
                                             <span class="badge bg-warning">Menunggu</span>
@@ -148,6 +148,7 @@
                         </tbody>
                     </table>
                 </div>
+
 
                 <!-- Pagination Links -->
                 @if ($customers->hasPages())
