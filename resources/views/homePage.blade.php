@@ -48,7 +48,7 @@
                 <h1 class="hero-title">Beauty Redefined</h1>
                 <p class="hero-subtitle">Experience luxury hair care and styling at our premium salon. Where elegance
                     meets expertise.</p>
-                <a class="btn-primary" href="#services">Booking Now</a>
+                <a class="btn-primary" href="#services">Register Now</a>
             </div>
         </div>
     </section>
@@ -56,8 +56,8 @@
     <!-- About Section -->
     <section class="section about-section" id="about">
         <div class="container">
-            <h2 class="section-title">Our Booking Policy</h2>
-            <p class="section-subtitle">Please read our guidelines before booking your appointment</p>
+            <h2 class="section-title">Our Register Policy</h2>
+            <p class="section-subtitle">Please read our guidelines before register your appointment</p>
             <div class="policy-card">
                 <ul class="policy-list">
                     <li>
