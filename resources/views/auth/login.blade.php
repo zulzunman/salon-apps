@@ -34,7 +34,7 @@
         </div>
     </div>
 </div>
-<link rel="stylesheet" href="{{ asset('css/login.css') }}">
+<link rel="stylesheet" href="/css/login.css">
 <script>
     // Auto-show modal if there are validation errors
     document.addEventListener('DOMContentLoaded', function() {

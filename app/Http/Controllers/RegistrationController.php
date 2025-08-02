@@ -37,16 +37,34 @@ class RegistrationController extends Controller
 
     public function getData(Request $request)
     {
-
         $status = $request->query('status');
         $perPage = $request->query('per_page', 10);
+        $userRole = auth()->user()->role;
+        $userId = auth()->user()->id;
 
-        $query = $this->modelRegistration->with('customer', 'service');
+        // Load relasi customer, service, dan users (staff yang menangani)
+        $query = $this->modelRegistration->with(['customer', 'service', 'users']);
 
-        if ($status) {
-            $query->where('status', $status);
+        // Filter berdasarkan role
+        if ($userRole === 'STAFF') {
+            // Untuk STAFF: hanya tampilkan data yang ditangani oleh staff tersebut
+            $query->whereHas('users', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            });
+
+            // Filter status untuk STAFF: hanya SERVING dan COMPLETED
+            if ($status) {
+                $query->where('status', $status);
+            } else {
+                $query->whereIn('status', ['SERVING', 'COMPLETED']);
+            }
         } else {
-            $query->whereIn('status', ['PENDING', 'CALLING', 'SERVING']);
+            // Untuk ADMIN dan CASHIER: tampilkan semua data
+            if ($status) {
+                $query->where('status', $status);
+            } else {
+                $query->whereIn('status', ['PENDING', 'CALLING', 'SERVING', 'COMPLETED']);
+            }
         }
 
         $this->checkTimedOutCalls();
@@ -57,7 +75,10 @@ class RegistrationController extends Controller
         // Preserve query parameters in pagination links
         $customers->appends($request->query());
 
-        return view('customer.list', compact('customers'));
+        // Ambil data staff untuk modal - hanya yang aktif/tersedia
+        $staffList = $this->modelUser->where('role', 'STAFF')->get();
+
+        return view('customer.list', compact('customers', 'staffList'));
     }
 
     public function formRegist(Request $request)
@@ -221,7 +242,7 @@ class RegistrationController extends Controller
 
             DB::commit();
             return redirect()->route('register.get-data')
-                ->with('success', 'Pelanggan sedang dilayani oleh user ID: ' . $userId);
+                ->with('success', 'Pelanggan sedang dilayani oleh ' . $user->name);
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()

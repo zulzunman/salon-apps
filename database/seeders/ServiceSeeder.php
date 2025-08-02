@@ -27,7 +27,7 @@ class ServiceSeeder extends Seeder
                 'description' => 'Potong rambut wanita dengan teknik profesional dan modern.'
             ],
             [
-                'name' => 'Cuci + Blow',
+                'name' => 'Cuci Dan Blow',
                 'price' => 30000,
                 'duration' => 40,
                 'description' => 'Paket cuci rambut dan blow untuk tampilan lebih rapi dan segar.'

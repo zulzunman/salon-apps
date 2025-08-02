@@ -103,7 +103,7 @@
                         </a>
                     </li>
 
-                    @if (auth()->user()->role == 'ADMIN')
+                    @if (auth()->user()->role === 'ADMIN')
                         <!-- Menu untuk Admin -->
                         <li class="nav-item">
                             <a href="{{ route('service.get-data') }}"
@@ -117,12 +117,32 @@
                                 <i class="fas fa-users"></i> Data Staff
                             </a>
                         </li>
-                    @else
+                        <li class="nav-item">
+                            <a href="{{ route('staff.reporting') }}"
+                                class="nav-link {{ request()->routeIs('staff.reporting') ? 'active' : '' }}">
+                                <i class="fas fa-chart-line"></i> Report
+                            </a>
+                        </li>
+                    @elseif (auth()->user()->role === 'STAFF')
                         <!-- Menu untuk Staff -->
                         <li class="nav-item">
                             <a href="{{ route('register.get-data') }}"
                                 class="nav-link {{ request()->routeIs('register*') ? 'active' : '' }}">
                                 <i class="fas fa-user-friends"></i> Data Pelanggan
+                            </a>
+                        </li>
+                    @elseif (auth()->user()->role === 'CASHIER')
+                        <!-- Menu untuk Cashier -->
+                        <li class="nav-item">
+                            <a href="{{ route('register.get-data') }}"
+                                class="nav-link {{ request()->routeIs('register*') ? 'active' : '' }}">
+                                <i class="fas fa-user-friends"></i> Data Pelanggan
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('staff.reporting') }}"
+                                class="nav-link {{ request()->routeIs('staff.reporting') ? 'active' : '' }}">
+                                <i class="fas fa-chart-line"></i> Report
                             </a>
                         </li>
                     @endif

@@ -216,11 +216,135 @@ class StaffController extends Controller
         }
     }
 
-    public function reportings()
+    public function reportings(Request $request)
     {
-        // $data = $this->model->with('registrations')->get();
-        $data = $this->model->withCount('registrations')->get();
+        // Perbaiki query untuk role - konsisten dengan method lain
+        $staffList = User::where('role', 'STAFF')->get();
+        $staffId = $request->input('staff_id');
+        $viewType = $request->input('view_type', 'daily');
+        $selectedDate = $request->input('selected_date');
+        $selectedMonth = $request->input('selected_month', date('m'));
+        $selectedYear = $request->input('selected_year', date('Y'));
 
-        return view('admin.staff.report', compact('data'));
+        // Base query untuk staff - perbaiki role
+        $query = User::where('role', 'STAFF');
+        if ($staffId) {
+            $query->where('id', $staffId);
+        }
+        $staffData = $query->get();
+
+        // Prepare report data
+        $reportData = [];
+
+        foreach ($staffData as $staff) {
+            if ($viewType === 'daily') {
+                if ($selectedDate) {
+                    // Hitung untuk tanggal spesifik menggunakan relationship
+                    $count = $staff->registrations()
+                        ->whereYear('registrations.created_at', $selectedYear)
+                        ->whereMonth('registrations.created_at', $selectedMonth)
+                        ->whereDay('registrations.created_at', $selectedDate)
+                        ->count();
+
+                    $reportData[$staff->id] = [
+                        'staff_name' => $staff->name,
+                        'data' => [$selectedDate => $count],
+                        'total' => $count
+                    ];
+                } else {
+                    // Hitung untuk semua hari dalam bulan
+                    $dailyData = [];
+                    $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $selectedMonth, $selectedYear);
+
+                    for ($day = 1; $day <= $daysInMonth; $day++) {
+                        $count = $staff->registrations()
+                            ->whereYear('registrations.created_at', $selectedYear)
+                            ->whereMonth('registrations.created_at', $selectedMonth)
+                            ->whereDay('registrations.created_at', $day)
+                            ->count();
+                        $dailyData[$day] = $count;
+                    }
+
+                    $reportData[$staff->id] = [
+                        'staff_name' => $staff->name,
+                        'data' => $dailyData,
+                        'total' => array_sum($dailyData)
+                    ];
+                }
+            } elseif ($viewType === 'weekly') {
+                $weeklyData = [];
+                $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $selectedMonth, $selectedYear);
+                $weekCount = ceil($daysInMonth / 7);
+
+                for ($week = 1; $week <= $weekCount; $week++) {
+                    $startDay = ($week - 1) * 7 + 1;
+                    $endDay = min($week * 7, $daysInMonth);
+
+                    $count = $staff->registrations()
+                        ->whereYear('registrations.created_at', $selectedYear)
+                        ->whereMonth('registrations.created_at', $selectedMonth)
+                        ->whereRaw('DAY(registrations.created_at) BETWEEN ? AND ?', [$startDay, $endDay])
+                        ->count();
+
+                    $weeklyData[$week] = [
+                        'count' => $count,
+                        'range' => "$startDay-$endDay"
+                    ];
+                }
+
+                $reportData[$staff->id] = [
+                    'staff_name' => $staff->name,
+                    'data' => $weeklyData,
+                    'total' => array_sum(array_column($weeklyData, 'count'))
+                ];
+            } elseif ($viewType === 'monthly') {
+                $monthlyData = [];
+
+                for ($month = 1; $month <= 12; $month++) {
+                    $count = $staff->registrations()
+                        ->whereYear('registrations.created_at', $selectedYear)
+                        ->whereMonth('registrations.created_at', $month)
+                        ->count();
+                    $monthlyData[$month] = $count;
+                }
+
+                $reportData[$staff->id] = [
+                    'staff_name' => $staff->name,
+                    'data' => $monthlyData,
+                    'total' => array_sum($monthlyData)
+                ];
+            }
+        }
+
+        // Generate options
+        $dateOptions = range(1, cal_days_in_month(CAL_GREGORIAN, $selectedMonth, $selectedYear));
+        $monthOptions = [
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember'
+        ];
+        $yearOptions = range(date('Y') - 5, date('Y') + 1);
+
+        return view('admin.staff.report', compact(
+            'reportData',
+            'staffList',
+            'staffId',
+            'viewType',
+            'selectedDate',
+            'selectedMonth',
+            'selectedYear',
+            'dateOptions',
+            'monthOptions',
+            'yearOptions'
+        ));
     }
 }

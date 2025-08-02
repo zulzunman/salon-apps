@@ -39,12 +39,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/registration/call/{id}', [RegistrationController::class, 'callCustomer'])->name('register.calling');
     Route::post('/registration/serving/{id}', [RegistrationController::class, 'servingCustomer'])->name('register.serving');
     Route::post('/registration/complete/{id}', [RegistrationController::class, 'completeCustomer'])->name('register.complete');
+    Route::get('/staff/report', [StaffController::class, 'reportings'])->name('staff.reporting');
 
     Route::middleware(['is_admin'])->group(function () {
         // staff
         Route::get('/staff', [StaffController::class, 'getData'])->name('staff.get-data');
         Route::get('/staff/add', [StaffController::class, 'formAdd'])->name('staff.form-add');
-        Route::get('/staff/report', [StaffController::class, 'reportings'])->name('staff.reporting');
         Route::post('/staff/add/add-data', [StaffController::class, 'addData'])->name('staff.add-data');
         Route::get('/staff/edit/{id}', [StaffController::class, 'formEdit'])->name('staff.form-edit');
         Route::post('/staff/edit/{id}/edit-data', [StaffController::class, 'editData'])->name('staff.edit-data');
