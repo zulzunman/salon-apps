@@ -27,6 +27,11 @@ class Registration extends Model
         return $this->belongsTo(Service::class);
     }
 
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'reports_user_registration');
+    }
+
     public function getStatusLabelAttribute()
     {
         $statuses = [
