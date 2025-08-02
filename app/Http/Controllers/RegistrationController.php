@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 
+// abcdadsasda
 class RegistrationController extends Controller
 {
     protected $modelRegistration;

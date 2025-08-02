@@ -242,15 +242,6 @@
                 <a href="https://www.tiktok.com/@bronissalon" class="social-link" target="_blank">
                     <i class="fab fa-tiktok"></i>
                 </a>
-                <a href="#" class="social-link">
-                    <i class="fab fa-facebook-f"></i>
-                </a>
-                <a href="#" class="social-link">
-                    <i class="fab fa-twitter"></i>
-                </a>
-                <a href="#" class="social-link">
-                    <i class="fab fa-youtube"></i>
-                </a>
             </div>
         </div>
     </section>
