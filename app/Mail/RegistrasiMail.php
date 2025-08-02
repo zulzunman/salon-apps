@@ -24,7 +24,7 @@ class RegistrasiMail extends Mailable
 
     public function build()
     {
-        return $this->subject('Informasi Booking Pelayanan Salon')
+        return $this->subject('Informasi Pendaftaran Pelayanan Salon')
                     ->view('customer.email.regist')
                     ->with([
                         'name'  => $this->data->customer->name,

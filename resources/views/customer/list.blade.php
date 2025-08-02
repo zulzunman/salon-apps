@@ -77,7 +77,7 @@
                                 <th>Nama Pelanggan</th>
                                 <th>Email</th>
                                 <th>Pelayanan</th>
-                                <th>Tanggal Booking</th>
+                                <th>Tanggal Pendaftaran</th>
                                 <th>Nomor Antrian</th> {{-- Ganti dari Jam Layanan --}}
                                 <th>Status</th>
                                 <th>Aksi</th>

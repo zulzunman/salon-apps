@@ -44,6 +44,7 @@ Route::middleware(['auth'])->group(function () {
         // staff
         Route::get('/staff', [StaffController::class, 'getData'])->name('staff.get-data');
         Route::get('/staff/add', [StaffController::class, 'formAdd'])->name('staff.form-add');
+        Route::get('/staff/report', [StaffController::class, 'reportings'])->name('staff.reporting');
         Route::post('/staff/add/add-data', [StaffController::class, 'addData'])->name('staff.add-data');
         Route::get('/staff/edit/{id}', [StaffController::class, 'formEdit'])->name('staff.form-edit');
         Route::post('/staff/edit/{id}/edit-data', [StaffController::class, 'editData'])->name('staff.edit-data');

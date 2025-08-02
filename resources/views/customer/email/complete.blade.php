@@ -520,7 +520,7 @@
                 <ul>
                     <li>Gunakan produk perawatan yang direkomendasikan</li>
                     <li>Hindari aktivitas yang dapat merusak hasil styling</li>
-                    <li>Booking treatment rutin untuk hasil optimal</li>
+                    <li>Treatment rutin untuk hasil optimal</li>
                     <li>Hubungi kami jika ada pertanyaan</li>
                 </ul>
             </div>

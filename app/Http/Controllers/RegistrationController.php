@@ -11,6 +11,7 @@ use App\Mail\ReminderMail;
 use App\Models\Customer;
 use App\Models\Registration;
 use App\Models\Service;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,11 +25,13 @@ class RegistrationController extends Controller
     protected $modelRegistration;
     protected $modelCustomer;
     protected $modelService;
+    protected $modelUser;
 
     public function __construct()
     {
         $this->modelRegistration = new Registration();
         $this->modelCustomer = new Customer();
+        $this->modelUser = new User();
         $this->modelService = new Service();
     }
 
@@ -80,6 +83,7 @@ class RegistrationController extends Controller
         $antrianSebelumnya = Registration::whereDate('created_at', now()->toDateString())
             ->where('queue_number', '<', $queueNumber)
             ->where('status', '!=', 'COMPLETED') // ← Tambahan untuk exclude selesai
+            ->where('status', '!=', 'CANCELED') // ← Tambahan untuk exclude selesai
             ->orderBy('queue_number')
             ->get();
 
@@ -185,31 +189,46 @@ class RegistrationController extends Controller
         ])
             ->where('status', 'CALLING')
             ->whereNotNull('called_at')
-            ->where('called_at', '<=', now()->subMinutes(30))
+            ->where('called_at', '<=', now()->subMinutes(15))
             ->get();
 
         foreach ($timedOutCalls as $call) {
             $call->status = 'CANCELED';
+            $call->canceled_at = now();
             $call->save();
             Mail::to($call->customer->email)->send(new CancleMail($call));
         }
     }
 
-    public function servingCustomer($id)
+    public function servingCustomer(Request $request, $id)
     {
         $data = $this->modelRegistration->findOrFail($id);
+
         DB::beginTransaction();
         try {
+            // Update status registration
             $data->status = "SERVING";
             $data->save();
+
+            // Ambil user_id dari request
+            $userId = $request->input('user_id');
+
+            // Validasi user_id (opsional, pastikan user-nya ada)
+            $user = $this->modelUser->findOrFail($userId);
+
+            // Tambahkan relasi registration ke user
+            $user->registrations()->syncWithoutDetaching([$data->id]);
+
             DB::commit();
             return redirect()->route('register.get-data')
-                ->with('success', 'Pelanggan sedang dilayani.');
+                ->with('success', 'Pelanggan sedang dilayani oleh user ID: ' . $userId);
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()
                 ->withInput()
-                ->withErrors(['message' => 'Terjadi kesalahan saat update status pelanggan: ' . $e->getMessage()]);
+                ->withErrors([
+                    'message' => 'Terjadi kesalahan saat update status pelanggan: ' . $e->getMessage()
+                ]);
         }
     }
 

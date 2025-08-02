@@ -127,7 +127,7 @@
 
                     <div class="alert alert-warning" id="edit-warning-alert">
                         <i class="fas fa-exclamation-triangle"></i>
-                        <strong>Peringatan:</strong> Perubahan data pelayanan akan mempengaruhi semua booking yang
+                        <strong>Peringatan:</strong> Perubahan data pelayanan akan mempengaruhi semua pendaftaran yang
                         menggunakan pelayanan ini.
                         <div class="mt-2">
                             <small>Alert ini akan hilang dalam <span id="countdown-timer">10</span> detik</small>

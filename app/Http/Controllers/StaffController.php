@@ -215,4 +215,12 @@ class StaffController extends Controller
                 ->withErrors(['message' => 'Terjadi kesalahan saat menghapus data: ' . $e->getMessage()]);
         }
     }
+
+    public function reportings()
+    {
+        // $data = $this->model->with('registrations')->get();
+        $data = $this->model->withCount('registrations')->get();
+
+        return view('admin.staff.report', compact('data'));
+    }
 }

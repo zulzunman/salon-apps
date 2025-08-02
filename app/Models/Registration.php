@@ -27,6 +27,11 @@ class Registration extends Model
         return $this->belongsTo(Service::class);
     }
 
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'reports_user_registration');
+    }
+
     public function getStatusLabelAttribute()
     {
         $statuses = [
@@ -53,7 +58,7 @@ class Registration extends Model
     public function isCallTimeout()
     {
         if ($this->status === 'CALLING' && $this->called_at) {
-            return Carbon::parse($this->called_at)->addMinutes(30)->isPast();
+            return Carbon::parse($this->called_at)->addMinutes(15)->isPast();
         }
         return false;
     }
