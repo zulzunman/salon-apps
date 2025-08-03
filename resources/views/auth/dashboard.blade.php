@@ -1,3 +1,4 @@
+{{-- resources/views/dashboard.blade.php --}}
 @extends('layouts.app')
 
 @section('title', 'Dashboard')
@@ -253,8 +254,6 @@
             </div>
         @endif
     </div>
-
-    <!-- Quick Actions Section -->
 @endsection
 
 @section('scripts')

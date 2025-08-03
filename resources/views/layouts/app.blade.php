@@ -9,71 +9,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <style>
-        body {
-            font-family: 'Nunito', sans-serif;
-            background-color: #f8f9fa;
-        }
-
-        .sidebar {
-            min-height: 100vh;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            background-color: #343a40;
-            color: #fff;
-        }
-
-        .sidebar .nav-link {
-            color: rgba(255, 255, 255, 0.8);
-            padding: 0.5rem 1rem;
-            margin: 0.2rem 0;
-            border-radius: 0.25rem;
-        }
-
-        .sidebar .nav-link:hover {
-            color: #fff;
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .sidebar .nav-link.active {
-            color: #fff;
-            background-color: #0d6efd;
-        }
-
-        .sidebar .nav-link i {
-            margin-right: 0.5rem;
-        }
-
-        .content {
-            padding: 20px;
-        }
-
-        .navbar-brand {
-            font-weight: bold;
-        }
-
-        .card-dashboard {
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
-        }
-
-        .card-dashboard:hover {
-            transform: translateY(-5px);
-        }
-
-        .role-badge {
-            font-size: 0.75rem;
-            background-color: #28a745;
-            color: white;
-            padding: 0.2rem 0.5rem;
-            border-radius: 0.25rem;
-            margin-left: 0.5rem;
-        }
-
-        .role-badge.staff {
-            background-color: #17a2b8;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('app/layout.css') }}">
+    @yield('styles')
 </head>
 
 <body>
@@ -81,78 +20,96 @@
         <div class="row">
             <!-- Sidebar -->
             <div class="col-md-3 col-lg-2 px-0 sidebar">
-                <div class="py-4 px-3 mb-4">
-                    <div class="media d-flex align-items-center">
-                        <div class="media-body">
-                            <h4 class="m-0">Sistem Pelayanan</h4>
-                            <small class="text-muted">
-                                {{ Auth::user()->name }}
-                                <span class="role-badge {{ Auth::user()->role == 'STAFF' ? 'staff' : '' }}">
-                                    {{ ucfirst(Auth::user()->role) }}
-                                </span>
-                            </small>
+                <div class="sidebar-header">
+                    <div class="brand-logo">
+                        <i class="fas fa-cut brand-icon"></i>
+                        <div class="brand-text">
+                            <h4 class="brand-title">Beauty Salon</h4>
+                            <small class="brand-subtitle">Management System</small>
+                        </div>
+                    </div>
+                    <div class="user-profile">
+                        <div class="user-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="user-info">
+                            <span class="user-name">{{ Auth::user()->name }}</span>
+                            <span
+                                class="role-badge {{ Auth::user()->role == 'STAFF' ? 'staff' : (Auth::user()->role == 'CASHIER' ? 'cashier' : 'admin') }}">
+                                {{ ucfirst(Auth::user()->role) }}
+                            </span>
                         </div>
                     </div>
                 </div>
-                <ul class="nav flex-column">
-                    <!-- Dashboard - Untuk semua role -->
-                    <li class="nav-item">
-                        <a href="{{ route('dashboard') }}"
-                            class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                            <i class="fas fa-tachometer-alt"></i> Dashboard
-                        </a>
-                    </li>
 
-                    @if (auth()->user()->role === 'ADMIN')
-                        <!-- Menu untuk Admin -->
+                <nav class="sidebar-nav">
+                    <ul class="nav flex-column">
+                        <!-- Dashboard - Untuk semua role -->
                         <li class="nav-item">
-                            <a href="{{ route('service.get-data') }}"
-                                class="nav-link {{ request()->routeIs('service*') ? 'active' : '' }}">
-                                <i class="fas fa-cogs"></i> Data Pelayanan
+                            <a href="{{ route('dashboard') }}"
+                                class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>Dashboard</span>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="{{ route('staff.get-data') }}"
-                                class="nav-link {{ request()->routeIs('staff*') ? 'active' : '' }}">
-                                <i class="fas fa-users"></i> Data Staff
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('staff.reporting') }}"
-                                class="nav-link {{ request()->routeIs('staff.reporting') ? 'active' : '' }}">
-                                <i class="fas fa-chart-line"></i> Report
-                            </a>
-                        </li>
-                    @elseif (auth()->user()->role === 'STAFF')
-                        <!-- Menu untuk Staff -->
-                        <li class="nav-item">
-                            <a href="{{ route('register.get-data') }}"
-                                class="nav-link {{ request()->routeIs('register*') ? 'active' : '' }}">
-                                <i class="fas fa-user-friends"></i> Data Pelanggan
-                            </a>
-                        </li>
-                    @elseif (auth()->user()->role === 'CASHIER')
-                        <!-- Menu untuk Cashier -->
-                        <li class="nav-item">
-                            <a href="{{ route('register.get-data') }}"
-                                class="nav-link {{ request()->routeIs('register*') ? 'active' : '' }}">
-                                <i class="fas fa-user-friends"></i> Data Pelanggan
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('staff.reporting') }}"
-                                class="nav-link {{ request()->routeIs('staff.reporting') ? 'active' : '' }}">
-                                <i class="fas fa-chart-line"></i> Report
-                            </a>
-                        </li>
-                    @endif
-                </ul>
+
+                        @if (auth()->user()->role === 'ADMIN')
+                            <!-- Menu untuk Admin -->
+                            <li class="nav-item">
+                                <a href="{{ route('service.get-data') }}"
+                                    class="nav-link {{ request()->routeIs('service*') ? 'active' : '' }}">
+                                    <i class="fas fa-spa"></i>
+                                    <span>Data Pelayanan</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('staff.get-data') }}"
+                                    class="nav-link {{ request()->routeIs('staff*') ? 'active' : '' }}">
+                                    <i class="fas fa-users-cog"></i>
+                                    <span>Data Staff</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('staff.reporting') }}"
+                                    class="nav-link {{ request()->routeIs('staff.reporting') ? 'active' : '' }}">
+                                    <i class="fas fa-chart-pie"></i>
+                                    <span>Report</span>
+                                </a>
+                            </li>
+                        @elseif (auth()->user()->role === 'STAFF')
+                            <!-- Menu untuk Staff -->
+                            <li class="nav-item">
+                                <a href="{{ route('register.get-data') }}"
+                                    class="nav-link {{ request()->routeIs('register*') ? 'active' : '' }}">
+                                    <i class="fas fa-user-friends"></i>
+                                    <span>Data Pelanggan</span>
+                                </a>
+                            </li>
+                        @elseif (auth()->user()->role === 'CASHIER')
+                            <!-- Menu untuk Cashier -->
+                            <li class="nav-item">
+                                <a href="{{ route('register.get-data') }}"
+                                    class="nav-link {{ request()->routeIs('register*') ? 'active' : '' }}">
+                                    <i class="fas fa-user-friends"></i>
+                                    <span>Data Pelanggan</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('staff.reporting') }}"
+                                    class="nav-link {{ request()->routeIs('staff.reporting') ? 'active' : '' }}">
+                                    <i class="fas fa-chart-pie"></i>
+                                    <span>Report</span>
+                                </a>
+                            </li>
+                        @endif
+                    </ul>
+                </nav>
             </div>
 
             <!-- Content -->
             <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content">
                 <!-- Top Navbar -->
-                <nav class="navbar navbar-expand-lg navbar-light bg-white mb-4 shadow-sm rounded">
+                <nav class="navbar navbar-expand-lg navbar-light top-navbar mb-4">
                     <div class="container-fluid">
                         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                             data-bs-target="#navbarNav">
@@ -161,28 +118,27 @@
                         <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
                             <ul class="navbar-nav">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('dashboard') }}">
+                                    <a class="nav-link home-link" href="{{ route('dashboard') }}">
                                         <i class="fas fa-home"></i> Home
                                     </a>
                                 </li>
                             </ul>
                             <ul class="navbar-nav">
                                 <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
+                                    <a class="nav-link dropdown-toggle user-dropdown" href="#" id="navbarDropdown"
                                         role="button" data-bs-toggle="dropdown">
-                                        <i class="fas fa-user-circle"></i> {{ Auth::user()->name }}
+                                        <div class="user-avatar-small">
+                                            <i class="fas fa-user-circle"></i>
+                                        </div>
+                                        <span class="user-name-nav">{{ Auth::user()->name }}</span>
                                         <small class="text-muted">({{ ucfirst(Auth::user()->role) }})</small>
                                     </a>
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                        <li><a class="dropdown-item" href="#"><i class="fas fa-user-cog"></i>
-                                                Profile</a></li>
-                                        <li>
-                                            <hr class="dropdown-divider">
-                                        </li>
+                                    <ul class="dropdown-menu dropdown-menu-end user-dropdown-menu"
+                                        aria-labelledby="navbarDropdown">
                                         <li>
                                             <form action="{{ route('logout') }}" method="POST">
                                                 @csrf
-                                                <button type="submit" class="dropdown-item">
+                                                <button type="submit" class="dropdown-item logout-btn">
                                                     <i class="fas fa-sign-out-alt"></i> Logout
                                                 </button>
                                             </form>
@@ -195,35 +151,42 @@
                 </nav>
 
                 <!-- Page Content -->
-                <div class="container-fluid">
+                <div class="container-fluid main-content">
                     @if (session('success'))
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <i class="fas fa-check-circle"></i> {{ session('success') }}
+                        <div class="alert alert-success alert-dismissible fade show custom-alert success-alert"
+                            role="alert">
+                            <i class="fas fa-check-circle alert-icon"></i>
+                            <span>{{ session('success') }}</span>
                             <button type="button" class="btn-close" data-bs-dismiss="alert"
                                 aria-label="Close"></button>
                         </div>
                     @endif
 
                     @if (session('error'))
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+                        <div class="alert alert-danger alert-dismissible fade show custom-alert error-alert"
+                            role="alert">
+                            <i class="fas fa-exclamation-circle alert-icon"></i>
+                            <span>{{ session('error') }}</span>
                             <button type="button" class="btn-close" data-bs-dismiss="alert"
                                 aria-label="Close"></button>
                         </div>
                     @endif
 
                     @if (session('warning'))
-                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                            <i class="fas fa-exclamation-triangle"></i> {{ session('warning') }}
+                        <div class="alert alert-warning alert-dismissible fade show custom-alert warning-alert"
+                            role="alert">
+                            <i class="fas fa-exclamation-triangle alert-icon"></i>
+                            <span>{{ session('warning') }}</span>
                             <button type="button" class="btn-close" data-bs-dismiss="alert"
                                 aria-label="Close"></button>
                         </div>
                     @endif
 
                     @if ($errors->any())
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <i class="fas fa-exclamation-circle"></i>
-                            <ul class="mb-0 mt-2">
+                        <div class="alert alert-danger alert-dismissible fade show custom-alert error-alert"
+                            role="alert">
+                            <i class="fas fa-exclamation-circle alert-icon"></i>
+                            <ul class="mb-0 mt-2 error-list">
                                 @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>
                                 @endforeach
@@ -248,6 +211,26 @@
             setTimeout(function() {
                 $('.alert').fadeOut('slow');
             }, 5000);
+        });
+
+        // Add smooth scrolling and hover effects
+        $(document).ready(function() {
+            // Smooth transitions for nav links
+            $('.nav-link').on('mouseenter', function() {
+                $(this).addClass('nav-link-hover');
+            }).on('mouseleave', function() {
+                $(this).removeClass('nav-link-hover');
+            });
+
+            // Add floating animation to cards
+            $('.card-dashboard').hover(
+                function() {
+                    $(this).addClass('card-float');
+                },
+                function() {
+                    $(this).removeClass('card-float');
+                }
+            );
         });
     </script>
 
