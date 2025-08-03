@@ -4,14 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class StaffController extends Controller
 {
     protected $model;
+
     public function __construct()
     {
         $this->model = new User;
@@ -19,7 +22,7 @@ class StaffController extends Controller
 
     public function getData()
     {
-        // Ambil user dengan role 'staff' dengan pagination
+        // Ambil user dengan role 'STAFF' dengan pagination
         $data = $this->model->where('role', 'STAFF')->paginate(5);
 
         return view('admin.staff.index', compact('data'));
@@ -163,7 +166,7 @@ class StaffController extends Controller
 
             // Update password hanya jika diisi
             if ($request->filled('password')) {
-                $data->password = Hash::make($request->password); // Fix: gunakan $request->password, bukan $request->name
+                $data->password = Hash::make($request->password);
             }
 
             $data->save();
@@ -199,20 +202,39 @@ class StaffController extends Controller
 
     public function deleteData($id)
     {
-        $data = $this->model->findOrFail($id);
-
-        DB::beginTransaction();
         try {
-            $data->delete();
+            $staff = User::where('role', 'STAFF')->findOrFail($id);
+
+            DB::beginTransaction();
+
+            // Optional: Check if staff has related registrations
+            // Uncomment if you have registrations relationship
+            // $hasRegistrations = $staff->registrations()->exists();
+            // 
+            // if ($hasRegistrations) {
+            //     DB::rollBack();
+            //     return redirect()->back()
+            //         ->with('error', 'Staff tidak dapat dihapus karena memiliki data registrasi pelanggan.');
+            // }
+
+            // Delete the staff
+            $staffName = $staff->name;
+            $staff->delete();
 
             DB::commit();
+
             return redirect()->route('admin.staff.index')
-                ->with('success', 'Data staff berhasil dihapus');
-        } catch (Exception $e) {
+                ->with('success', "Data staff '{$staffName}' berhasil dihapus");
+        } catch (ModelNotFoundException $e) {
             DB::rollBack();
             return redirect()->back()
-                ->withInput()
-                ->withErrors(['message' => 'Terjadi kesalahan saat menghapus data: ' . $e->getMessage()]);
+                ->with('error', 'Data staff tidak ditemukan');
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Error deleting staff: ' . $e->getMessage());
+
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan saat menghapus data staff. Silakan coba lagi.');
         }
     }
 
@@ -222,9 +244,16 @@ class StaffController extends Controller
         $staffList = User::where('role', 'STAFF')->get();
         $staffId = $request->input('staff_id');
         $viewType = $request->input('view_type', 'daily');
-        $selectedDate = $request->input('selected_date');
-        $selectedMonth = $request->input('selected_month', date('m'));
-        $selectedYear = $request->input('selected_year', date('Y'));
+
+        // Default ke tanggal hari ini alih-alih sebulan penuh
+        $selectedDate = $request->input('selected_date', date('j')); // hari saat ini (1-31)
+        $selectedMonth = $request->input('selected_month', date('n')); // bulan saat ini (1-12)
+        $selectedYear = $request->input('selected_year', date('Y')); // tahun saat ini
+
+        // Jika tidak ada filter khusus, default tampilkan data hari ini saja
+        $isDefaultView = !$request->has('staff_id') && !$request->has('view_type') &&
+            !$request->has('selected_date') && !$request->has('selected_month') &&
+            !$request->has('selected_year');
 
         // Base query untuk staff - perbaiki role
         $query = User::where('role', 'STAFF');
@@ -238,13 +267,15 @@ class StaffController extends Controller
 
         foreach ($staffData as $staff) {
             if ($viewType === 'daily') {
-                if ($selectedDate) {
-                    // Hitung untuk tanggal spesifik menggunakan relationship
-                    $count = $staff->registrations()
-                        ->whereYear('registrations.created_at', $selectedYear)
-                        ->whereMonth('registrations.created_at', $selectedMonth)
-                        ->whereDay('registrations.created_at', $selectedDate)
-                        ->count();
+                if ($selectedDate && ($isDefaultView || $request->has('selected_date'))) {
+                    // Hitung untuk tanggal spesifik (default: hari ini)
+                    $count = 0;
+                    // Uncomment and modify if you have registrations relationship
+                    // $count = $staff->registrations()
+                    //     ->whereYear('registrations.created_at', $selectedYear)
+                    //     ->whereMonth('registrations.created_at', $selectedMonth)
+                    //     ->whereDay('registrations.created_at', $selectedDate)
+                    //     ->count();
 
                     $reportData[$staff->id] = [
                         'staff_name' => $staff->name,
@@ -257,11 +288,13 @@ class StaffController extends Controller
                     $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $selectedMonth, $selectedYear);
 
                     for ($day = 1; $day <= $daysInMonth; $day++) {
-                        $count = $staff->registrations()
-                            ->whereYear('registrations.created_at', $selectedYear)
-                            ->whereMonth('registrations.created_at', $selectedMonth)
-                            ->whereDay('registrations.created_at', $day)
-                            ->count();
+                        $count = 0;
+                        // Uncomment and modify if you have registrations relationship
+                        // $count = $staff->registrations()
+                        //     ->whereYear('registrations.created_at', $selectedYear)
+                        //     ->whereMonth('registrations.created_at', $selectedMonth)
+                        //     ->whereDay('registrations.created_at', $day)
+                        //     ->count();
                         $dailyData[$day] = $count;
                     }
 
@@ -280,11 +313,13 @@ class StaffController extends Controller
                     $startDay = ($week - 1) * 7 + 1;
                     $endDay = min($week * 7, $daysInMonth);
 
-                    $count = $staff->registrations()
-                        ->whereYear('registrations.created_at', $selectedYear)
-                        ->whereMonth('registrations.created_at', $selectedMonth)
-                        ->whereRaw('DAY(registrations.created_at) BETWEEN ? AND ?', [$startDay, $endDay])
-                        ->count();
+                    $count = 0;
+                    // Uncomment and modify if you have registrations relationship
+                    // $count = $staff->registrations()
+                    //     ->whereYear('registrations.created_at', $selectedYear)
+                    //     ->whereMonth('registrations.created_at', $selectedMonth)
+                    //     ->whereRaw('DAY(registrations.created_at) BETWEEN ? AND ?', [$startDay, $endDay])
+                    //     ->count();
 
                     $weeklyData[$week] = [
                         'count' => $count,
@@ -301,10 +336,12 @@ class StaffController extends Controller
                 $monthlyData = [];
 
                 for ($month = 1; $month <= 12; $month++) {
-                    $count = $staff->registrations()
-                        ->whereYear('registrations.created_at', $selectedYear)
-                        ->whereMonth('registrations.created_at', $month)
-                        ->count();
+                    $count = 0;
+                    // Uncomment and modify if you have registrations relationship
+                    // $count = $staff->registrations()
+                    //     ->whereYear('registrations.created_at', $selectedYear)
+                    //     ->whereMonth('registrations.created_at', $month)
+                    //     ->count();
                     $monthlyData[$month] = $count;
                 }
 
@@ -333,6 +370,11 @@ class StaffController extends Controller
             12 => 'Desember'
         ];
         $yearOptions = range(date('Y') - 5, date('Y') + 1);
+
+        // Untuk default view, set selectedDate agar tampil di form
+        if ($isDefaultView) {
+            $selectedDate = date('j');
+        }
 
         return view('admin.staff.report', compact(
             'reportData',

@@ -64,7 +64,7 @@
                             </li>
                             <li class="nav-item">
                                 <a href="{{ route('staff.get-data') }}"
-                                    class="nav-link {{ request()->routeIs('staff*') ? 'active' : '' }}">
+                                    class="nav-link {{ request()->routeIs('staff.get-data') ? 'active' : '' }}">
                                     <i class="fas fa-users-cog"></i>
                                     <span>Data Staff</span>
                                 </a>
