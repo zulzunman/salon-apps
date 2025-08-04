@@ -20,7 +20,7 @@
             <!-- Modal Body -->
             <form action="" method="post" id="editStaffForm" novalidate>
                 @csrf
-                @method('PUT')
+                @method('POST')
                 <div class="modal-body p-4">
                     <!-- Staff Information Section -->
                     <div class="row">
