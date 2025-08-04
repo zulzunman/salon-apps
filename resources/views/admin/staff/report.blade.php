@@ -140,6 +140,7 @@
                 @if (count($reportData) > 0)
                     <div class="table-responsive">
                         <table class="table table-hover table-bordered align-middle">
+                            <!-- Di bagian thead table -->
                             <thead class="table-dark">
                                 <tr>
                                     <th class="text-center">#</th>
@@ -179,11 +180,20 @@
                                             <th class="text-center">{{ $label }}</th>
                                         @endforeach
                                     @endif
-                                    <th class="text-center bg-warning">
-                                        <i class="fas fa-sum me-1"></i>Total
-                                    </th>
+
+                                    {{-- Tampilkan kolom Total: 
+             - Weekly: selalu tampil
+             - Monthly: selalu tampil  
+             - Daily: hanya tampil jika "Semua Tanggal", tidak tampil jika pilih tanggal tertentu --}}
+                                    @if ($viewType !== 'daily' || ($viewType === 'daily' && !$selectedDate))
+                                        <th class="text-center bg-warning">
+                                            <i class="fas fa-sum me-1"></i>Total
+                                        </th>
+                                    @endif
                                 </tr>
                             </thead>
+
+                            <!-- Di bagian tbody table -->
                             <tbody>
                                 @php $no = 1; @endphp
                                 @foreach ($reportData as $staffId => $data)
@@ -239,48 +249,53 @@
                                             @endforeach
                                         @endif
 
-                                        <td class="text-center">
-                                            <span class="badge bg-warning text-dark fs-6 fw-bold">
-                                                {{ $data['total'] }}
-                                            </span>
-                                        </td>
+                                        {{-- Tampilkan kolom Total: 
+                 - Weekly: selalu tampil
+                 - Monthly: selalu tampil  
+                 - Daily: hanya tampil jika "Semua Tanggal", tidak tampil jika pilih tanggal tertentu --}}
+                                        @if ($viewType !== 'daily' || ($viewType === 'daily' && !$selectedDate))
+                                            <td class="text-center">
+                                                <span class="badge bg-warning text-dark fs-6 fw-bold">
+                                                    {{ $data['total'] }}
+                                                </span>
+                                            </td>
+                                        @endif
                                     </tr>
                                 @endforeach
 
-                                <!-- Summary Row -->
-                                <tr class="table-info fw-bold">
-                                    <td colspan="2" class="text-center">
-                                        <i class="fas fa-calculator me-1"></i>TOTAL KESELURUHAN
-                                    </td>
-                                    @if ($viewType === 'daily')
-                                        @if ($selectedDate)
-                                            <td class="text-center">
-                                                {{ collect($reportData)->sum(function ($item) use ($selectedDate) {return $item['data'][$selectedDate] ?? 0;}) }}
-                                            </td>
-                                        @else
+                                <!-- Summary Row:
+             - Weekly: selalu tampil
+             - Monthly: selalu tampil
+             - Daily: hanya tampil jika "Semua Tanggal", tidak tampil jika pilih tanggal tertentu -->
+                                @if ($viewType !== 'daily' || ($viewType === 'daily' && !$selectedDate))
+                                    <tr class="table-info fw-bold">
+                                        <td colspan="2" class="text-center">
+                                            <i class="fas fa-calculator me-1"></i>TOTAL KESELURUHAN
+                                        </td>
+                                        @if ($viewType === 'daily')
                                             @foreach ($dateOptions as $date)
                                                 <td class="text-center">
                                                     {{ collect($reportData)->sum(function ($item) use ($date) {return $item['data'][$date] ?? 0;}) }}
                                                 </td>
                                             @endforeach
+                                        @elseif ($viewType === 'weekly')
+                                            @for ($week = 1; $week <= $weekCount; $week++)
+                                                <td class="text-center">
+                                                    {{ collect($reportData)->sum(function ($item) use ($week) {return $item['data'][$week]['count'] ?? 0;}) }}
+                                                </td>
+                                            @endfor
+                                        @elseif ($viewType === 'monthly')
+                                            @foreach ($monthOptions as $value => $label)
+                                                <td class="text-center">
+                                                    {{ collect($reportData)->sum(function ($item) use ($value) {return $item['data'][$value] ?? 0;}) }}
+                                                </td>
+                                            @endforeach
                                         @endif
-                                    @elseif ($viewType === 'weekly')
-                                        @for ($week = 1; $week <= $weekCount; $week++)
-                                            <td class="text-center">
-                                                {{ collect($reportData)->sum(function ($item) use ($week) {return $item['data'][$week]['count'] ?? 0;}) }}
-                                            </td>
-                                        @endfor
-                                    @elseif ($viewType === 'monthly')
-                                        @foreach ($monthOptions as $value => $label)
-                                            <td class="text-center">
-                                                {{ collect($reportData)->sum(function ($item) use ($value) {return $item['data'][$value] ?? 0;}) }}
-                                            </td>
-                                        @endforeach
-                                    @endif
-                                    <td class="text-center bg-danger text-white">
-                                        {{ collect($reportData)->sum('total') }}
-                                    </td>
-                                </tr>
+                                        <td class="text-center bg-danger text-white">
+                                            {{ collect($reportData)->sum('total') }}
+                                        </td>
+                                    </tr>
+                                @endif
                             </tbody>
                         </table>
                     </div>

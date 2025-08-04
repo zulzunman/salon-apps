@@ -323,7 +323,7 @@
                     // Update form action URL
                     const editForm = document.getElementById('editStaffForm');
                     if (editForm) {
-                        editForm.action = `/admin/staff/edit/${id}`;
+                        editForm.action = `/staff/edit/${id}/edit-data`;
                     }
 
                     // Populate form fields

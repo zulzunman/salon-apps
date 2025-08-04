@@ -45,21 +45,23 @@ class RegistrationController extends Controller
         // Load relasi customer, service, dan users (staff yang menangani)
         $query = $this->modelRegistration->with(['customer', 'service', 'users']);
 
+        // ====== FILTER TANGGAL: Hanya tampilkan data hari ini dan yang sudah diproses ======
+        $query->where(function ($q) {
+            $q->where('created_at', '>=', now()->startOfDay()) // Data hari ini
+                ->orWhereIn('status', ['CALLING', 'SERVING', 'COMPLETED']); // Atau yang sudah diproses
+        });
         // Filter berdasarkan role
         if ($userRole === 'STAFF') {
-            // Untuk STAFF: hanya tampilkan data yang ditangani oleh staff tersebut
             $query->whereHas('users', function ($q) use ($userId) {
                 $q->where('user_id', $userId);
             });
 
-            // Filter status untuk STAFF: hanya SERVING dan COMPLETED
             if ($status) {
                 $query->where('status', $status);
             } else {
                 $query->whereIn('status', ['SERVING', 'COMPLETED']);
             }
         } else {
-            // Untuk ADMIN dan CASHIER: tampilkan semua data
             if ($status) {
                 $query->where('status', $status);
             } else {
@@ -72,10 +74,7 @@ class RegistrationController extends Controller
         $customers = $query->orderBy('created_at', 'desc')
             ->paginate($perPage);
 
-        // Preserve query parameters in pagination links
         $customers->appends($request->query());
-
-        // Ambil data staff untuk modal - hanya yang aktif/tersedia
         $staffList = $this->modelUser->where('role', 'STAFF')->get();
 
         return view('customer.list', compact('customers', 'staffList'));

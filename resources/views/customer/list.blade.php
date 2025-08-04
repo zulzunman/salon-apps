@@ -41,7 +41,7 @@
                 <div class="card mb-4 border-0 bg-light">
                     <div class="card-header bg-white border-bottom">
                         <h6 class="mb-0 text-primary">
-                            <i class="fas fa-filter me-2"></i>Filter Status & Pengaturan
+                            <i class="fas fa-filter me-2"></i>Filter Status
                         </h6>
                     </div>
                     <div class="card-body">
@@ -644,6 +644,31 @@
 
         .card:hover {
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        /* Sembunyikan kolom Tanggal Pendaftaran */
+        .table thead tr th:nth-child(4),
+        /* Header kolom ke-4 (Tanggal Pendaftaran) */
+        .table tbody tr td:nth-child(4)
+
+        /* Cell kolom ke-4 (Tanggal Pendaftaran) */
+            {
+            display: none !important;
+        }
+
+        /* Jika untuk STAFF (yang tidak melihat Email), kolom Tanggal adalah ke-3 */
+        @if (auth()->user()->role === 'STAFF')
+            .table thead tr th:nth-child(3),
+            .table tbody tr td:nth-child(3) {
+                display: none !important;
+            }
+        @endif
+
+        /* Style existing lainnya tetap sama */
+        .avatar-sm {
+            width: 40px;
+            height: 40px;
+            font-size: 16px;
         }
     </style>
 @endsection

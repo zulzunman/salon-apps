@@ -20,7 +20,7 @@
             <!-- Modal Body -->
             <form action="" method="post" id="editStaffForm" novalidate>
                 @csrf
-                @method('PUT')
+                @method('POST')
                 <div class="modal-body p-4">
                     <!-- Staff Information Section -->
                     <div class="row">
@@ -36,7 +36,7 @@
 
                     <div class="row g-3">
                         <!-- Nama Staff -->
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label for="edit_name" class="form-label fw-semibold">
                                 <i class="fas fa-user me-1 text-primary"></i>
                                 Nama Lengkap <span class="text-danger">*</span>
@@ -57,7 +57,7 @@
                         </div>
 
                         <!-- Email -->
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label for="edit_email" class="form-label fw-semibold">
                                 <i class="fas fa-envelope me-1 text-primary"></i>
                                 Email <span class="text-danger">*</span>
@@ -75,6 +75,33 @@
                                     <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
                                 </div>
                             @enderror
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="edit_role" class="form-label fw-semibold">
+                            <i class="fas fa-user-tag me-1 text-primary"></i>
+                            Role Akses <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0">
+                                <i class="fas fa-user-tag text-muted"></i>
+                            </span>
+                            <select class="form-select border-start-0 @error('role') is-invalid @enderror"
+                                id="edit_role" name="role" required>
+                                <option value="">Pilih Role Akses</option>
+                                <option value="STAFF">STAFF</option>
+                                <option value="CASHIER">CASHIER</option>
+                            </select>
+                        </div>
+                        @error('role')
+                            <div class="invalid-feedback d-block">
+                                <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                            </div>
+                        @enderror
+                        <div class="form-text">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Tentukan level akses staff
                         </div>
                     </div>
 
