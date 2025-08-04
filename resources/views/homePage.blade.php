@@ -38,10 +38,10 @@
                     <span class="hamburger-line"></span>
                 </button>
                 <ul class="nav-links" id="navLinks">
-                    <li><a class="nav-link" href="#about">About</a></li>
-                    <li><a class="nav-link" href="#services">Services</a></li>
-                    <li><a class="nav-link" href="#gallery">Gallery</a></li>
-                    <li><a class="nav-link" href="#contact">Contact</a></li>
+                    <li><a class="nav-link" href="#about">Tentang</a></li>
+                    <li><a class="nav-link" href="#services">Layanan</a></li>
+                    <li><a class="nav-link" href="#gallery">Galeri</a></li>
+                    <li><a class="nav-link" href="#contact">Kontak</a></li>
                     <li><a class="nav-link login-btn" href="#" onclick="openLoginModal()">
                             <i class="fas fa-user"></i> Login
                         </a></li>
@@ -56,7 +56,7 @@
         <div class="hero-background"></div>
         <div class="container">
             <div class="hero-content">
-                <div class="hero-badge">Premium Salon Experience</div>
+                <div class="hero-badge">Pengalaman Salon Premium</div>
                 <h1 class="hero-title">
                     Tampil Beda? <span class="highlight">Boleh Banget!</span>
                 </h1>
@@ -69,21 +69,21 @@
                     </a>
                     <a class="btn-secondary" href="#about">
                         <i class="fas fa-play"></i>
-                        Learn More
+                        Pelajari Lebih Lanjut
                     </a>
                 </div>
                 <div class="hero-features">
                     <div class="feature-item">
                         <i class="fas fa-award"></i>
-                        <span>Certified Stylists</span>
+                        <span>Penata Gaya Bersertifikat</span>
                     </div>
                     <div class="feature-item">
                         <i class="fas fa-gem"></i>
-                        <span>Premium Products</span>
+                        <span>Produk Premium</span>
                     </div>
                     <div class="feature-item">
                         <i class="fas fa-clock"></i>
-                        <span>Flexible Hours</span>
+                        <span>Jam Kerja Fleksibel</span>
                     </div>
                 </div>
             </div>
@@ -97,7 +97,7 @@
     <section class="section about-section" id="about">
         <div class="container">
             <div class="section-header">
-                <div class="section-badge">Queue Rules</div>
+                <div class="section-badge">Aturan Antrean</div>
                 <h2 class="section-title">Aturan Antrian Brownis Salon</h2>
                 <p class="section-subtitle">Sebelum melakukan antrian, harap perhatikan ketentuan berikut untuk
                     pengalaman terbaik</p>
@@ -143,9 +143,9 @@
     <section class="section services-section" id="services">
         <div class="container">
             <div class="section-header">
-                <div class="section-badge">Our Expertise</div>
-                <h2 class="section-title">Our Premium Services</h2>
-                <p class="section-subtitle">Choose from our exclusive range of professional hair care services</p>
+                <div class="section-badge">Keahlian Kami</div>
+                <h2 class="section-title">Layanan Premium Kami</h2>
+                <p class="section-subtitle">Pilih dari rangkaian layanan perawatan rambut profesional eksklusif kami</p>
             </div>
 
             @if ($services->count() > 0)
@@ -165,19 +165,19 @@
                                 @endif
 
                                 @if ($loop->first)
-                                    <div class="service-badge popular">Popular</div>
+                                    <div class="service-badge popular">Populer</div>
                                 @elseif($loop->index == 1)
                                     <div class="service-badge premium">Premium</div>
                                 @elseif($loop->index == 2)
-                                    <div class="service-badge new">New</div>
+                                    <div class="service-badge new">Baru</div>
                                 @else
-                                    <div class="service-badge featured">Featured</div>
+                                    <div class="service-badge featured">Unggulan</div>
                                 @endif
 
                                 <div class="service-overlay">
                                     <button class="btn-view-details"
-                                        onclick="openImageModal('{{ asset('assets/img/service/' . $service->picture) }}', '{{ $service->name }}')">View
-                                        Picture</button>
+                                        onclick="openImageModal('{{ asset('assets/img/service/' . $service->picture) }}', '{{ $service->name }}')">Lihat
+                                        Gambar</button>
                                 </div>
                             </div>
                             <div class="service-content">
@@ -214,9 +214,9 @@
                     <div class="no-services-icon">
                         <i class="fas fa-calendar-times"></i>
                     </div>
-                    <h3>No Services Available</h3>
-                    <p>No services available at the moment. Please check back later.</p>
-                    <a href="#contact" class="btn-outline">Contact Us</a>
+                    <h3>Tidak Ada Layanan yang Tersedia</h3>
+                    <p>Tidak ada layanan yang tersedia saat ini. Silakan periksa kembali nanti.</p>
+                    <a href="#contact" class="btn-outline">Hubungi kami</a>
                 </div>
             @endif
         </div>
@@ -240,8 +240,8 @@
                             style="background-image: url('assets/img/homepage/1-cukur_rambut_pria.jpg');">
                             <div class="gallery-overlay">
                                 <div class="gallery-content">
-                                    <h4>Men's Haircut</h4>
-                                    <p>Professional styling for men</p>
+                                    <h4>Potongan Rambut Pria</h4>
+                                    <p>Penataan gaya profesional untuk pria</p>
                                     <i class="fas fa-search-plus"></i>
                                 </div>
                             </div>
@@ -253,8 +253,8 @@
                             style="background-image: url('assets/img/homepage/2-cukur_rambut_wanita.jpg');">
                             <div class="gallery-overlay">
                                 <div class="gallery-content">
-                                    <h4>Women's Haircut</h4>
-                                    <p>Elegant cuts for women</p>
+                                    <h4>Potongan Rambut Wanita</h4>
+                                    <p>Potongan elegan untuk wanita</p>
                                     <i class="fas fa-search-plus"></i>
                                 </div>
                             </div>
@@ -266,8 +266,8 @@
                             style="background-image: url('assets/img/homepage/7-smoothing.jfif');">
                             <div class="gallery-overlay">
                                 <div class="gallery-content">
-                                    <h4>Hair Smoothing</h4>
-                                    <p>Silky smooth results</p>
+                                    <h4>Pelurusan Rambut</h4>
+                                    <p>Hasil yang sangat halus</p>
                                     <i class="fas fa-search-plus"></i>
                                 </div>
                             </div>
@@ -280,7 +280,7 @@
                             <div class="gallery-overlay">
                                 <div class="gallery-content">
                                     <h4>Creambath</h4>
-                                    <p>Relaxing hair treatment</p>
+                                    <p> Perawatan rambut yang menenangkan</p>
                                     <i class="fas fa-search-plus"></i>
                                 </div>
                             </div>
@@ -292,8 +292,8 @@
                             style="background-image: url('assets/img/homepage/5-hair_mask.jpg');">
                             <div class="gallery-overlay">
                                 <div class="gallery-content">
-                                    <h4>Hair Mask</h4>
-                                    <p>Nourishing treatment</p>
+                                    <h4>Masker Rambut</h4>
+                                    <p>Perawatan rambut yang sehat</p>
                                     <i class="fas fa-search-plus"></i>
                                 </div>
                             </div>
@@ -305,8 +305,8 @@
                             style="background-image: url('assets/img/homepage/6-coloring_rambut.jfif');">
                             <div class="gallery-overlay">
                                 <div class="gallery-content">
-                                    <h4>Hair Coloring</h4>
-                                    <p>Vibrant color transformations</p>
+                                    <h4>Pewarnaan Rambut</h4>
+                                    <p>Transformasi warna cerah</p>
                                     <i class="fas fa-search-plus"></i>
                                 </div>
                             </div>
@@ -321,7 +321,7 @@
     <section class="section contact-section" id="contact">
         <div class="container">
             <div class="section-header">
-                <div class="section-badge">Get In Touch</div>
+                <div class="section-badge">Hubungi Kami</div>
                 <h2 class="section-title">Hubungi Kami</h2>
                 <p class="section-subtitle">Silakan datang langsung ke lokasi atau hubungi kami melalui kontak berikut
                     untuk informasi lebih lanjut.</p>
@@ -334,13 +334,13 @@
                             <i class="fas fa-map-marker-alt"></i>
                         </div>
                         <div class="contact-content">
-                            <h4>Our Location</h4>
+                            <h4>Lokasi Kami</h4>
                             <p>Jl. Lapang Tembak Sel. kp mekarsari 9<br>
                                 Padasuka, Kec. Cimahi Tengah<br>
                                 Kota Cimahi, Jawa Barat 40523</p>
                             <a href="https://maps.app.goo.gl/1uDXtg97C785V3XN7" target="_blank" class="contact-link">
                                 <i class="fas fa-external-link-alt"></i>
-                                View on Maps
+                                Lihat di Peta
                             </a>
                         </div>
                     </div>
@@ -350,8 +350,8 @@
                             <i class="fas fa-phone"></i>
                         </div>
                         <div class="contact-content">
-                            <h4>Call Us</h4>
-                            <p>Ready to help you book your appointment</p>
+                            <h4>Hubungi Kami</h4>
+                            <p>Siap membantu Anda memesan janji temu</p>
                             <a href="tel:+6289671875340" class="contact-link">
                                 <i class="fas fa-phone"></i>
                                 +62 896 7187 5340
@@ -364,8 +364,8 @@
                             <i class="fab fa-instagram"></i>
                         </div>
                         <div class="contact-content">
-                            <h4>Follow Us</h4>
-                            <p>Stay updated with our latest work and offers</p>
+                            <h4>Ikuti Kami</h4>
+                            <p>Tetap update dengan karya dan penawaran terbaru kami</p>
                             <div class="social-links-inline">
                                 <a href="https://www.instagram.com/bronis.salon" target="_blank" class="social-link">
                                     <i class="fab fa-instagram"></i>
@@ -383,8 +383,8 @@
                 <div class="contact-visual">
                     <div class="contact-image">
                         <div class="contact-overlay">
-                            <h3>Visit Our Beautiful Salon</h3>
-                            <p>Experience luxury in a comfortable and modern environment</p>
+                            <h3>Kunjungi Salon Cantik Kami</h3>
+                            <p>Rasakan kemewahan di lingkungan yang nyaman dan modern</p>
                         </div>
                     </div>
                 </div>
@@ -407,13 +407,13 @@
             <div class="footer-content">
                 <div class="footer-brand">
                     <h3>Brownis Salon</h3>
-                    <p>Where beauty meets excellence</p>
+                    <p>Dimana keindahan bertemu dengan keunggulan</p>
                 </div>
                 <div class="footer-links">
-                    <a href="#about">About</a>
-                    <a href="#services">Services</a>
-                    <a href="#gallery">Gallery</a>
-                    <a href="#contact">Contact</a>
+                    <a href="#about">Tentang</a>
+                    <a href="#services">Layanan</a>
+                    <a href="#gallery">Galeri</a>
+                    <a href="#contact">Kontak</a>
                 </div>
                 <div class="footer-social">
                     <a href="https://www.instagram.com/bronis.salon" target="_blank">
