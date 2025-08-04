@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Pemberitahuan Pembatalan Pelayanan</title>
     <meta charset="UTF-8">
@@ -20,8 +21,13 @@
         }
 
         @keyframes gradientShift {
-            0% { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); }
-            100% { background: linear-gradient(135deg, #764ba2 0%, #667eea 50%, #a8edea 100%); }
+            0% {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            }
+
+            100% {
+                background: linear-gradient(135deg, #764ba2 0%, #667eea 50%, #a8edea 100%);
+            }
         }
 
         .email-container {
@@ -40,6 +46,7 @@
                 opacity: 0;
                 transform: translateY(40px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -61,19 +68,22 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 15px,
-                rgba(255, 255, 255, 0.08) 15px,
-                rgba(255, 255, 255, 0.08) 30px
-            );
+            background: repeating-linear-gradient(45deg,
+                    transparent,
+                    transparent 15px,
+                    rgba(255, 255, 255, 0.08) 15px,
+                    rgba(255, 255, 255, 0.08) 30px);
             animation: moveStripes 10s linear infinite;
         }
 
         @keyframes moveStripes {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
         }
 
         .notification-badge {
@@ -92,8 +102,15 @@
         }
 
         @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.08); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.08);
+            }
         }
 
         .header h1 {
@@ -122,11 +139,27 @@
         }
 
         @keyframes bellRing {
-            0%, 100% { transform: rotate(0deg); }
-            20% { transform: rotate(-20deg); }
-            40% { transform: rotate(20deg); }
-            60% { transform: rotate(-15deg); }
-            80% { transform: rotate(15deg); }
+
+            0%,
+            100% {
+                transform: rotate(0deg);
+            }
+
+            20% {
+                transform: rotate(-20deg);
+            }
+
+            40% {
+                transform: rotate(20deg);
+            }
+
+            60% {
+                transform: rotate(-15deg);
+            }
+
+            80% {
+                transform: rotate(15deg);
+            }
         }
 
         .bell-icon::before {
@@ -156,6 +189,7 @@
                 filter: drop-shadow(0 0 8px rgba(255, 118, 117, 0.4));
                 text-shadow: 0 0 15px rgba(255, 118, 117, 0.3);
             }
+
             to {
                 filter: drop-shadow(0 0 15px rgba(255, 118, 117, 0.7));
                 text-shadow: 0 0 25px rgba(255, 118, 117, 0.5);
@@ -185,8 +219,13 @@
         }
 
         @keyframes shimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
+            0% {
+                left: -100%;
+            }
+
+            100% {
+                left: 100%;
+            }
         }
 
         .details-title {
@@ -269,10 +308,13 @@
         }
 
         @keyframes noticePulse {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: scale(1);
                 box-shadow: 0 15px 35px rgba(116, 185, 255, 0.3);
             }
+
             50% {
                 transform: scale(1.02);
                 box-shadow: 0 20px 45px rgba(116, 185, 255, 0.5);
@@ -319,10 +361,33 @@
         }
 
         .footer {
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            padding: 35px;
+            background: #f8f9ff;
+            padding: 30px;
             text-align: center;
-            border-top: 1px solid #dee2e6;
+            border-top: 1px solid #eee;
+        }
+
+        .footer-content {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .social-links {
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50%;
+            text-decoration: none;
+            margin: 0 10px;
+            line-height: 40px;
+            font-size: 16px;
         }
 
         .salon-info {
@@ -403,6 +468,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="email-container">
         <div class="header">
@@ -452,43 +518,36 @@
                     <span>Status Pelayanan</span>
                 </div>
                 <div class="notice-text">
-                    Pelayanan Anda telah dibatalkan secara otomatis oleh sistem karena ketidakhadiran setelah waktu yang telah ditentukan.
+                    Pelayanan Anda telah dibatalkan secara otomatis oleh sistem karena ketidakhadiran setelah waktu yang
+                    telah ditentukan.
                 </div>
             </div>
 
             <div class="apology-section">
                 <div class="apology-title">🙏 Mohon Maaf Atas Ketidaknyamanan Ini</div>
                 <div class="apology-text">
-                    Kami memahami bahwa terkadang ada hal-hal yang tidak terduga. Kami tetap menghargai Anda sebagai pelanggan dan akan dengan senang hati melayani Anda di kesempatan lain. Silakan membuat pelayanan baru kapan saja Anda membutuhkan layanan kami.
+                    Kami memahami bahwa terkadang ada hal-hal yang tidak terduga. Kami tetap menghargai Anda sebagai
+                    pelanggan dan akan dengan senang hati melayani Anda di kesempatan lain. Silakan membuat pelayanan
+                    baru kapan saja Anda membutuhkan layanan kami.
                 </div>
             </div>
         </div>
 
         <div class="footer">
-            <div class="salon-info">
-                <div class="salon-name">✨ Beauty Salon Premium ✨</div>
-            </div>
+            <div class="footer-content">
+                <p><strong>Beauty Salon</strong></p>
+                <p>Jl. Kecantikan No. 123, Jakarta<br>
+                    Telp: (021) 123-4567<br>
+                    Email: info@beautysalon.com</p>
 
-            <div class="contact-info">
-                <div class="contact-row">
-                    <span>📍 Jl. Kecantikan Raya No. 123, Jakarta Selatan</span>
+                <div class="social-links">
+                    <a href="#">📧</a>
+                    <a href="#">📱</a>
+                    <a href="#">🌐</a>
                 </div>
-                <div class="contact-row">
-                    <span>📞 (021) 123-4567 | 📱 0812-3456-7890</span>
-                </div>
-                <div class="contact-row">
-                    <span>✉️ pelayanan@beautysalon.com</span>
-                </div>
-                <div class="contact-row">
-                    <span>🌐 www.beautysalon.com</span>
-                </div>
-            </div>
-
-            <div class="disclaimer">
-                Email ini dikirim secara otomatis oleh sistem pelayanan Beauty Salon Premium.<br>
-                Terima kasih atas pengertian Anda.
             </div>
         </div>
     </div>
 </body>
+
 </html>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Informasi Pengingat Pelayanan Pelanggan</title>
     <meta charset="UTF-8">
@@ -20,8 +21,13 @@
         }
 
         @keyframes gradientShift {
-            0% { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #5b73e8 100%); }
-            100% { background: linear-gradient(135deg, #764ba2 0%, #667eea 50%, #8b94e8 100%); }
+            0% {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #5b73e8 100%);
+            }
+
+            100% {
+                background: linear-gradient(135deg, #764ba2 0%, #667eea 50%, #8b94e8 100%);
+            }
         }
 
         .email-container {
@@ -39,6 +45,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -60,19 +67,22 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 10px,
-                rgba(255, 255, 255, 0.05) 10px,
-                rgba(255, 255, 255, 0.05) 20px
-            );
+            background: repeating-linear-gradient(45deg,
+                    transparent,
+                    transparent 10px,
+                    rgba(255, 255, 255, 0.05) 10px,
+                    rgba(255, 255, 255, 0.05) 20px);
             animation: moveStripes 8s linear infinite;
         }
 
         @keyframes moveStripes {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
         }
 
         .reminder-badge {
@@ -90,8 +100,15 @@
         }
 
         @keyframes gentlePulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+            }
         }
 
         .header h1 {
@@ -118,8 +135,15 @@
         }
 
         @keyframes calendarFloat {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-5px); }
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
         }
 
         .calendar-icon::before {
@@ -144,8 +168,13 @@
         }
 
         @keyframes softGlow {
-            from { text-shadow: 0 0 10px rgba(74, 144, 226, 0.3); }
-            to { text-shadow: 0 0 20px rgba(74, 144, 226, 0.5); }
+            from {
+                text-shadow: 0 0 10px rgba(74, 144, 226, 0.3);
+            }
+
+            to {
+                text-shadow: 0 0 20px rgba(74, 144, 226, 0.5);
+            }
         }
 
         .appointment-info {
@@ -171,8 +200,13 @@
         }
 
         @keyframes shimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
+            0% {
+                left: -100%;
+            }
+
+            100% {
+                left: 100%;
+            }
         }
 
         .appointment-title {
@@ -246,8 +280,17 @@
         }
 
         @keyframes borderGlow {
-            0%, 100% { border-color: #4a90e2; box-shadow: 0 10px 30px rgba(74, 144, 226, 0.2); }
-            50% { border-color: #5ba3f5; box-shadow: 0 15px 40px rgba(74, 144, 226, 0.4); }
+
+            0%,
+            100% {
+                border-color: #4a90e2;
+                box-shadow: 0 10px 30px rgba(74, 144, 226, 0.2);
+            }
+
+            50% {
+                border-color: #5ba3f5;
+                box-shadow: 0 15px 40px rgba(74, 144, 226, 0.4);
+            }
         }
 
         .reminder-text {
@@ -286,8 +329,17 @@
         }
 
         @keyframes timeFlash {
-            0%, 50%, 100% { opacity: 1; }
-            25%, 75% { opacity: 0.7; }
+
+            0%,
+            50%,
+            100% {
+                opacity: 1;
+            }
+
+            25%,
+            75% {
+                opacity: 0.7;
+            }
         }
 
         .action-buttons {
@@ -352,16 +404,33 @@
         }
 
         .footer {
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            background: #f8f9ff;
             padding: 30px;
             text-align: center;
-            border-top: 1px solid #dee2e6;
+            border-top: 1px solid #eee;
         }
 
         .footer-content {
             color: #666;
             font-size: 14px;
             line-height: 1.6;
+        }
+
+        .social-links {
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50%;
+            text-decoration: none;
+            margin: 0 10px;
+            line-height: 40px;
+            font-size: 16px;
         }
 
         .contact-info {
@@ -408,6 +477,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="email-container">
         <div class="header">
@@ -491,16 +561,18 @@
         <div class="footer">
             <div class="footer-content">
                 <p><strong>Beauty Salon</strong></p>
-                <div class="contact-info">
-                    <p>📍 Jl. Kecantikan No. 123, Jakarta</p>
-                    <p>📞 (021) 123-4567</p>
-                    <p>✉️ info@beautysalon.com</p>
+                <p>Jl. Kecantikan No. 123, Jakarta<br>
+                    Telp: (021) 123-4567<br>
+                    Email: info@beautysalon.com</p>
+
+                <div class="social-links">
+                    <a href="#">📧</a>
+                    <a href="#">📱</a>
+                    <a href="#">🌐</a>
                 </div>
-                <p style="margin-top: 15px; font-size: 12px; opacity: 0.7;">
-                    Email pengingat ini dikirim secara otomatis. Terima kasih atas kepercayaan Anda.
-                </p>
             </div>
         </div>
     </div>
 </body>
+
 </html>

@@ -82,6 +82,35 @@
                             </div>
                         </div>
 
+                        <div class="col-12">
+                            <label for="add_role" class="form-label fw-semibold">
+                                <i class="fas fa-user-tag me-1 text-primary"></i>
+                                Role Akses
+                                <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-user-tag text-muted"></i>
+                                </span>
+                                <select class="form-select border-start-0 @error('role') is-invalid @enderror"
+                                    id="add_role" name="role" required>
+                                    <option value="">Pilih Role Akses</option>
+                                    <option value="STAFF" {{ old('role') == 'STAFF' ? 'selected' : '' }}>STAFF</option>
+                                    <option value="CASHIER" {{ old('role') == 'CASHIER' ? 'selected' : '' }}>CASHIER
+                                    </option>
+                                </select>
+                                @error('role')
+                                    <div class="invalid-feedback">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                STAFF: Akses terbatas, CASHIER: Akses kasir
+                            </div>
+                        </div>
+
                         <!-- Password -->
                         <div class="col-md-6">
                             <label for="add_password" class="form-label fw-semibold">
@@ -108,7 +137,8 @@
                             </div>
                             <!-- Password Strength Indicator -->
                             <div class="progress mt-2" style="height: 4px;">
-                                <div class="progress-bar" id="passwordStrength" role="progressbar" style="width: 0%">
+                                <div class="progress-bar" id="passwordStrength" role="progressbar"
+                                    style="width: 0%">
                                 </div>
                             </div>
                             <small class="form-text text-muted" id="passwordHelp">
@@ -408,15 +438,18 @@
         function validateForm() {
             const name = document.getElementById('add_name').value.trim();
             const email = document.getElementById('add_email').value.trim();
+            const role = document.getElementById('add_role').value; // TAMBAHKAN INI
             const password = addPasswordInput.value;
             const confirmPassword = addPasswordConfirmInput.value;
 
             const isNameValid = name.length > 0;
             const isEmailValid = email.length > 0 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            const isRoleValid = role !== ''; // TAMBAHKAN INI
             const isPasswordValid = password.length >= 8 && checkPasswordStrength(password).strength === 100;
             const isPasswordMatch = password === confirmPassword;
 
-            const isFormValid = isNameValid && isEmailValid && isPasswordValid && isPasswordMatch;
+            const isFormValid = isNameValid && isEmailValid && isRoleValid && isPasswordValid &&
+                isPasswordMatch; // TAMBAHKAN isRoleValid
 
             submitBtn.disabled = !isFormValid;
 
@@ -443,6 +476,7 @@
 
         document.getElementById('add_name').addEventListener('input', validateForm);
         document.getElementById('add_email').addEventListener('input', validateForm);
+        document.getElementById('add_role').addEventListener('change', validateForm);
 
         // Reset form when modal is hidden
         document.getElementById('addStaffModal').addEventListener('hidden.bs.modal', function() {
