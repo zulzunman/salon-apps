@@ -4,66 +4,104 @@
 
 @section('content')
     <div class="container-fluid">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Data Staff</h6>
-                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addStaffModal">
-                    <i class="fas fa-user-plus"></i> Tambah Staff
-                </button>
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-users-cog me-2"></i>Data Staff
+                </h1>
+                <p class="text-muted mb-0">Kelola data staff dan pengguna sistem</p>
             </div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStaffModal">
+                <i class="fas fa-user-plus me-2"></i>Tambah Staff
+            </button>
+        </div>
+
+        <!-- Main Card -->
+        <div class="card shadow">
+            <!-- Card Header -->
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <i class="fas fa-table me-2"></i>
+                        <h6 class="m-0 font-weight-bold d-inline">Daftar Staff</h6>
+                    </div>
+                    <div>
+                        <small>Total: {{ $data->total() }} staff</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Body -->
             <div class="card-body">
-                @if ($message = Session::get('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ $message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-
-                @if ($errors->any())
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <ul class="mb-0">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-
+                <!-- Table -->
                 <div class="table-responsive">
-                    <table class="table table-bordered" width="100%" cellspacing="0">
-                        <thead>
+                    <table class="table table-hover table-bordered align-middle">
+                        <thead class="table-dark">
                             <tr>
-                                <th>No</th>
-                                <th>Nama Staff</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>Aksi</th>
+                                <th class="text-center" width="60">#</th>
+                                <th><i class="fas fa-user me-1"></i>Nama Staff</th>
+                                <th><i class="fas fa-envelope me-1"></i>Email</th>
+                                <th class="text-center"><i class="fas fa-user-tag me-1"></i>Role</th>
+                                <th class="text-center" width="120">
+                                    <i class="fas fa-cogs me-1"></i>Aksi
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($data as $index => $item)
                                 <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ $item->name }}</td>
-                                    <td>{{ $item->email }}</td>
-                                    <td>
-                                        <span class="badge bg-info">{{ $item->role }}</span>
+                                    <td class="text-center">
+                                        <span
+                                            class="fw-bold">{{ ($data->currentPage() - 1) * $data->perPage() + $index + 1 }}</span>
                                     </td>
                                     <td>
-                                        <div class="d-flex gap-1">
-                                            <button type="button" class="btn btn-primary btn-sm edit-btn"
+                                        <div class="d-flex align-items-center">
+                                            <div
+                                                class="avatar-sm bg-primary rounded-circle d-flex align-items-center justify-content-center me-3">
+                                                <i class="fas fa-user text-white"></i>
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold">{{ $item->name }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-envelope text-muted me-2"></i>
+                                            {{ $item->email }}
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        @php
+                                            $roleClass = match ($item->role) {
+                                                'ADMIN' => 'bg-danger',
+                                                'STAFF' => 'bg-success',
+                                                'CASHIER' => 'bg-warning text-dark',
+                                                default => 'bg-secondary',
+                                            };
+                                        @endphp
+                                        <span class="badge {{ $roleClass }} px-3 py-2">
+                                            <i class="fas fa-user-shield me-1"></i>{{ $item->role }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-outline-primary btn-sm edit-btn"
                                                 data-bs-toggle="modal" data-bs-target="#editStaffModal"
                                                 data-id="{{ $item->id }}" data-name="{{ $item->name }}"
-                                                data-email="{{ $item->email }}">
+                                                data-email="{{ $item->email }}" title="Edit Staff">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                             <form action="{{ route('staff.delete-data', $item->id) }}" method="POST"
                                                 class="d-inline delete-form" data-name="{{ $item->name }}">
                                                 @csrf
                                                 @method('POST')
-                                                <button type="button" class="btn btn-danger btn-sm delete-btn">
-                                                    <i class="fas fa-trash"></i>
+                                                <button type="button" class="btn btn-danger btn-sm delete-btn"
+                                                    title="Hapus Staff" data-id="{{ $item->id }}"
+                                                    data-name="{{ $item->name }}" data-email="{{ $item->email }}"
+                                                    onclick="openDeleteModal(this)">
+                                                    <i class="fas fa-trash-alt"></i>
                                                 </button>
                                             </form>
                                         </div>
@@ -71,27 +109,39 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="text-center">Tidak ada data staff.</td>
+                                    <td colspan="5" class="text-center py-5">
+                                        <div class="d-flex flex-column align-items-center">
+                                            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                                            <h5 class="text-muted">Belum ada data staff</h5>
+                                            <p class="text-muted">Silakan tambah staff baru dengan mengklik tombol "Tambah
+                                                Staff"</p>
+                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                                data-bs-target="#addStaffModal">
+                                                <i class="fas fa-user-plus me-2"></i>Tambah Staff Pertama
+                                            </button>
+                                        </div>
+                                    </td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
+
                 <!-- Pagination -->
-                <div class="row mt-4">
-                    <div class="col-sm-12 col-md-5">
-                        <div class="dataTables_info">
-                            @if ($data->total() > 0)
-                                Menampilkan {{ $data->firstItem() }} - {{ $data->lastItem() }}
-                                dari {{ $data->total() }} staff
-                            @else
-                                Tidak ada data untuk ditampilkan
-                            @endif
+                @if ($data->hasPages())
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <div class="text-muted">
+                            <small>
+                                @if ($data->total() > 0)
+                                    Menampilkan {{ $data->firstItem() }} - {{ $data->lastItem() }} dari
+                                    {{ $data->total() }} staff
+                                @else
+                                    Tidak ada data untuk ditampilkan
+                                @endif
+                            </small>
                         </div>
-                    </div>
-                    <div class="col-sm-12 col-md-7">
-                        <div class="dataTables_paginate paging_simple_numbers float-right">
-                            @if ($data->hasPages())
+                        <div>
+                            <nav aria-label="Pagination">
                                 <ul class="pagination pagination-sm mb-0">
                                     <!-- Previous -->
                                     @if ($data->onFirstPage())
@@ -136,10 +186,10 @@
                                         </li>
                                     @endif
                                 </ul>
-                            @endif
+                            </nav>
                         </div>
                     </div>
-                </div>
+                @endif
             </div>
         </div>
     </div>
@@ -147,23 +197,120 @@
     <!-- Include Modal Files -->
     @include('admin.staff.formAdd')
     @include('admin.staff.formEdit')
+    @include('admin.staff.delete')
+@endsection
+
+@section('styles')
+    <style>
+        .avatar-sm {
+            width: 40px;
+            height: 40px;
+            font-size: 16px;
+        }
+
+        .table th {
+            font-weight: 600;
+            font-size: 0.875rem;
+            border-color: #dee2e6;
+        }
+
+        .table td {
+            border-color: #dee2e6;
+            vertical-align: middle;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .btn-group .btn {
+            border-radius: 0.375rem;
+            margin: 0 1px;
+        }
+
+        .card-header {
+            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .table-responsive {
+            border-radius: 0.375rem;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+            color: #fff;
+        }
+
+        .pagination .page-link {
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+            margin: 0 2px;
+            border-radius: 0.375rem;
+        }
+
+        .pagination .page-link:hover {
+            color: #0d6efd;
+            background-color: #f8f9fa;
+            border-color: #0d6efd;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #adb5bd;
+            background-color: #fff;
+            border-color: #dee2e6;
+        }
+
+        /* Hover effect untuk table rows */
+        .table-hover tbody tr:hover {
+            background-color: rgba(13, 110, 253, 0.05);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn-group .btn {
+                margin: 1px 0;
+            }
+
+            .d-flex.justify-content-between {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .pagination {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .avatar-sm {
+                display: none;
+            }
+
+            .card-header .d-flex {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 0.5rem;
+            }
+        }
+    </style>
 @endsection
 
 @section('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Handle delete confirmations
-            const deleteButtons = document.querySelectorAll('.delete-btn');
-            deleteButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const form = this.closest('form');
-                    const itemName = form.getAttribute('data-name');
-
-                    if (confirm(`Apakah Anda yakin ingin menghapus data staff "${itemName}"?`)) {
-                        form.submit();
-                    }
-                });
-            });
+            function openDeleteModal(button) {
+                const id = button.getAttribute('data-id');
+                const form = document.getElementById('deleteForm');
+                form.action = `/staff/delete/${id}`; // Atau gunakan route helper jika di-parse ke JS
+                const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+                modal.show();
+            }
 
             // Handle edit button clicks
             const editButtons = document.querySelectorAll('.edit-btn');
@@ -173,118 +320,125 @@
                     const name = this.getAttribute('data-name');
                     const email = this.getAttribute('data-email');
 
-                    // Update form action URL - sesuaikan dengan route Anda
+                    // Update form action URL
                     const editForm = document.getElementById('editStaffForm');
-                    editForm.action = `/admin/staff/edit/${id}`;
+                    if (editForm) {
+                        editForm.action = `/admin/staff/edit/${id}`;
+                    }
 
                     // Populate form fields
-                    document.getElementById('edit_name').value = name;
-                    document.getElementById('edit_email').value = email;
-                    document.getElementById('edit_password').value = '';
-                    document.getElementById('edit_password_confirmation').value = '';
+                    const nameField = document.getElementById('edit_name');
+                    const emailField = document.getElementById('edit_email');
+                    const passwordField = document.getElementById('edit_password');
+                    const passwordConfirmField = document.getElementById(
+                        'edit_password_confirmation');
+
+                    if (nameField) nameField.value = name;
+                    if (emailField) emailField.value = email;
+                    if (passwordField) passwordField.value = '';
+                    if (passwordConfirmField) passwordConfirmField.value = '';
+
+                    // Clear validation classes
+                    [nameField, emailField, passwordField, passwordConfirmField].forEach(field => {
+                        if (field) {
+                            field.classList.remove('is-invalid', 'is-valid');
+                        }
+                    });
                 });
             });
 
-            // Handle modal close - clear forms
-            const addModal = document.getElementById('addStaffModal');
-            const editModal = document.getElementById('editStaffModal');
+            // Handle modal close - clear forms and validation
+            const modals = ['addStaffModal', 'editStaffModal'];
+            modals.forEach(modalId => {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.addEventListener('hidden.bs.modal', function() {
+                        const form = modal.querySelector('form');
+                        if (form) {
+                            form.reset();
 
-            if (addModal) {
-                addModal.addEventListener('hidden.bs.modal', function() {
-                    // Clear add form
-                    document.getElementById('addStaffForm').reset();
-                    // Remove validation classes
-                    const inputs = addModal.querySelectorAll('.form-control');
-                    inputs.forEach(input => {
-                        input.classList.remove('is-invalid', 'is-valid');
+                            // Remove validation classes
+                            const inputs = modal.querySelectorAll('.form-control');
+                            inputs.forEach(input => {
+                                input.classList.remove('is-invalid', 'is-valid');
+                            });
+
+                            // Clear validation messages
+                            const feedbacks = modal.querySelectorAll('.invalid-feedback');
+                            feedbacks.forEach(feedback => {
+                                feedback.style.display = 'none';
+                            });
+                        }
                     });
-                });
-            }
+                }
+            });
 
-            if (editModal) {
-                editModal.addEventListener('hidden.bs.modal', function() {
-                    // Clear edit form
-                    document.getElementById('editStaffForm').reset();
-                    // Remove validation classes
-                    const inputs = editModal.querySelectorAll('.form-control');
-                    inputs.forEach(input => {
-                        input.classList.remove('is-invalid', 'is-valid');
-                    });
-                });
-            }
-
-            // Show modal if there are validation errors
+            // Auto-show modal if validation errors exist
             @if ($errors->any())
                 @if (old('_token'))
-                    @if (request()->routeIs('staff.get-data'))
-                        // Show add modal if add form has errors
-                        const addModalInstance = new bootstrap.Modal(document.getElementById('addStaffModal'));
-                        addModalInstance.show();
-                    @elseif (request()->routeIs('staff.edit-data'))
-                        // Show edit modal if edit form has errors
-                        const editModalInstance = new bootstrap.Modal(document.getElementById('editStaffModal'));
-                        editModalInstance.show();
-                    @endif
+                    const modalToShow = '{{ old('modal_type', 'add') }}' === 'edit' ? 'editStaffModal' :
+                        'addStaffModal';
+                    const modalElement = document.getElementById(modalToShow);
+                    if (modalElement) {
+                        const modal = new bootstrap.Modal(modalElement);
+                        modal.show();
+                    }
                 @endif
             @endif
+
+            // Add smooth animations
+            const tableRows = document.querySelectorAll('tbody tr');
+            tableRows.forEach((row, index) => {
+                row.style.opacity = '0';
+                row.style.transform = 'translateY(10px)';
+
+                setTimeout(() => {
+                    row.style.transition = 'all 0.3s ease';
+                    row.style.opacity = '1';
+                    row.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
+
+            // Enhanced button interactions
+            const actionButtons = document.querySelectorAll('.btn-sm');
+            actionButtons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                });
+
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+
+            // Auto-hide alerts after 5 seconds
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    if (alert.classList.contains('show')) {
+                        const bsAlert = new bootstrap.Alert(alert);
+                        bsAlert.close();
+                    }
+                }, 5000);
+            });
+        });
+
+        // Add loading state for form submissions
+        document.addEventListener('submit', function(e) {
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            if (submitButton) {
+                const originalText = submitButton.innerHTML;
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...';
+                submitButton.disabled = true;
+
+                // Restore button if form validation fails
+                setTimeout(() => {
+                    if (submitButton.disabled) {
+                        submitButton.innerHTML = originalText;
+                        submitButton.disabled = false;
+                    }
+                }, 3000);
+            }
         });
     </script>
-    <style>
-        /* Pagination Styles - sama seperti di service */
-        .dataTables_info {
-            padding-top: 8px;
-            color: #6c757d;
-            font-size: 14px;
-        }
-
-        .dataTables_paginate {
-            padding-top: 0;
-        }
-
-        .pagination-sm .page-link {
-            padding: 0.4rem 0.65rem;
-            font-size: 0.875rem;
-            border-radius: 0.2rem;
-        }
-
-        .pagination .page-item.active .page-link {
-            background-color: #4e73df;
-            border-color: #4e73df;
-            color: #fff;
-        }
-
-        .pagination .page-link {
-            color: #6c757d;
-            border: 1px solid #e3e6f0;
-            margin: 0 2px;
-        }
-
-        .pagination .page-link:hover {
-            color: #4e73df;
-            background-color: #f8f9fc;
-            border-color: #4e73df;
-        }
-
-        .pagination .page-item.disabled .page-link {
-            color: #adb5bd;
-            background-color: #fff;
-            border-color: #e3e6f0;
-        }
-
-        @media (max-width: 576px) {
-            .float-right {
-                float: none !important;
-            }
-
-            .dataTables_paginate {
-                text-align: center;
-                margin-top: 10px;
-            }
-
-            .col-sm-12.col-md-5,
-            .col-sm-12.col-md-7 {
-                text-align: center;
-            }
-        }
-    </style>
 @endsection

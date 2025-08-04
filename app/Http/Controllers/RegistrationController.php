@@ -11,6 +11,7 @@ use App\Mail\ReminderMail;
 use App\Models\Customer;
 use App\Models\Registration;
 use App\Models\Service;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,31 +19,52 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 
+// abcdadsasda
 class RegistrationController extends Controller
 {
     protected $modelRegistration;
     protected $modelCustomer;
     protected $modelService;
+    protected $modelUser;
 
     public function __construct()
     {
         $this->modelRegistration = new Registration();
         $this->modelCustomer = new Customer();
+        $this->modelUser = new User();
         $this->modelService = new Service();
     }
 
     public function getData(Request $request)
     {
-
         $status = $request->query('status');
         $perPage = $request->query('per_page', 10);
+        $userRole = auth()->user()->role;
+        $userId = auth()->user()->id;
 
-        $query = $this->modelRegistration->with('customer', 'service');
+        // Load relasi customer, service, dan users (staff yang menangani)
+        $query = $this->modelRegistration->with(['customer', 'service', 'users']);
 
-        if ($status) {
-            $query->where('status', $status);
+        // Filter berdasarkan role
+        if ($userRole === 'STAFF') {
+            // Untuk STAFF: hanya tampilkan data yang ditangani oleh staff tersebut
+            $query->whereHas('users', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            });
+
+            // Filter status untuk STAFF: hanya SERVING dan COMPLETED
+            if ($status) {
+                $query->where('status', $status);
+            } else {
+                $query->whereIn('status', ['SERVING', 'COMPLETED']);
+            }
         } else {
-            $query->whereIn('status', ['PENDING', 'CALLING', 'SERVING']);
+            // Untuk ADMIN dan CASHIER: tampilkan semua data
+            if ($status) {
+                $query->where('status', $status);
+            } else {
+                $query->whereIn('status', ['PENDING', 'CALLING', 'SERVING', 'COMPLETED']);
+            }
         }
 
         $this->checkTimedOutCalls();
@@ -53,7 +75,10 @@ class RegistrationController extends Controller
         // Preserve query parameters in pagination links
         $customers->appends($request->query());
 
-        return view('customer.list', compact('customers'));
+        // Ambil data staff untuk modal - hanya yang aktif/tersedia
+        $staffList = $this->modelUser->where('role', 'STAFF')->get();
+
+        return view('customer.list', compact('customers', 'staffList'));
     }
 
     public function formRegist(Request $request)
@@ -196,21 +221,35 @@ class RegistrationController extends Controller
         }
     }
 
-    public function servingCustomer($id)
+    public function servingCustomer(Request $request, $id)
     {
         $data = $this->modelRegistration->findOrFail($id);
+
         DB::beginTransaction();
         try {
+            // Update status registration
             $data->status = "SERVING";
             $data->save();
+
+            // Ambil user_id dari request
+            $userId = $request->input('user_id');
+
+            // Validasi user_id (opsional, pastikan user-nya ada)
+            $user = $this->modelUser->findOrFail($userId);
+
+            // Tambahkan relasi registration ke user
+            $user->registrations()->syncWithoutDetaching([$data->id]);
+
             DB::commit();
             return redirect()->route('register.get-data')
-                ->with('success', 'Pelanggan sedang dilayani.');
+                ->with('success', 'Pelanggan sedang dilayani oleh ' . $user->name);
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()
                 ->withInput()
-                ->withErrors(['message' => 'Terjadi kesalahan saat update status pelanggan: ' . $e->getMessage()]);
+                ->withErrors([
+                    'message' => 'Terjadi kesalahan saat update status pelanggan: ' . $e->getMessage()
+                ]);
         }
     }
 

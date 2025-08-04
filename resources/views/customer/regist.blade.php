@@ -334,7 +334,8 @@
                                     class="list-group-item d-flex justify-content-between align-items-center rounded shadow-sm mb-2">
                                     <div>
                                         <i class="bi bi-person-circle me-2 text-secondary"></i>
-                                        Antrian <strong>{{ $antri->queue_number }}</strong>
+                                        Antrian atas nama <strong>{{ $antri->customer->name }}</strong> : <strong>No.
+                                            {{ $antri->queue_number }}</strong>
                                     </div>
                                     <div>
                                         @if ($antri->status == 'PENDING')

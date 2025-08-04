@@ -29,8 +29,8 @@ class UserSeeder extends Seeder
             [
                 'id'    => 2,
                 'name'  => 'Stylist',
-                'role'  => 'STAFF',
-                'email' => 'stylist@example.com',
+                'role'  => 'CASHIER',
+                'email' => 'kasir@example.com',
                 'email_verified_at' => now(),
                 'password' => Hash::make('12345678'),
                 // 'phone' => 089111111111,

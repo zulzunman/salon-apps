@@ -39,6 +39,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/registration/call/{id}', [RegistrationController::class, 'callCustomer'])->name('register.calling');
     Route::post('/registration/serving/{id}', [RegistrationController::class, 'servingCustomer'])->name('register.serving');
     Route::post('/registration/complete/{id}', [RegistrationController::class, 'completeCustomer'])->name('register.complete');
+    Route::get('/staff/report', [StaffController::class, 'reportings'])->name('staff.reporting');
 
     Route::middleware(['is_admin'])->group(function () {
         // staff

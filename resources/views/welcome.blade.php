@@ -303,7 +303,7 @@
         <div class="container px-4 px-lg-5">
             <div class="row gx-4 gx-lg-5 justify-content-center">
                 <div class="col-lg-8">
-                    <h2 class="text-white mb-3">Our Booking Policy</h2>
+                    <h2 class="text-white mb-3">Our Registration Policy</h2>
                     <div class="text-white-50 text-center">
                         <p class="mb-1">Loyal Customer</p>
                         <p class="mb-2">"Silahkan Di Baca Terlebih Dahulu"</p>
@@ -344,7 +344,7 @@
                             'PERMING PACKAGE' => [],
                             'OTHER PACKAGE' => [],
                         ];
-                        
+
                         foreach ($services as $service) {
                             // Determine category based on service name
                             if (stripos($service->name, 'THIN') !== false || stripos($service->name, 'BOLD') !== false || stripos($service->name, 'SOLID') !== false) {
@@ -354,10 +354,10 @@
                             } else {
                                 $categoryName = 'OTHER PACKAGE';
                             }
-                        
+
                             $serviceCategories[$categoryName][] = $service;
                         }
-                        
+
                         // Remove empty categories
                         $serviceCategories = array_filter($serviceCategories, function ($category) {
                             return !empty($category);
@@ -403,7 +403,7 @@
                                                 <div class="service-price-wrapper">
                                                     <div class="service-price">Rp
                                                         {{ number_format($service->price, 0, ',', '.') }}</div>
-                                                    <div class="book-now-btn">Booking</div>
+                                                    <div class="book-now-btn">Registration</div>
                                                 </div>
                                             </a>
                                         </div>
@@ -428,7 +428,7 @@
                 <div class="col-lg-6 text-center">
                     <a href="{{ route('booking.datetime') }}" class="btn btn-outline-light btn-lg">
                         <i class="bi bi-calendar-plus me-2"></i>
-                        Booking Sekarang
+                        Daftar Sekarang
                     </a>
                 </div>
             </div>
