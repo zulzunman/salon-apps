@@ -23,7 +23,7 @@ class StaffController extends Controller
     public function getData()
     {
         // Ambil user dengan role 'STAFF' dengan pagination
-        $data = $this->model->where('role', 'STAFF')->paginate(5);
+        $data = $this->model->whereIn('role', ['STAFF', 'CASHIER'])->paginate(5);
 
         return view('admin.staff.index', compact('data'));
     }
