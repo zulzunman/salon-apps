@@ -507,9 +507,10 @@
         <div class="footer">
             <div class="footer-content">
                 <p><strong>Beauty Salon</strong></p>
-                <p>Jl. Kecantikan No. 123, Jakarta<br>
-                    Telp: (021) 123-4567<br>
-                    Email: info@beautysalon.com</p>
+                <p>Jl. Lapang Tembak Sel. kp mekarsari 9<br>
+                    Padasuka, Kec. Cimahi Tengah<br>
+                    Kota Cimahi, Jawa Barat 40523 <br></p>
+                Telp: +62 896 7187 5340<br>
 
                 <div class="social-links">
                     <a href="#">📧</a>
