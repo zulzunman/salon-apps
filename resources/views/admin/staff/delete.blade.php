@@ -42,9 +42,9 @@
                     <i class="fas fa-times me-1"></i>
                     Batal
                 </button>
-                <form id="deleteForm" method="POST" style="display: inline;">
+                <form id="deleteForm" method="POST" action="{{ route('staff.delete-data', $item->id) }}" style="display: inline;">
                     @csrf
-                    @method('DELETE')
+                    @method('POST')
                     <button type="submit" class="btn btn-danger" id="confirmDeleteBtn">
                         <i class="fas fa-trash-alt me-1"></i>
                         <span class="btn-text">Ya, Hapus Data</span>

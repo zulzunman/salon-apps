@@ -93,7 +93,7 @@
                                                 data-email="{{ $item->email }}" title="Edit Staff">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-                                            <form action="{{ route('staff.delete-data', $item->id) }}" method="POST"
+                                            <form id="deleteForm" action="{{ route('staff.delete-data', $item->id) }}" method="POST"
                                                 class="d-inline delete-form" data-name="{{ $item->name }}">
                                                 @csrf
                                                 @method('POST')
