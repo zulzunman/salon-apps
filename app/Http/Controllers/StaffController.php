@@ -56,7 +56,7 @@ class StaffController extends Controller
             'password.min' => 'Password minimal 8 karakter',
         ];
 
-        // Validasi input
+        // Validasi
         $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
@@ -210,7 +210,7 @@ class StaffController extends Controller
             // Optional: Check if staff has related registrations
             // Uncomment if you have registrations relationship
             // $hasRegistrations = $staff->registrations()->exists();
-            // 
+            //
             // if ($hasRegistrations) {
             //     DB::rollBack();
             //     return redirect()->back()
