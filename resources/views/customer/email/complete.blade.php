@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Informasi Pelayanan Salon</title>
     <meta charset="UTF-8">
@@ -20,8 +21,13 @@
         }
 
         @keyframes backgroundGlow {
-            0% { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); }
-            100% { background: linear-gradient(135deg, #f093fb 0%, #667eea 50%, #764ba2 100%); }
+            0% {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            }
+
+            100% {
+                background: linear-gradient(135deg, #f093fb 0%, #667eea 50%, #764ba2 100%);
+            }
         }
 
         .email-container {
@@ -39,6 +45,7 @@
                 opacity: 0;
                 transform: translateY(40px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -65,8 +72,13 @@
         }
 
         @keyframes patternMove {
-            0% { transform: translateX(0) translateY(0); }
-            100% { transform: translateX(60px) translateY(60px); }
+            0% {
+                transform: translateX(0) translateY(0);
+            }
+
+            100% {
+                transform: translateX(60px) translateY(60px);
+            }
         }
 
         .success-badge {
@@ -84,9 +96,22 @@
         }
 
         @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-10px);
+            }
+
+            60% {
+                transform: translateY(-5px);
+            }
         }
 
         .header h1 {
@@ -113,9 +138,19 @@
         }
 
         @keyframes checkmarkPop {
-            0% { transform: scale(0); opacity: 0; }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); opacity: 1; }
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         .completion-icon::before {
@@ -144,8 +179,13 @@
         }
 
         @keyframes textGlow {
-            from { filter: brightness(1); }
-            to { filter: brightness(1.2); }
+            from {
+                filter: brightness(1);
+            }
+
+            to {
+                filter: brightness(1.2);
+            }
         }
 
         .completion-subtitle {
@@ -177,8 +217,13 @@
         }
 
         @keyframes shimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
+            0% {
+                left: -100%;
+            }
+
+            100% {
+                left: 100%;
+            }
         }
 
         .summary-title {
@@ -200,7 +245,7 @@
             align-items: center;
             margin-bottom: 18px;
             padding: 15px;
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(241, 239, 239, 0.15);
             border-radius: 12px;
             backdrop-filter: blur(10px);
         }
@@ -229,11 +274,13 @@
             font-size: 14px;
             opacity: 0.9;
             margin-bottom: 5px;
+            color: white;
         }
 
         .detail-value {
             font-size: 17px;
             font-weight: bold;
+            color: white;
         }
 
         .completion-announcement {
@@ -248,8 +295,13 @@
         }
 
         @keyframes pulseGlow {
-            from { box-shadow: 0 15px 40px rgba(255, 107, 107, 0.3); }
-            to { box-shadow: 0 20px 50px rgba(255, 107, 107, 0.5); }
+            from {
+                box-shadow: 0 15px 40px rgba(255, 107, 107, 0.3);
+            }
+
+            to {
+                box-shadow: 0 20px 50px rgba(255, 107, 107, 0.5);
+            }
         }
 
         .completion-text {
@@ -296,15 +348,36 @@
             animation: starFloat 3s ease-in-out infinite;
         }
 
-        .star:nth-child(1) { animation-delay: 0s; }
-        .star:nth-child(2) { animation-delay: 0.2s; }
-        .star:nth-child(3) { animation-delay: 0.4s; }
-        .star:nth-child(4) { animation-delay: 0.6s; }
-        .star:nth-child(5) { animation-delay: 0.8s; }
+        .star:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .star:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .star:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        .star:nth-child(4) {
+            animation-delay: 0.6s;
+        }
+
+        .star:nth-child(5) {
+            animation-delay: 0.8s;
+        }
 
         @keyframes starFloat {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-5px); }
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
         }
 
         .star.gold {
@@ -379,15 +452,33 @@
         }
 
         .footer {
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            padding: 40px 30px;
+            background: #f8f9ff;
+            padding: 30px;
             text-align: center;
+            border-top: 1px solid #eee;
         }
 
         .footer-content {
             color: #666;
             font-size: 14px;
-            line-height: 1.8;
+            line-height: 1.6;
+        }
+
+        .social-links {
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50%;
+            text-decoration: none;
+            margin: 0 10px;
+            line-height: 40px;
+            font-size: 16px;
         }
 
         .salon-info {
@@ -400,21 +491,6 @@
         .social-links {
             margin-top: 25px;
         }
-
-        .social-links a {
-            display: inline-block;
-            width: 45px;
-            height: 45px;
-            background: linear-gradient(45deg, #4CAF50, #81C784);
-            color: white;
-            border-radius: 50%;
-            text-decoration: none;
-            margin: 0 10px;
-            line-height: 45px;
-            font-size: 18px;
-            transition: transform 0.3s ease;
-        }
-
         .social-links a:hover {
             transform: scale(1.1);
         }
@@ -466,6 +542,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="email-container">
         <div class="header">
@@ -488,7 +565,7 @@
                         <div class="detail-icon">👤</div>
                         <div class="detail-content">
                             <div class="detail-label">Nama Pelanggan</div>
-                            <div class="detail-value">{{ $name }}</div>
+                            <div class="detail-value">Ibro</div>
                         </div>
                     </div>
 
@@ -496,7 +573,7 @@
                         <div class="detail-icon">🕒</div>
                         <div class="detail-content">
                             <div class="detail-label">Nomor Antrian</div>
-                            <div class="detail-value">00{{ $antri }}</div>
+                            <div class="detail-value">003</div>
                         </div>
                     </div>
 
@@ -504,7 +581,7 @@
                         <div class="detail-icon">💄</div>
                         <div class="detail-content">
                             <div class="detail-label">Layanan yang Diterima</div>
-                            <div class="detail-value">{{ $service }}</div>
+                            <div class="detail-value">Cuci Dan Blow</div>
                         </div>
                     </div>
                 </div>
@@ -529,25 +606,18 @@
         <div class="footer">
             <div class="footer-content">
                 <p><strong>Beauty Salon</strong></p>
-                <div class="salon-info">
-                    <p>📍 Jl. Kecantikan No. 123, Jakarta</p>
-                    <p>📞 (021) 123-4567</p>
-                    <p>✉️ info@beautysalon.com</p>
-                    <p>🕒 Buka: Senin - Minggu, 09:00 - 21:00</p>
-                </div>
+                <p>Jl. Kecantikan No. 123, Jakarta<br>
+                    Telp: (021) 123-4567<br>
+                    Email: info@beautysalon.com</p>
 
                 <div class="social-links">
                     <a href="#">📧</a>
                     <a href="#">📱</a>
                     <a href="#">🌐</a>
-                    <a href="#">📷</a>
                 </div>
-
-                <p style="margin-top: 20px; font-size: 12px; opacity: 0.7;">
-                    Terima kasih telah mempercayakan kecantikan Anda kepada kami!
-                </p>
             </div>
         </div>
     </div>
 </body>
+
 </html>

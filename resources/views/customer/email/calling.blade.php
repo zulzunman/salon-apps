@@ -372,16 +372,33 @@
         }
 
         .footer {
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            background: #f8f9ff;
             padding: 30px;
             text-align: center;
-            border-top: 1px solid #dee2e6;
+            border-top: 1px solid #eee;
         }
 
         .footer-content {
             color: #666;
             font-size: 14px;
             line-height: 1.6;
+        }
+
+        .social-links {
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50%;
+            text-decoration: none;
+            margin: 0 10px;
+            line-height: 40px;
+            font-size: 16px;
         }
 
         .contact-info {
@@ -490,14 +507,15 @@
         <div class="footer">
             <div class="footer-content">
                 <p><strong>Beauty Salon</strong></p>
-                <div class="contact-info">
-                    <p>📍 Jl. Kecantikan No. 123, Jakarta</p>
-                    <p>📞 (021) 123-4567</p>
-                    <p>✉️ info@beautysalon.com</p>
+                <p>Jl. Kecantikan No. 123, Jakarta<br>
+                    Telp: (021) 123-4567<br>
+                    Email: info@beautysalon.com</p>
+
+                <div class="social-links">
+                    <a href="#">📧</a>
+                    <a href="#">📱</a>
+                    <a href="#">🌐</a>
                 </div>
-                <p style="margin-top: 15px; font-size: 12px; opacity: 0.7;">
-                    Email ini dikirim secara otomatis oleh sistem antrian salon
-                </p>
             </div>
         </div>
     </div>

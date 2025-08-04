@@ -39,6 +39,7 @@ class StaffController extends Controller
         $rules = [
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
+            'role' => 'required|in:STAFF,CASHIER', // PERUBAHAN: Tambahkan validasi role
             'password' => [
                 'required',
                 'confirmed',
@@ -51,6 +52,8 @@ class StaffController extends Controller
             'email.required' => 'Email harus diisi',
             'email.email' => 'Silahkan isi dengan alamat email yang valid',
             'email.unique' => 'Email sudah digunakan',
+            'role.required' => 'Role akses harus diisi',
+            'role.in' => 'Role harus STAFF atau CASHIER', // PERUBAHAN: Tambahkan pesan error role
             'password.required' => 'Password harus diisi',
             'password.confirmed' => 'Password konfirmasi tidak cocok',
             'password.min' => 'Password minimal 8 karakter',
@@ -79,7 +82,7 @@ class StaffController extends Controller
             $data = new User(); // Gunakan new instance, bukan $this->model
             $data->name = $request->input('name');
             $data->email = $request->input('email');
-            $data->role = 'STAFF';
+            $data->role = $request->input('role');
             $data->password = Hash::make($request->input('password'));
             $data->save();
 
@@ -93,7 +96,7 @@ class StaffController extends Controller
                 ]);
             }
 
-            return redirect()->route('admin.staff.index')
+            return redirect()->route('staff.get-data')
                 ->with('success', 'Tambah data staff berhasil.');
         } catch (Exception $e) {
             DB::rollBack();
@@ -125,9 +128,10 @@ class StaffController extends Controller
 
         $rules = [
             'name'  =>  'required',
-            'email'  =>  'required|email|unique:users,email,' . $id, // Exclude current user from unique validation
+            'email'  =>  'required|email|unique:users,email,' . $id,
+            'role'  =>  'required|in:STAFF,CASHIER', // PERUBAHAN: Tambahkan validasi role
             'password'  =>  [
-                'nullable', // Password optional untuk edit
+                'nullable',
                 'confirmed',
                 'min:8',
             ],
@@ -138,6 +142,8 @@ class StaffController extends Controller
             'email.required' => 'Email harus diisi',
             'email.email' => 'Silahkan isi dengan alamat email yang valid',
             'email.unique' => 'Email sudah digunakan',
+            'role.required' => 'Role akses harus diisi',
+            'role.in' => 'Role harus STAFF atau CASHIER', // PERUBAHAN: Tambahkan pesan error role
             'password.confirmed' => 'Password konfirmasi tidak cocok',
             'password.min' => 'Password minimal 8 karakter',
         ];
@@ -163,7 +169,7 @@ class StaffController extends Controller
             // Update data
             $data->name = $request->name;
             $data->email = $request->email;
-
+            $data->role = $request->role;
             // Update password hanya jika diisi
             if ($request->filled('password')) {
                 $data->password = Hash::make($request->password);
@@ -181,7 +187,7 @@ class StaffController extends Controller
                 ]);
             }
 
-            return redirect()->route('admin.staff.index')
+            return redirect()->route('staff.get-data')
                 ->with('success', 'Staff berhasil diedit.');
         } catch (Exception $e) {
             DB::rollBack();
@@ -223,7 +229,7 @@ class StaffController extends Controller
 
             DB::commit();
 
-            return redirect()->route('admin.staff.index')
+            return redirect()->route('staff.get-data')
                 ->with('success', "Data staff '{$staffName}' berhasil dihapus");
         } catch (ModelNotFoundException $e) {
             DB::rollBack();
@@ -269,13 +275,12 @@ class StaffController extends Controller
             if ($viewType === 'daily') {
                 if ($selectedDate && ($isDefaultView || $request->has('selected_date'))) {
                     // Hitung untuk tanggal spesifik (default: hari ini)
-                    $count = 0;
-                    // Uncomment and modify if you have registrations relationship
-                    // $count = $staff->registrations()
-                    //     ->whereYear('registrations.created_at', $selectedYear)
-                    //     ->whereMonth('registrations.created_at', $selectedMonth)
-                    //     ->whereDay('registrations.created_at', $selectedDate)
-                    //     ->count();
+                    $count = $staff->registrations()
+                        ->whereYear('registrations.created_at', $selectedYear)
+                        ->whereMonth('registrations.created_at', $selectedMonth)
+                        ->whereDay('registrations.created_at', $selectedDate)
+                        ->where('registrations.status', 'COMPLETED') // Filter hanya COMPLETED
+                        ->count();
 
                     $reportData[$staff->id] = [
                         'staff_name' => $staff->name,
@@ -288,13 +293,13 @@ class StaffController extends Controller
                     $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $selectedMonth, $selectedYear);
 
                     for ($day = 1; $day <= $daysInMonth; $day++) {
-                        $count = 0;
-                        // Uncomment and modify if you have registrations relationship
-                        // $count = $staff->registrations()
-                        //     ->whereYear('registrations.created_at', $selectedYear)
-                        //     ->whereMonth('registrations.created_at', $selectedMonth)
-                        //     ->whereDay('registrations.created_at', $day)
-                        //     ->count();
+                        $count = $staff->registrations()
+                            ->whereYear('registrations.created_at', $selectedYear)
+                            ->whereMonth('registrations.created_at', $selectedMonth)
+                            ->whereDay('registrations.created_at', $day)
+                            ->where('registrations.status', 'COMPLETED') // Filter hanya COMPLETED
+                            ->count();
+
                         $dailyData[$day] = $count;
                     }
 
@@ -313,13 +318,13 @@ class StaffController extends Controller
                     $startDay = ($week - 1) * 7 + 1;
                     $endDay = min($week * 7, $daysInMonth);
 
-                    $count = 0;
-                    // Uncomment and modify if you have registrations relationship
-                    // $count = $staff->registrations()
-                    //     ->whereYear('registrations.created_at', $selectedYear)
-                    //     ->whereMonth('registrations.created_at', $selectedMonth)
-                    //     ->whereRaw('DAY(registrations.created_at) BETWEEN ? AND ?', [$startDay, $endDay])
-                    //     ->count();
+                    // Query untuk rentang hari dalam minggu
+                    $count = $staff->registrations()
+                        ->whereYear('registrations.created_at', $selectedYear)
+                        ->whereMonth('registrations.created_at', $selectedMonth)
+                        ->whereBetween(DB::raw('DAY(registrations.created_at)'), [$startDay, $endDay])
+                        ->where('registrations.status', 'COMPLETED') // Filter hanya COMPLETED
+                        ->count();
 
                     $weeklyData[$week] = [
                         'count' => $count,
@@ -336,12 +341,12 @@ class StaffController extends Controller
                 $monthlyData = [];
 
                 for ($month = 1; $month <= 12; $month++) {
-                    $count = 0;
-                    // Uncomment and modify if you have registrations relationship
-                    // $count = $staff->registrations()
-                    //     ->whereYear('registrations.created_at', $selectedYear)
-                    //     ->whereMonth('registrations.created_at', $month)
-                    //     ->count();
+                    $count = $staff->registrations()
+                        ->whereYear('registrations.created_at', $selectedYear)
+                        ->whereMonth('registrations.created_at', $month)
+                        ->where('registrations.status', 'COMPLETED') // Filter hanya COMPLETED
+                        ->count();
+
                     $monthlyData[$month] = $count;
                 }
 
